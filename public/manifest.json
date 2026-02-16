@@ -1,0 +1,67 @@
+{
+    "name": "AstroWeb - Vedic Astrology",
+    "short_name": "AstroWeb",
+    "description": "Free Vedic Astrology - Kundli, Horoscope & Birth Chart Analysis",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a1a2e",
+    "theme_color": "#ff6b35",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "en-IN",
+    "categories": [
+        "lifestyle",
+        "entertainment",
+        "utilities"
+    ],
+    "icons": [
+        {
+            "src": "/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [],
+    "shortcuts": [
+        {
+            "name": "Free Kundli",
+            "short_name": "Kundli",
+            "description": "Generate Free Birth Chart",
+            "url": "/kundli",
+            "icons": [
+                {
+                    "src": "/icon.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "Daily Horoscope",
+            "short_name": "Horoscope",
+            "description": "Today's Rashifal",
+            "url": "/horoscope/daily",
+            "icons": [
+                {
+                    "src": "/icon.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        },
+        {
+            "name": "Kundli Matching",
+            "short_name": "Matching",
+            "description": "Marriage Compatibility",
+            "url": "/kundli-matching",
+            "icons": [
+                {
+                    "src": "/icon.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ]
+        }
+    ]
+}
