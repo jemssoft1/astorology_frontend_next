@@ -47,11 +47,6 @@ export default function PageTopNavbar() {
     },
     { icon: "mdi:numbers", text: "Numerology", href: "/numerology" },
     { icon: "gis:map-time", text: "Life Predictor", href: "/life-predictor" },
-    {
-      icon: "svg-spinners:clock",
-      text: "Good Time Finder",
-      href: "/good-time-finder",
-    },
   ];
 
   return (

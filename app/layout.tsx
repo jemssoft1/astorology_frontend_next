@@ -304,6 +304,8 @@ export const metadata: Metadata = {
   bookmarks: ["https://astroweb.com/bookmarks"],
 };
 
+// ... (existing imports)
+
 export default function RootLayout({
   children,
 }: Readonly<{

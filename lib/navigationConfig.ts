@@ -10,17 +10,50 @@ const routeMetadata: Record<
   string,
   { icon: string; text: string; category?: string }
 > = {
+  // --- General / Dashboard ---
   "/": { icon: "ant-design:home-twotone", text: "Home" },
+
+  // --- Horoscopes ---
+  "/horoscope": {
+    icon: "fluent:book-star-20-filled",
+    text: "Horoscope",
+    category: "Horoscopes",
+  },
+  "/daily-horoscope": {
+    icon: "mdi:forecast",
+    text: "Daily Horoscope",
+    category: "Horoscopes",
+  },
+  "/daily-nakshatra-predictions": {
+    icon: "mdi:star-shooting",
+    text: "Daily Nakshatra",
+    category: "Horoscopes",
+  },
+
+  // --- Predictions ---
+  "/life-predictor": {
+    icon: "gis:map-time",
+    text: "Life Predictor",
+    category: "Predictions",
+  },
+  "/basic-astro-details": {
+    icon: "mdi:script-text-outline",
+    text: "Basic Astro Details",
+    category: "Predictions",
+  },
+  "/suggestions-and-remedies": {
+    icon: "mdi:script-text-outline",
+    text: "Remedies",
+    category: "Predictions",
+  },
+  // --- Match Making ---
   "/match-checker": {
     icon: "bi:arrow-through-heart-fill",
     text: "Match Checker",
+    category: "Match Making",
   },
-  "/life-predictor": { icon: "gis:map-time", text: "Life Predictor" },
-  "/horoscope": { icon: "fluent:book-star-20-filled", text: "Horoscope" },
-  "/good-time-finder": { icon: "svg-spinners:clock", text: "Good Time Finder" },
-  "/api-builder": { icon: "mdi:cloud-tags", text: "API Builder" },
 
-  // Numerology
+  // --- Numerology ---
   "/numerology": {
     icon: "mdi:calendar-account",
     text: "Birth Numerology",
@@ -33,11 +66,11 @@ const routeMetadata: Record<
   },
   "/Numerology-weston": {
     icon: "mdi:earth",
-    text: "Western Numerology",
-    category: "Numerology",
+    text: " Numerology",
+    category: "Western Astrology",
   },
 
-  // Astrology Systems
+  // --- Astrology Systems ---
   "/vimshottari-dasha": {
     icon: "mdi:timer-sand",
     text: "Vimshottari Dasha",
@@ -58,51 +91,64 @@ const routeMetadata: Record<
     text: "Yogini Dasha",
     category: "Astrology Systems",
   },
-
-  "/daily-nakshatra-predictions": {
-    icon: "mdi:star-shooting",
-    text: "Daily Nakshatra",
-  },
-  "/mini-calculators": {
-    icon: "fluent:calculator-multiple-20-regular",
-    text: "Mini Calculators",
-  },
   "/ashtakvarga": {
     icon: "fluent:calculator-multiple-20-regular",
     text: "Ashtakvarga",
+    category: "Astrology Systems",
   },
-   "/daily-horoscope": {
-    icon: "fluent:calculator-multiple-20-regular",
-    text: "Daily Horoscope",
+
+  // --- Western Astrology ---
+  "/Natal-Chart": {
+    icon: "mdi:chart-bubble",
+    text: "Natal Chart",
+    category: "Western Astrology",
   },
-  "/indian-calender": { icon: "mdi:calendar-month", text: "Indian Calendar" },
+  "/LoveCompatibilityPage": {
+    icon: "mdi:heart-multiple",
+    text: "Love Compatibility",
+    category: "Western Astrology",
+  },
+  "/PersonalityPage": {
+    icon: "mdi:account-box-multiple",
+    text: "Personality",
+    category: "Western Astrology",
+  },
+  "/TransitsPage": {
+    icon: "mdi:orbit",
+    text: "Transits",
+    category: "Western Astrology",
+  },
+  // --- Tools & Utilities ---
+  "/indian-calender": {
+    icon: "mdi:calendar-month",
+    text: "Indian Calendar",
+    category: "Tools",
+  },
+
+  "/api-builder": {
+    icon: "mdi:cloud-tags",
+    text: "API Builder",
+    category: "Tools",
+  },
+
+  // --- Other (Hidden/Footer) ---
   "/about": { icon: "mdi:information", text: "About" },
   "/contact-us": { icon: "mdi:email", text: "Contact Us" },
   "/donate": { icon: "mdi:hand-heart", text: "Donate" },
   "/privacy-policy": { icon: "mdi:shield-lock", text: "Privacy Policy" },
   "/terms-of-service": { icon: "mdi:file-document", text: "Terms of Service" },
   "/remedy": { icon: "mdi:meditation", text: "Remedy" },
-  "/match-finder": { icon: "mdi:account-search", text: "Match Finder" },
-  "/birth-time-finder": {
-    icon: "mdi:clock-time-four",
-    text: "Birth Time Finder",
-  },
-  "/Natal-Chart": {
-    icon: "mdi:zodiac-aquarius",
-    text: "Natal Chart (Western)",
-    category: "Astrology Systems",
-  },
-  "/events-chart-viewer": {
-    icon: "mdi:chart-timeline-variant",
-    text: "Events Chart Viewer",
-  },
-  "/person-list": { icon: "mdi:account-group", text: "Person List" },
 };
 
 // Category icons
 const categoryIcons: Record<string, string> = {
+  Horoscopes: "mdi:weather-night",
+  Predictions: "mdi:crystal-ball",
+  "Match Making": "mdi:heart-multiple",
   Numerology: "mdi:numeric",
   "Astrology Systems": "mdi:chart-arc",
+  "Western Astrology": "mdi:zodiac-leo",
+  Tools: "mdi:tools",
 };
 
 // Routes to exclude from sidebar
@@ -116,15 +162,12 @@ const excludedRoutes = [
   "/now-in-dwapara",
   "/add-person",
   "/edit-person",
-  "/person-list",
   "/contact-us",
   "/privacy-policy",
   "/donate",
-  "/mini-calculators",
   "/remedy",
   "/terms-of-service",
   "/about",
-  "/match-finder",
 ];
 
 /**

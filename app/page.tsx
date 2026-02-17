@@ -16,12 +16,6 @@ export default function Home() {
 
   const quickLinks: QuickLink[] = [
     {
-      href: "/good-time-finder",
-      imgSrc: "/images/muhurtha-card.jpg",
-      title: "Muhurtha",
-      text: "Find a good time for buying car, travel, studies, building..",
-    },
-    {
       href: "/life-predictor",
       imgSrc: "/images/dasa-card.jpg",
       title: "Life Predictor",

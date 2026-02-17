@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE_URL = "https://json.astrologyapi.com/v1";
-const API_USER_ID = process.env.ASTROLOGY_API_USER_ID;
-const API_KEY = process.env.ASTROLOGY_API_KEY;
+const API_BASE_URL = process.env.BACKEND_URL;
 
-const getAuthHeader = () => {
-  const credentials = Buffer.from(`${API_USER_ID}:${API_KEY}`).toString(
-    "base64",
-  );
-  return `Basic ${credentials}`;
-};
+
+
 
 interface BirthData {
   day: number;
@@ -40,10 +34,9 @@ const ASHTAKVARGA_PLANETS = [
 
 async function fetchAPI(endpoint: string, data: BirthData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+    const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
       method: "POST",
       headers: {
-        Authorization: getAuthHeader(),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),

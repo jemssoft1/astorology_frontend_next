@@ -1,112 +1,136 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import PageHeader from "@/components/PageHeader";
-import { astroweb } from "@/lib/astroweb"; // Import for API domain if needed
+import APIMethodViewer from "@/components/APIMethodViewer";
+import { API_DOC_METADATA } from "@/lib/api-docs";
+import Iconify from "@/components/Iconify";
 
 export default function APIBuilder() {
-  const [htmlContent, setHtmlContent] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    // Fetch the API content that was originally in data/APIHomePage.html
-    // For now, I'll hardcode the structure or fetch it if it was a static HTML file.
-    // But better is to just reproduce the content in React.
-    // However, the legacy app used APIHomePage.html.
-    // I will implement the "Easy API Builder" UI here.
-    // It seems the legacy page just listed links?
-    // Wait, APIBuilder.html had: <div id="ApiMethodViewer" ...></div>
-    // And JS: new ApiMethodViewer...
-    // So I need to know what ApiMethodViewer does.
-    // It likely fetches the list of API methods and displays them.
-    // Since I don't have the ApiMethodViewer code yet (grep running),
-    // I will put a placeholder or basic text.
-  }, []);
+  const filteredMethods = useMemo(() => {
+    return API_DOC_METADATA.methods.filter((method) => {
+      const matchesCategory =
+        selectedCategory === "All" || method.category === selectedCategory;
+      const matchesSearch =
+        method.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        method.endpoint.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
 
   return (
-    <div className="container">
+    <div className="container py-6">
       <PageHeader
-        title="API Builder"
-        description="Astro data via a simple HTTP request. Enabling you to build your app or service faster and cheaper. 🙏 Donated by Leslie C."
+        title="API Documentation"
+        description="Astro data via a simple HTTP request. Build your app or service faster with our comprehensive Vedic Astrology APIs."
         imageSrc="/images/api-builder-banner.png"
       />
 
-      <div className="alert alert-info">
-        This page is under construction. The API Builder functionality is being
-        ported.
+      <div className="flex flex-col md:flex-row gap-4 mb-8 items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <div className="relative flex-1 w-full">
+          <Iconify
+            icon="mdi:magnify"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"
+          />
+          <input
+            type="text"
+            placeholder="Search API endpoints..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition-all text-sm outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
+          <button
+            onClick={() => setSelectedCategory("All")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              selectedCategory === "All"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "bg-white text-slate-600 border border-slate-100 hover:bg-slate-50"
+            }`}
+          >
+            All
+          </button>
+          {API_DOC_METADATA.categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                selectedCategory === cat
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                  : "bg-white text-slate-600 border border-slate-100 hover:bg-slate-50"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="text-center">
-        <pre style={{ color: "black", lineHeight: 1.15, overflowX: "auto" }}>
-          {`
-                                          ...::^^^^^^::...                                          
-                                  .:~7JY?!7???77!?P!77?JJ?77YJ7~:.                                  
-                             .~??YJ~^~:.: .      .7      ....:~!~J5J7~.                             
-                         .~JJ??^    ^:^.^:..  ...^J.... .:^:.^~: ...:?JJJ~.                         
-                      :7JY!~~       ..:::. ......^?......  ::::..:     .J!557.                      
-                   .7Y?!.   .:  ..^:             .!           . .::.. .~   .!Y5!.                   
-                 ^JJ~.       ~!:     .^:~ :^:^   .~    :^   ^:      .~7:      .!PJ:                 
-               ~Y?:...:. ....  :.    ^: :^~  !   .~     ~7~7:       :.  .:. ...  ^Y5^               
-             ^Y7:..:......      :.       5:      .~    .!   !      :.      .:..... :Y5:             
-           .YJ:......::          ..      !.      .^     .^:^.     ^          .:..::  ^PJ            
-          !5~.  .  :.   ^.  ::    .:             .~             .:    ^^.:^:   .: .:   ?G^          
-         YJ^     ..     :7..!.      :    ..  ....:~..... ..    ..      ! :7      ..     ^B?         
-       .P!....  :.      .!..~.       ^: .         ^        . .^.       !.:7        :.  . .5Y        
-      .P^.    .~..      :.  ..    ... ..   .. .  .:  ...     :  ..    :...:.      . ^^     Y5       
-      G~. ..  :     .           ..     ..  .  .   :   ..   ..     ..           ..    ..    .5Y      
-     5!.  .  :        ..      ..    ..   .   ..   .  .    ..  . .   ..     ...        .  ..  P7     
-    ~5: ..  :              ....    ..:   .:.             ..   ...     :..              :  .  :B.    
-    B.. .. .                .   .      ..                  ..  .    .  ..     .:.....   . ..  75    
-   ~Y.  .  .   ........    .      .  ..      :  ^. ^  .       .  .      .    .:.: ..:.  .. .  :B.   
-   P^. .  ..   ........   .   ..    .      . .:.:.....: ..     .     .   .   .:.  :.:.   : ..  5?   
-   G.  .  .               .   ...  .       .:..      ....       .         .     ...      .     !G   
-  .P                                       ..          ..                 .                    .B   
-  :P   .^^:       ^^:              .    ?J^ .    ~!~    ..       .  ...   .                    .G   
-  :P   .&@&      P@@:                  .@@5..   Y@@@5  ...          B@#   .                    .B   
-  .G    .@@G    ?@@7  :7YP5!.    .!5PY~.@@Y  . !@@!@@7   . ~J55Y7..Y@@@Y? .?Y^.75^  :?5PY?:    :B   
-   B.    ^@@?  .@@Y !&@B?7J&@B: J@@&PYG&@@J   :@@? 7@@^   &@#!!5#! 5@@@Y?. @@&&&G^~#@&5YG@@B.  !5   
-   Y!     7@@: &@B  @@@5YY5G@@G.@@G    :@@?   #@@77!&@&.  G@&G57^   #@#    &@&:. .&@#    :@@G  5~   
-   .G      5@&G@&.  &@@J^^^7Y7:.@@#.   ~@@J  P@@PPGPP@@G  ..^!Y&@#  #@&    &@B  . #@&.   ~@@5 .B    
-    5~      B@@@.   .5&&GPG&&7  :#@@#B##&@&.?@@~     ~@@?^&&GY5&@P  P@@&&7 &@#    .P@@#B&@@Y  Y7    
-    .B       ~^.       :~~^.      .!77:  !~ :^^       :^^ .^~77!.    ^!!^. ^~:       ^77!:   ^G     
-     ~5                                                                                     .G.     
-      7Y                                                                                    P^      
-       ?J                                                                                 .P^       
-        !5                               ?!       ~J77?7?7.   .!                         :P:        
-         :P:                            P#&!      G&.....~B5  !@.                       !5.         
-           J?                          Y# :&^     G#      .@~ !@                      .Y7           
-            ^Y~                       7&   ~&.    G&      5&. !@                     7Y.            
-              !J^                    ^@P!?77&&    P@JYYY55?.  7@                   !Y^              
-                ~J~                 :@7.:::::G#   G&          !@                .!J^                
-                  ^?7:             .&J        BG  G#          !@.             ^??:                  
-                    .!?!:          .:          :  ..           :           :7?~                     
-                       .~7!^.                                          .~77^.                       
-                           :!7!^:.                                .:~!7~:                           
-                               .^~!!~^:...                ..::^!!!~:.                               
-                                     .:^~~~!!!!~~~~~~!!!!~~^^..                                     
-`}
-        </pre>
-        <h2>🙏 Welcome Developer 🙏</h2>
-        <h5>To The Best Vedic Astrology API On Earth</h5>
-        <hr />
-        <div className="vstack gap-2">
-          <a target="_blank" href="https://astroweb.in/APIBuilder.html">
-            EASY API BUILDER
-          </a>
-          <a target="_blank" href="https://www.youtube.com/@astroweb/videos">
-            YOUTUBE GUIDE
-          </a>
-          <a target="_blank" href="https://github.com/astroweb/astroweb">
-            SOURCE CODE
-          </a>
-          <a target="_blank" href="https://astroweb.in/About.html">
-            ABOUT
+      <div className="grid grid-cols-1 gap-6">
+        {filteredMethods.length > 0 ? (
+          filteredMethods.map((method) => (
+            <APIMethodViewer key={method.id} method={method} />
+          ))
+        ) : (
+          <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 text-slate-500">
+            <Iconify
+              icon="mdi:alert-circle-outline"
+              className="w-12 h-12 mx-auto mb-3 opacity-20"
+            />
+            <p className="text-lg font-medium">
+              No APIs found matching your criteria
+            </p>
+            <button
+              onClick={() => {
+                setSelectedCategory("All");
+                setSearchQuery("");
+              }}
+              className="mt-4 text-blue-600 hover:underline font-medium"
+            >
+              Clear all filters
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-12 text-center p-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl text-white shadow-xl shadow-blue-500/10">
+        <h2 className="text-2xl font-bold mb-4">
+          🙏 Join Our Developer Community 🙏
+        </h2>
+        <p className="opacity-90 max-w-2xl mx-auto mb-8 text-sm leading-relaxed">
+          Help us build the most comprehensive open-source Vedic Astrology
+          engine. Contribute code, report issues, or support the project through
+          donations.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <a
+            target="_blank"
+            href="https://github.com/astroweb/astroweb"
+            className="bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-full transition-all flex items-center gap-2 font-semibold"
+          >
+            <Iconify icon="mdi:github" className="w-5 h-5" />
+            Vist Source Code
           </a>
           <a
             target="_blank"
-            style={{ color: "red" }}
-            href="https://astroweb.in/Donate.html"
+            href="https://www.youtube.com/@astroweb/videos"
+            className="bg-white/10 hover:bg-white/20 px-6 py-2.5 rounded-full transition-all flex items-center gap-2 font-semibold"
           >
-            FREE USE FOR ALL
+            <Iconify icon="mdi:youtube" className="w-5 h-5" />
+            Watch Guides
+          </a>
+          <a
+            target="_blank"
+            href="https://astroweb.in/Donate.html"
+            className="bg-red-500 hover:bg-red-600 px-8 py-2.5 rounded-full transition-all flex items-center gap-2 font-bold shadow-lg shadow-red-500/20"
+          >
+            <Iconify icon="mdi:hand-heart" className="w-5 h-5" />
+            Support Free Use
           </a>
         </div>
       </div>

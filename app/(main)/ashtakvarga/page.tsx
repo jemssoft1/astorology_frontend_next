@@ -7,24 +7,56 @@ import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
 
-// Types
-interface PlanetAshtakData {
-  ashtakvarga_points?: number[];
-  ashtakvarga?: number[];
-  total?: number;
-  total_points?: number;
-  planet?: string;
+// ============ Updated Types ============
+interface SignAshtakPoints {
+  sun: number;
+  moon: number;
+  mars: number;
+  mercury: number;
+  jupiter: number;
+  venus: number;
+  saturn: number;
+  ascendant: number;
+  total: number;
+}
+
+interface AshtakPoints {
+  aries: SignAshtakPoints;
+  taurus: SignAshtakPoints;
+  gemini: SignAshtakPoints;
+  cancer: SignAshtakPoints;
+  leo: SignAshtakPoints;
+  virgo: SignAshtakPoints;
+  libra: SignAshtakPoints;
+  scorpio: SignAshtakPoints;
+  sagittarius: SignAshtakPoints;
+  capricorn: SignAshtakPoints;
+  aquarius: SignAshtakPoints;
+  pisces: SignAshtakPoints;
+}
+
+interface PlanetAshtakVarga {
+  ashtak_varga: {
+    type: string;
+    planet: string;
+    sign: string;
+    sign_id: number;
+  };
+  ashtak_points: AshtakPoints;
 }
 
 interface SarvashtakData {
-  sarvashtakvarga?: number[];
-  total?: number;
-  sign_wise_total?: number[];
+  ashtak_varga: {
+    type: string;
+    sign: string;
+    sign_id: number;
+  };
+  ashtak_points: AshtakPoints;
 }
 
 interface AshtakvargaData {
   sarvashtakvarga: SarvashtakData | null;
-  planet_ashtakvarga: Record<string, PlanetAshtakData | null>;
+  planet_ashtakvarga: Record<string, PlanetAshtakVarga | null>;
 }
 
 interface AshtakvargaResponse {
@@ -40,7 +72,24 @@ interface AshtakvargaResponse {
   };
 }
 
-// Constants
+// ============ Constants ============
+const SIGN_KEYS = [
+  "aries",
+  "taurus",
+  "gemini",
+  "cancer",
+  "leo",
+  "virgo",
+  "libra",
+  "scorpio",
+  "sagittarius",
+  "capricorn",
+  "aquarius",
+  "pisces",
+] as const;
+
+type SignKey = (typeof SIGN_KEYS)[number];
+
 const PLANETS = [
   { key: "sun", name: "Sun", icon: "mdi:white-balance-sunny", color: "orange" },
   {
@@ -67,18 +116,33 @@ const PLANETS = [
 ];
 
 const SIGNS = [
-  { name: "Aries", short: "Ari", icon: "mdi:zodiac-aries" },
-  { name: "Taurus", short: "Tau", icon: "mdi:zodiac-taurus" },
-  { name: "Gemini", short: "Gem", icon: "mdi:zodiac-gemini" },
-  { name: "Cancer", short: "Can", icon: "mdi:zodiac-cancer" },
-  { name: "Leo", short: "Leo", icon: "mdi:zodiac-leo" },
-  { name: "Virgo", short: "Vir", icon: "mdi:zodiac-virgo" },
-  { name: "Libra", short: "Lib", icon: "mdi:zodiac-libra" },
-  { name: "Scorpio", short: "Sco", icon: "mdi:zodiac-scorpio" },
-  { name: "Sagittarius", short: "Sag", icon: "mdi:zodiac-sagittarius" },
-  { name: "Capricorn", short: "Cap", icon: "mdi:zodiac-capricorn" },
-  { name: "Aquarius", short: "Aqu", icon: "mdi:zodiac-aquarius" },
-  { name: "Pisces", short: "Pis", icon: "mdi:zodiac-pisces" },
+  { name: "Aries", short: "Ari", icon: "mdi:zodiac-aries", key: "aries" },
+  { name: "Taurus", short: "Tau", icon: "mdi:zodiac-taurus", key: "taurus" },
+  { name: "Gemini", short: "Gem", icon: "mdi:zodiac-gemini", key: "gemini" },
+  { name: "Cancer", short: "Can", icon: "mdi:zodiac-cancer", key: "cancer" },
+  { name: "Leo", short: "Leo", icon: "mdi:zodiac-leo", key: "leo" },
+  { name: "Virgo", short: "Vir", icon: "mdi:zodiac-virgo", key: "virgo" },
+  { name: "Libra", short: "Lib", icon: "mdi:zodiac-libra", key: "libra" },
+  { name: "Scorpio", short: "Sco", icon: "mdi:zodiac-scorpio", key: "scorpio" },
+  {
+    name: "Sagittarius",
+    short: "Sag",
+    icon: "mdi:zodiac-sagittarius",
+    key: "sagittarius",
+  },
+  {
+    name: "Capricorn",
+    short: "Cap",
+    icon: "mdi:zodiac-capricorn",
+    key: "capricorn",
+  },
+  {
+    name: "Aquarius",
+    short: "Aqu",
+    icon: "mdi:zodiac-aquarius",
+    key: "aquarius",
+  },
+  { name: "Pisces", short: "Pis", icon: "mdi:zodiac-pisces", key: "pisces" },
 ];
 
 const COLOR_CLASSES: Record<
@@ -216,42 +280,63 @@ export default function AshtakvargaPage() {
     }
   };
 
-  // Get points array from planet data
-  const getPoints = (data: PlanetAshtakData | null): number[] => {
-    if (!data) return Array(12).fill(0);
-    return data.ashtakvarga_points || data.ashtakvarga || Array(12).fill(0);
-  };
+  // ============ Fixed Helper Functions ============
 
-  // Get total points
-  const getTotal = (data: PlanetAshtakData | null): number => {
-    if (!data) return 0;
-    return (
-      data.total ||
-      data.total_points ||
-      getPoints(data).reduce((a, b) => a + b, 0)
+  // Get points array from planet data - FIXED
+  const getPoints = (data: PlanetAshtakVarga | null): number[] => {
+    if (!data?.ashtak_points) return Array(12).fill(0);
+    return SIGN_KEYS.map(
+      (sign) => data.ashtak_points[sign as SignKey]?.total || 0,
     );
   };
 
-  // Get sarvashtakvarga points
-  const getSarvashtakPoints = (): number[] => {
-    const sarva = ashtakData?.data?.sarvashtakvarga;
-    if (!sarva) return Array(12).fill(0);
-    return sarva.sarvashtakvarga || sarva.sign_wise_total || Array(12).fill(0);
+  // Get total points - FIXED
+  const getTotal = (data: PlanetAshtakVarga | null): number => {
+    if (!data?.ashtak_points) return 0;
+    return SIGN_KEYS.reduce(
+      (sum, sign) => sum + (data.ashtak_points[sign as SignKey]?.total || 0),
+      0,
+    );
   };
 
-  // Get sarvashtakvarga total
-  const getSarvashtakTotal = (): number => {
+  // Get sarvashtakvarga points - FIXED
+  const getSarvashtakPoints = (): number[] => {
     const sarva = ashtakData?.data?.sarvashtakvarga;
-    if (!sarva) return 0;
-    return sarva.total || getSarvashtakPoints().reduce((a, b) => a + b, 0);
+    if (!sarva?.ashtak_points) return Array(12).fill(0);
+    return SIGN_KEYS.map(
+      (sign) => sarva.ashtak_points[sign as SignKey]?.total || 0,
+    );
+  };
+
+  // Get sarvashtakvarga total - FIXED
+  const getSarvashtakTotal = (): number => {
+    const points = getSarvashtakPoints();
+    return points.reduce((a, b) => a + b, 0);
+  };
+
+  // Get detailed breakdown for a planet in a sign - NEW
+  const getDetailedBreakdown = (
+    planetKey: string,
+    signKey: SignKey,
+  ): SignAshtakPoints | null => {
+    const planetData = ashtakData?.data?.planet_ashtakvarga?.[planetKey];
+    if (!planetData?.ashtak_points) return null;
+    return planetData.ashtak_points[signKey];
+  };
+
+  // Get sarvashtakvarga breakdown for a sign - NEW
+  const getSarvaBreakdown = (signKey: SignKey): SignAshtakPoints | null => {
+    const sarva = ashtakData?.data?.sarvashtakvarga;
+    if (!sarva?.ashtak_points) return null;
+    return sarva.ashtak_points[signKey];
   };
 
   // Get color based on points
   const getPointColor = (points: number, max: number = 8): string => {
     const ratio = points / max;
-    if (ratio >= 0.625) return "bg-green-500 text-white"; // 5+ out of 8
-    if (ratio >= 0.375) return "bg-yellow-500 text-white"; // 3-4 out of 8
-    return "bg-red-500 text-white"; // 0-2 out of 8
+    if (ratio >= 0.625) return "bg-green-500 text-white";
+    if (ratio >= 0.375) return "bg-yellow-500 text-white";
+    return "bg-red-500 text-white";
   };
 
   // Get sarvashtakvarga color
@@ -263,13 +348,13 @@ export default function AshtakvargaPage() {
     return "bg-red-500 text-white";
   };
 
-  // Calculate planet totals for summary
+  // Calculate planet totals for summary - FIXED
   const planetTotals = useMemo(() => {
     if (!ashtakData?.data?.planet_ashtakvarga) return [];
     return PLANETS.map((planet) => ({
       ...planet,
-      total: getTotal(ashtakData.data.planet_ashtakvarga[planet.key]),
-      points: getPoints(ashtakData.data.planet_ashtakvarga[planet.key]),
+      total: getTotal(ashtakData.data.planet_ashtakvarga[planet.key] || null),
+      points: getPoints(ashtakData.data.planet_ashtakvarga[planet.key] || null),
     }));
   }, [ashtakData]);
 
@@ -308,14 +393,14 @@ export default function AshtakvargaPage() {
     if (!ashtakData?.data) return null;
 
     const sarvaTotal = getSarvashtakTotal();
-    const highestPlanet = planetTotals.reduce(
-      (max, p) => (p.total > max.total ? p : max),
-      planetTotals[0],
-    );
-    const lowestPlanet = planetTotals.reduce(
-      (min, p) => (p.total < min.total ? p : min),
-      planetTotals[0],
-    );
+    const highestPlanet =
+      planetTotals.length > 0
+        ? planetTotals.reduce((max, p) => (p.total > max.total ? p : max))
+        : null;
+    const lowestPlanet =
+      planetTotals.length > 0
+        ? planetTotals.reduce((min, p) => (p.total < min.total ? p : min))
+        : null;
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -341,107 +426,167 @@ export default function AshtakvargaPage() {
           <p className="text-xs text-gray-500 uppercase tracking-wide">
             Strongest Planet
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <Iconify
-              icon={highestPlanet?.icon || "mdi:circle"}
-              className={`text-xl ${COLOR_CLASSES[highestPlanet?.color || "slate"].text}`}
-            />
-            <span className="text-lg font-bold text-gray-900">
-              {highestPlanet?.name}
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 mt-1">
-            {highestPlanet?.total} bindus
-          </p>
+          {highestPlanet && (
+            <>
+              <div className="flex items-center gap-2 mt-1">
+                <Iconify
+                  icon={highestPlanet.icon}
+                  className={`text-xl ${COLOR_CLASSES[highestPlanet.color].text}`}
+                />
+                <span className="text-lg font-bold text-gray-900">
+                  {highestPlanet.name}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                {highestPlanet.total} bindus
+              </p>
+            </>
+          )}
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <p className="text-xs text-gray-500 uppercase tracking-wide">
             Weakest Planet
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <Iconify
-              icon={lowestPlanet?.icon || "mdi:circle"}
-              className={`text-xl ${COLOR_CLASSES[lowestPlanet?.color || "slate"].text}`}
-            />
-            <span className="text-lg font-bold text-gray-900">
-              {lowestPlanet?.name}
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 mt-1">
-            {lowestPlanet?.total} bindus
-          </p>
+          {lowestPlanet && (
+            <>
+              <div className="flex items-center gap-2 mt-1">
+                <Iconify
+                  icon={lowestPlanet.icon}
+                  className={`text-xl ${COLOR_CLASSES[lowestPlanet.color].text}`}
+                />
+                <span className="text-lg font-bold text-gray-900">
+                  {lowestPlanet.name}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                {lowestPlanet.total} bindus
+              </p>
+            </>
+          )}
         </div>
       </div>
     );
   };
 
-  // Sarvashtakvarga Grid Component
+  // Sarvashtakvarga Grid Component - FIXED with detailed breakdown
   const SarvashtakvargaGrid = () => {
     const sarvaPoints = getSarvashtakPoints();
     const sarvaTotal = getSarvashtakTotal();
+    const [selectedSign, setSelectedSign] = useState<SignKey | null>(null);
 
     return (
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 bg-indigo-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
-                <Iconify icon="mdi:grid" className="text-xl text-white" />
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-gray-900">
-                  Sarvashtakvarga
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Combined bindus of all planets
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-indigo-600">{sarvaTotal}</p>
-              <p className="text-xs text-gray-500">Total Bindus</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5">
-          {/* Sign-wise Grid */}
-          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
-            {SIGNS.map((sign, idx) => (
-              <div key={idx} className="text-center">
-                <div className="mb-2">
-                  <Iconify
-                    icon={sign.icon}
-                    className="text-2xl text-gray-400 mx-auto"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">{sign.short}</p>
+      <div className="space-y-4">
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 bg-indigo-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                  <Iconify icon="mdi:grid" className="text-xl text-white" />
                 </div>
-                <BinduCell
-                  value={sarvaPoints[idx] || 0}
-                  maxValue={56}
-                  size="lg"
-                />
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900">
+                    Sarvashtakvarga
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Combined bindus of all planets
+                  </p>
+                </div>
               </div>
-            ))}
+              <div className="text-right">
+                <p className="text-2xl font-bold text-indigo-600">
+                  {sarvaTotal}
+                </p>
+                <p className="text-xs text-gray-500">Total Bindus</p>
+              </div>
+            </div>
           </div>
 
-          {/* Legend */}
-          <div className="mt-6 pt-4 border-t border-gray-100">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
-              Bindu Strength
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-green-500"></div>
-                <span className="text-xs text-gray-600">Strong (30+)</span>
+          <div className="p-5">
+            {/* Sign-wise Grid */}
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
+              {SIGNS.map((sign, idx) => (
+                <div
+                  key={idx}
+                  className={`text-center cursor-pointer p-2 rounded-lg transition-all ${
+                    selectedSign === sign.key
+                      ? "bg-indigo-50 ring-2 ring-indigo-300"
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() =>
+                    setSelectedSign(
+                      selectedSign === sign.key ? null : (sign.key as SignKey),
+                    )
+                  }
+                >
+                  <div className="mb-2">
+                    <Iconify
+                      icon={sign.icon}
+                      className="text-2xl text-gray-400 mx-auto"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{sign.short}</p>
+                  </div>
+                  <BinduCell
+                    value={sarvaPoints[idx] || 0}
+                    maxValue={56}
+                    size="lg"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Detailed Breakdown for Selected Sign */}
+            {selectedSign && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                  Breakdown for{" "}
+                  {SIGNS.find((s) => s.key === selectedSign)?.name}
+                </h4>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+                  {(() => {
+                    const breakdown = getSarvaBreakdown(selectedSign);
+                    if (!breakdown) return null;
+
+                    return PLANETS.map((planet) => (
+                      <div key={planet.key} className="text-center">
+                        <Iconify
+                          icon={planet.icon}
+                          className={`text-lg ${COLOR_CLASSES[planet.color].text} mx-auto`}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          {planet.name}
+                        </p>
+                        <p
+                          className={`text-lg font-bold ${COLOR_CLASSES[planet.color].text}`}
+                        >
+                          {breakdown[planet.key as keyof SignAshtakPoints]}
+                        </p>
+                      </div>
+                    ));
+                  })()}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-yellow-500"></div>
-                <span className="text-xs text-gray-600">Moderate (20-29)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-red-500"></div>
-                <span className="text-xs text-gray-600">Weak (&lt;20)</span>
+            )}
+
+            {/* Legend */}
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+                Bindu Strength
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-green-500"></div>
+                  <span className="text-xs text-gray-600">Strong (30+)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-yellow-500"></div>
+                  <span className="text-xs text-gray-600">
+                    Moderate (20-29)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-red-500"></div>
+                  <span className="text-xs text-gray-600">Weak (&lt;20)</span>
+                </div>
               </div>
             </div>
           </div>
@@ -450,13 +595,14 @@ export default function AshtakvargaPage() {
     );
   };
 
-  // Planet Ashtakvarga Component
+  // Planet Ashtakvarga Component - FIXED with detailed breakdown
   const PlanetAshtakvargaSection = () => {
     const selectedPlanetData = PLANETS.find((p) => p.key === selectedPlanet);
     const planetData = ashtakData?.data?.planet_ashtakvarga?.[selectedPlanet];
     const points = getPoints(planetData || null);
     const total = getTotal(planetData || null);
     const colorClass = COLOR_CLASSES[selectedPlanetData?.color || "slate"];
+    const [selectedSign, setSelectedSign] = useState<SignKey | null>(null);
 
     return (
       <div className="space-y-4">
@@ -475,7 +621,10 @@ export default function AshtakvargaPage() {
               return (
                 <button
                   key={planet.key}
-                  onClick={() => setSelectedPlanet(planet.key)}
+                  onClick={() => {
+                    setSelectedPlanet(planet.key);
+                    setSelectedSign(null);
+                  }}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                     isSelected
                       ? `${pColor.light} ${pColor.border} ${pColor.text}`
@@ -521,6 +670,11 @@ export default function AshtakvargaPage() {
                   <p className="text-sm text-gray-500">
                     Bindu distribution across signs
                   </p>
+                  {planetData?.ashtak_varga && (
+                    <p className="text-xs text-gray-400">
+                      Planet in {planetData.ashtak_varga.sign}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="text-right">
@@ -536,7 +690,19 @@ export default function AshtakvargaPage() {
             {/* Grid */}
             <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
               {SIGNS.map((sign, idx) => (
-                <div key={idx} className="text-center">
+                <div
+                  key={idx}
+                  className={`text-center cursor-pointer p-2 rounded-lg transition-all ${
+                    selectedSign === sign.key
+                      ? `${colorClass.light} ring-2 ring-offset-1`
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() =>
+                    setSelectedSign(
+                      selectedSign === sign.key ? null : (sign.key as SignKey),
+                    )
+                  }
+                >
                   <div className="mb-2">
                     <Iconify
                       icon={sign.icon}
@@ -548,6 +714,86 @@ export default function AshtakvargaPage() {
                 </div>
               ))}
             </div>
+
+            {/* Detailed Breakdown for Selected Sign - NEW */}
+            {selectedSign && (
+              <div
+                className={`mt-6 p-4 rounded-lg ${colorClass.light} border ${colorClass.border}`}
+              >
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                  {selectedPlanetData?.name} bindus in{" "}
+                  {SIGNS.find((s) => s.key === selectedSign)?.name} - Breakdown
+                </h4>
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+                  {(() => {
+                    const breakdown = getDetailedBreakdown(
+                      selectedPlanet,
+                      selectedSign,
+                    );
+                    if (!breakdown) return null;
+
+                    const contributors = [
+                      {
+                        key: "sun",
+                        name: "Sun",
+                        icon: "mdi:white-balance-sunny",
+                      },
+                      {
+                        key: "moon",
+                        name: "Moon",
+                        icon: "mdi:moon-waning-crescent",
+                      },
+                      { key: "mars", name: "Mars", icon: "mdi:triangle" },
+                      { key: "mercury", name: "Mercury", icon: "mdi:atom" },
+                      {
+                        key: "jupiter",
+                        name: "Jupiter",
+                        icon: "mdi:circle-outline",
+                      },
+                      { key: "venus", name: "Venus", icon: "mdi:heart" },
+                      {
+                        key: "saturn",
+                        name: "Saturn",
+                        icon: "mdi:hexagon-outline",
+                      },
+                      {
+                        key: "ascendant",
+                        name: "Asc",
+                        icon: "mdi:arrow-up-bold",
+                      },
+                    ];
+
+                    return contributors.map((cont) => {
+                      const value =
+                        breakdown[cont.key as keyof SignAshtakPoints];
+                      return (
+                        <div
+                          key={cont.key}
+                          className="text-center bg-white/50 p-2 rounded"
+                        >
+                          <Iconify
+                            icon={cont.icon}
+                            className={`text-lg mx-auto ${value === 1 ? "text-green-600" : "text-gray-400"}`}
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            {cont.name}
+                          </p>
+                          <div
+                            className={`w-6 h-6 mx-auto mt-1 rounded-full flex items-center justify-center text-xs font-bold ${
+                              value === 1
+                                ? "bg-green-500 text-white"
+                                : "bg-gray-200 text-gray-500"
+                            }`}
+                          >
+                            {value}
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+            )}
 
             {/* Stats */}
             <div className="mt-6 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4">
@@ -631,9 +877,7 @@ export default function AshtakvargaPage() {
                       {pPoints.map((point, idx) => (
                         <td key={idx} className="px-2 py-3 text-center">
                           <span
-                            className={`inline-flex items-center justify-center w-7 h-7 rounded text-xs font-bold ${getPointColor(
-                              point,
-                            )}`}
+                            className={`inline-flex items-center justify-center w-7 h-7 rounded text-xs font-bold ${getPointColor(point)}`}
                           >
                             {point}
                           </span>
@@ -663,9 +907,7 @@ export default function AshtakvargaPage() {
                   {getSarvashtakPoints().map((point, idx) => (
                     <td key={idx} className="px-2 py-3 text-center">
                       <span
-                        className={`inline-flex items-center justify-center w-7 h-7 rounded text-xs font-bold ${getSarvashtakColor(
-                          point,
-                        )}`}
+                        className={`inline-flex items-center justify-center w-7 h-7 rounded text-xs font-bold ${getSarvashtakColor(point)}`}
                       >
                         {point}
                       </span>
@@ -685,7 +927,7 @@ export default function AshtakvargaPage() {
     );
   };
 
-  // Analysis Section
+  // Analysis Section - FIXED
   const AnalysisSection = () => {
     const sarvaPoints = getSarvashtakPoints();
     const strongSigns = sarvaPoints
@@ -1012,49 +1254,6 @@ export default function AshtakvargaPage() {
                 )}
               </button>
             </div>
-
-            {/* Status Card */}
-            {ashtakData && (
-              <div
-                className={`border rounded-lg p-4 ${
-                  ashtakData.status === "Pass"
-                    ? "bg-green-50 border-green-200"
-                    : ashtakData.status === "Partial"
-                      ? "bg-amber-50 border-amber-200"
-                      : "bg-red-50 border-red-200"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Iconify
-                    icon={
-                      ashtakData.status === "Pass"
-                        ? "mdi:check-circle"
-                        : ashtakData.status === "Partial"
-                          ? "mdi:alert-circle"
-                          : "mdi:close-circle"
-                    }
-                    className={`text-lg ${
-                      ashtakData.status === "Pass"
-                        ? "text-green-600"
-                        : ashtakData.status === "Partial"
-                          ? "text-amber-600"
-                          : "text-red-600"
-                    }`}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {ashtakData.status === "Pass"
-                      ? "All Data Loaded"
-                      : ashtakData.status === "Partial"
-                        ? "Partial Data"
-                        : "Failed"}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-600">
-                  {ashtakData.meta.successful}/{ashtakData.meta.total_apis} APIs
-                  • {ashtakData.meta.success_rate}
-                </p>
-              </div>
-            )}
 
             {/* Info Card */}
             <div className="bg-white border border-gray-200 rounded-lg p-5">

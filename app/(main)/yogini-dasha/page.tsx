@@ -952,49 +952,6 @@ export default function YoginiDashaPage() {
               </button>
             </div>
 
-            {/* Status Card */}
-            {yoginiData && (
-              <div
-                className={`border rounded-lg p-4 ${
-                  yoginiData.status === "Pass"
-                    ? "bg-green-50 border-green-200"
-                    : yoginiData.status === "Partial"
-                      ? "bg-amber-50 border-amber-200"
-                      : "bg-red-50 border-red-200"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Iconify
-                    icon={
-                      yoginiData.status === "Pass"
-                        ? "mdi:check-circle"
-                        : yoginiData.status === "Partial"
-                          ? "mdi:alert-circle"
-                          : "mdi:close-circle"
-                    }
-                    className={`text-lg ${
-                      yoginiData.status === "Pass"
-                        ? "text-green-600"
-                        : yoginiData.status === "Partial"
-                          ? "text-amber-600"
-                          : "text-red-600"
-                    }`}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {yoginiData.status === "Pass"
-                      ? "All Data Loaded"
-                      : yoginiData.status === "Partial"
-                        ? "Partial Data"
-                        : "Failed"}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-600">
-                  {yoginiData.meta.successful}/{yoginiData.meta.total_apis} APIs
-                  • {yoginiData.meta.success_rate}
-                </p>
-              </div>
-            )}
-
             {/* 8 Yoginis Info */}
             <div className="bg-white border border-gray-200 rounded-lg p-5">
               <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">

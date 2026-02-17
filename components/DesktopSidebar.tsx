@@ -120,11 +120,11 @@ export default function DesktopSidebar() {
       <div className="p-3">
         <Link
           href="/"
-          className="flex items-center mb-3 py-3 md:mb-0 md:mr-auto text-gray-900 no-underline"
+          className="flex items-center mb-3 py-3 md:mb-0 md:mr-auto text-foreground no-underline"
         >
           <span className="text-2xl font-bold">AstroWeb</span>
         </Link>
-        <hr />
+        <hr className="border-border" />
       </div>
 
       {/* Scrollable navigation area */}
@@ -142,8 +142,10 @@ export default function DesktopSidebar() {
       </div>
 
       {/* Footer */}
-      <div className="border-t pt-4 mt-4 p-3">
-        <div className="text-xs text-gray-500 text-center">© 2024 AstroWeb</div>
+      <div className="border-t border-border pt-4 mt-4 p-3">
+        <div className="text-xs text-muted-foreground text-center">
+          © 2024 AstroWeb
+        </div>
       </div>
     </div>
   );
