@@ -47,10 +47,22 @@ const PERSONALITY_TITLES = [
 
 // ============ MAIN COMPONENT ============
 
+interface PersonalityData {
+  report: string[];
+  spiritual_lesson: string;
+  key_quality: string;
+}
+
+interface PersonalityResponse {
+  success: boolean;
+  message?: string;
+  data: PersonalityData;
+}
+
 function PersonalityPage() {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<PersonalityResponse | null>(null);
 
   const handleCalculate = async () => {
     if (!selectedPerson) {
@@ -93,11 +105,11 @@ function PersonalityPage() {
       } else {
         throw new Error(data.message || "Failed to fetch data");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.message || "Something went wrong!",
+        text: (error as Error).message || "Something went wrong!",
       });
     } finally {
       setLoading(false);
@@ -375,8 +387,8 @@ function PersonalityPage() {
             Discover Your Personality
           </h3>
           <p className="text-sm text-gray-500 max-w-md mx-auto">
-            Select a profile and click "Analyze Personality" to uncover your
-            unique personality traits based on your birth chart.
+            Select a profile and click &quot;Analyze Personality&quot; to
+            uncover your unique personality traits based on your birth chart.
           </p>
         </div>
       )}
@@ -431,7 +443,7 @@ function PersonalityTraitCard({
 function TraitBadge({
   label,
   count,
-  icon,
+
   color = "#6B7280",
 }: {
   label: string;

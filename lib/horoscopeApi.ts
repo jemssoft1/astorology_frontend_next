@@ -1,6 +1,20 @@
 // lib/horoscopeApi.ts
+import "server-only";
 
-const BASE_URL = "/api/Calculate";
+const BASE_URL = process.env.BACKEND_URL
+  ? `${process.env.BACKEND_URL}/api/Calculate`
+  : "http://localhost:3000/api/Calculate"; // Fallback for dev
+
+export interface PlanetData {
+  PlanetName: string;
+  SignName: string;
+  NakshatraName: string;
+  isRetrograde: boolean;
+}
+
+export interface Prediction {
+  Description: string;
+}
 
 export interface HoroscopeData {
   localMeanTime: any;
@@ -33,6 +47,10 @@ export interface HoroscopeData {
   planetShadbalaPinda: any;
   houseStrength: any;
   horoscopePredictions: any;
+  ghatChakra: any;
+  navamsaChart: any;
+  majorVimshottariDasha: any;
+  ascendantReport: any;
   // ❌ REMOVED: SouthIndianChart and NorthIndianChart (handled separately)
 }
 
@@ -50,13 +68,16 @@ export function buildTimeUrl(
   date: string,
   offset: string = "+05:30",
 ): string {
-  return `Location/${location}/Time/${time}/${date}/${offset}`;
+  // Add encoding to handle spaces in location (e.g. "New York, USA")
+  return `Location/${encodeURIComponent(location)}/Time/${time}/${date}/${offset}`;
 }
 
 // Fetch single API endpoint
 async function fetchApi(endpoint: string): Promise<any> {
   try {
-    const response = await fetch(`${BASE_URL}/${endpoint}`);
+    const url = `${BASE_URL}/${endpoint}`;
+    // console.log(`Fetching: ${url}`); // Debug logging
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
@@ -109,6 +130,10 @@ export async function fetchAllHoroscopeData(
     planetShadbalaPinda: `PlanetShadbalaPinda/PlanetName/All/${timeUrl}`,
     houseStrength: `HouseStrength/HouseName/All/${timeUrl}`,
     horoscopePredictions: `HoroscopePredictions/${timeUrl}`,
+    ghatChakra: `AvakhadaChakra/${timeUrl}`,
+    navamsaChart: `NavamsaChart/${timeUrl}`, // D9
+    majorVimshottariDasha: `MajorVimshottariDasha/${timeUrl}`,
+    ascendantReport: `GeneralAscendantReport/${timeUrl}`,
   };
 
   const keys = Object.keys(endpoints) as (keyof typeof endpoints)[];

@@ -1,10 +1,21 @@
-// app/api/solar-return/route.ts
+// app/api/lunar/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.BACKEND_URL;
 
-interface BirthData {
+const VALID_HOUSE_TYPES = [
+  "placidus",
+  "koch",
+  "topocentric",
+  "poryphry",
+  "equal_house",
+  "whole_sign",
+] as const;
+
+type HouseType = (typeof VALID_HOUSE_TYPES)[number];
+
+interface LunarRequest {
   day: number;
   month: number;
   year: number;
@@ -13,27 +24,16 @@ interface BirthData {
   lat: number;
   lon: number;
   tzone: number;
+  house_type?: HouseType;
 }
 
-interface SolarReturnRequest extends BirthData {
-  solar_year: number; // Year for which to calculate solar return
-  house_type?: string;
-}
+// Lunar API endpoints
+const LUNAR_ENDPOINTS = ["lunar_metrics", "moon_phase_report"] as const;
 
-// Solar Return API endpoints
-const SOLAR_RETURN_ENDPOINTS = [
-  "solar_return_details",
-  "solar_return_planets",
-  "solar_return_house_cusps",
-  "solar_return_planet_aspects",
-  "solar_return_planet_report",
-  "solar_return_aspects_report",
-] as const;
-
-type SolarReturnEndpoint = (typeof SOLAR_RETURN_ENDPOINTS)[number];
+type LunarEndpoint = (typeof LUNAR_ENDPOINTS)[number];
 
 interface ApiResult {
-  endpoint: SolarReturnEndpoint;
+  endpoint: LunarEndpoint;
   data: unknown | null;
   success: boolean;
   error?: string;
@@ -41,7 +41,7 @@ interface ApiResult {
 
 async function fetchAPI(
   endpoint: string,
-  data: SolarReturnRequest,
+  data: LunarRequest,
 ): Promise<unknown | null> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
@@ -65,7 +65,7 @@ async function fetchAPI(
 
 export async function POST(request: NextRequest) {
   try {
-    const requestData: SolarReturnRequest = await request.json();
+    const requestData: LunarRequest = await request.json();
 
     // Validate required fields
     const requiredFields = [
@@ -77,12 +77,11 @@ export async function POST(request: NextRequest) {
       "lat",
       "lon",
       "tzone",
-      "solar_year",
     ];
 
     const missingFields: string[] = [];
     for (const field of requiredFields) {
-      if (requestData[field as keyof SolarReturnRequest] === undefined) {
+      if (requestData[field as keyof LunarRequest] === undefined) {
         missingFields.push(field);
       }
     }
@@ -98,29 +97,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate solar_year is reasonable
-    const currentYear = new Date().getFullYear();
-    if (
-      requestData.solar_year < requestData.year ||
-      requestData.solar_year > currentYear + 100
-    ) {
-      return NextResponse.json(
-        {
-          status: "Fail",
-          message: `Invalid solar_year: must be between birth year (${requestData.year}) and ${currentYear + 100}`,
-          data: null,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Set default house type if not provided
-    if (!requestData.house_type) {
+    // Validate house_type if provided, otherwise default to "placidus"
+    if (requestData.house_type) {
+      if (!VALID_HOUSE_TYPES.includes(requestData.house_type as HouseType)) {
+        return NextResponse.json(
+          {
+            status: "Fail",
+            message: `Invalid house_type: "${requestData.house_type}". Must be one of: ${VALID_HOUSE_TYPES.join(", ")}`,
+            data: null,
+          },
+          { status: 400 },
+        );
+      }
+    } else {
       requestData.house_type = "placidus";
     }
 
-    // Fetch all Solar Return APIs in parallel
-    const apiPromises: Promise<ApiResult>[] = SOLAR_RETURN_ENDPOINTS.map(
+    // Fetch all Lunar APIs in parallel
+    const apiPromises: Promise<ApiResult>[] = LUNAR_ENDPOINTS.map(
       async (endpoint) => {
         const data = await fetchAPI(endpoint, requestData);
         return {
@@ -136,7 +130,6 @@ export async function POST(request: NextRequest) {
 
     // Build response data object
     const responseData: Record<string, unknown> = {
-      solar_year: requestData.solar_year,
       birth_data: {
         day: requestData.day,
         month: requestData.month,
@@ -151,13 +144,9 @@ export async function POST(request: NextRequest) {
     };
 
     // Convert endpoint names to camelCase keys
-    const endpointKeyMap: Record<SolarReturnEndpoint, string> = {
-      solar_return_details: "details",
-      solar_return_planets: "planets",
-      solar_return_house_cusps: "houseCusps",
-      solar_return_planet_aspects: "planetAspects",
-      solar_return_planet_report: "planetReport",
-      solar_return_aspects_report: "aspectsReport",
+    const endpointKeyMap: Record<LunarEndpoint, string> = {
+      lunar_metrics: "lunarMetrics",
+      moon_phase_report: "moonPhaseReport",
     };
 
     for (const result of results) {
@@ -166,7 +155,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate statistics
-    const totalApis = SOLAR_RETURN_ENDPOINTS.length;
+    const totalApis = LUNAR_ENDPOINTS.length;
     const successful = results.filter((r) => r.success).length;
     const failed = totalApis - successful;
     const failedEndpoints = results
@@ -179,13 +168,13 @@ export async function POST(request: NextRequest) {
 
     if (successful === totalApis) {
       status = "Pass";
-      message = "All Solar Return data fetched successfully";
+      message = "All Lunar data fetched successfully";
     } else if (successful > 0) {
       status = "Partial";
-      message = `${successful} of ${totalApis} Solar Return APIs succeeded`;
+      message = `${successful} of ${totalApis} Lunar APIs succeeded`;
     } else {
       status = "Fail";
-      message = "Failed to fetch Solar Return data from all endpoints";
+      message = "Failed to fetch Lunar data from all endpoints";
     }
 
     return NextResponse.json({
@@ -203,7 +192,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Solar Return API Error:", error);
+    console.error("Lunar API Error:", error);
     return NextResponse.json(
       {
         status: "Fail",
@@ -211,10 +200,10 @@ export async function POST(request: NextRequest) {
           error instanceof Error ? error.message : "Internal server error",
         data: null,
         meta: {
-          total_apis: SOLAR_RETURN_ENDPOINTS.length,
+          total_apis: LUNAR_ENDPOINTS.length,
           successful: 0,
-          failed: SOLAR_RETURN_ENDPOINTS.length,
-          failed_endpoints: [...SOLAR_RETURN_ENDPOINTS],
+          failed: LUNAR_ENDPOINTS.length,
+          failed_endpoints: [...LUNAR_ENDPOINTS],
           success_rate: "0%",
           timestamp: new Date().toISOString(),
         },

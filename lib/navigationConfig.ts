@@ -118,6 +118,11 @@ const routeMetadata: Record<
     text: "Transits",
     category: "Western Astrology",
   },
+  "/solar-return": {
+    icon: "mdi:orbit",
+    text: "Solar Return",
+    category: "Western Astrology",
+  },
   // --- Tools & Utilities ---
   "/indian-calender": {
     icon: "mdi:calendar-month",
