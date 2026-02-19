@@ -1,0 +1,62 @@
+[
+  {
+    "name": "mini-horoscope-pdf",
+    "status": "PASS",
+    "size": "142.8",
+    "time": 362
+  },
+  {
+    "name": "basic-horoscope-pdf",
+    "status": "PASS",
+    "size": "357.1",
+    "time": 485
+  },
+  {
+    "name": "professional-horoscope-pdf",
+    "status": "PASS",
+    "size": "564.7",
+    "time": 554
+  },
+  {
+    "name": "match-making-pdf",
+    "status": "PASS",
+    "size": "317.0",
+    "time": 526
+  },
+  {
+    "name": "western-natal-horoscope-pdf",
+    "status": "PASS",
+    "size": "80.5",
+    "time": 805
+  },
+  {
+    "name": "western-life-forecast-pdf",
+    "status": "PASS",
+    "size": "58.2",
+    "time": 736
+  },
+  {
+    "name": "solar-return-english-pdf",
+    "status": "PASS",
+    "size": "118.8",
+    "time": 668
+  },
+  {
+    "name": "synastry-english-pdf",
+    "status": "PASS",
+    "size": "159.2",
+    "time": 270
+  },
+  {
+    "name": "horoscope-pdf",
+    "status": "PASS",
+    "size": "47.0",
+    "time": 292
+  },
+  {
+    "name": "life-transit-report-pdf",
+    "status": "PASS",
+    "size": "52.7",
+    "time": 157
+  }
+]

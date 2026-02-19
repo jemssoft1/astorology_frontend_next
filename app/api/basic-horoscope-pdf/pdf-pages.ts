@@ -866,12 +866,14 @@ export function renderVimshottariDasha2Page(
   }
   y = addSectionTitle(doc, L.currentDasha, y + 4);
   const currentDasha = apiData.current_vdasha;
-  const currentAll = apiData.current_vdasha_all;
-  const src = currentAll || currentDasha;
+  // Prefer current_vdasha (flat structure with planet/start/end)
+  // over current_vdasha_all (has dasha_period arrays, not directly usable)
+  const src = currentDasha;
 
   if (src) {
     const rows: string[][] = [];
-    const md = src.major_dasha || src.mahadasha || src.major || {};
+    // API field names: major, minor, sub_minor, sub_sub_minor, sub_sub_sub_minor
+    const md = src.major || src.major_dasha || src.mahadasha || {};
     if (md.planet || md.Planet) {
       rows.push([
         L.mahadasha,
@@ -880,7 +882,7 @@ export function renderVimshottariDasha2Page(
         md.end || md.endDate || "—",
       ]);
     }
-    const ad = src.sub_dasha || src.antardasha || src.sub || {};
+    const ad = src.minor || src.sub_dasha || src.antardasha || {};
     if (ad.planet || ad.Planet) {
       rows.push([
         L.antardasha,
@@ -889,7 +891,7 @@ export function renderVimshottariDasha2Page(
         ad.end || ad.endDate || "—",
       ]);
     }
-    const pd = src.sub_sub_dasha || src.pratyantardasha || src.prat || {};
+    const pd = src.sub_minor || src.sub_sub_dasha || src.pratyantardasha || {};
     if (pd.planet || pd.Planet) {
       rows.push([
         L.pratyantarDasha || "Prtyantar Dasha",
@@ -898,13 +900,22 @@ export function renderVimshottariDasha2Page(
         pd.end || pd.endDate || "—",
       ]);
     }
-    const sd = src.sub_sub_sub_dasha || src.sookshm || {};
+    const sd = src.sub_sub_minor || src.sub_sub_sub_dasha || src.sookshm || {};
     if (sd.planet || sd.Planet) {
       rows.push([
         L.sookshmDasha || "Sookshm Dasha",
         sd.planet || sd.Planet || "—",
         sd.start || sd.startDate || "—",
         sd.end || sd.endDate || "—",
+      ]);
+    }
+    const prd = src.sub_sub_sub_minor || {};
+    if (prd.planet || prd.Planet) {
+      rows.push([
+        "Pran Dasha",
+        prd.planet || prd.Planet || "—",
+        prd.start || prd.startDate || "—",
+        prd.end || prd.endDate || "—",
       ]);
     }
     if (rows.length > 0) {
@@ -1366,13 +1377,20 @@ export function renderKalsarpaDoshaPage(
 
   // Left Box
   doc.rect(boxLeftX, boxY, boxW, boxH, "FD");
-  doc.setFontSize(24);
-  // Simple emoji representation requires font support which jsPDF basic fonts don't have well
-  // Using text fallback or simple shapes would be better if unicode fails
-  // But standard emojis might work in some readers
-  doc.text(isPresent ? "☹️" : "🙂", boxLeftX + boxW / 2, boxY + 18, {
-    align: "center",
-  });
+  // Draw status indicator circle (emojis don't render in jsPDF)
+  const circleX = boxLeftX + boxW / 2;
+  const circleY = boxY + 14;
+  const circleR = 6;
+  if (isPresent) {
+    doc.setFillColor(COLORS.darkRed[0], COLORS.darkRed[1], COLORS.darkRed[2]);
+  } else {
+    doc.setFillColor(34, 139, 34); // Green
+  }
+  doc.circle(circleX, circleY, circleR, "F");
+  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.text(isPresent ? "X" : "OK", circleX, circleY + 3, { align: "center" });
   doc.setFontSize(11);
   const c = isPresent ? COLORS.darkRed : COLORS.primary;
   doc.setTextColor(c[0], c[1], c[2]);
@@ -1694,10 +1712,20 @@ export function renderSadhesatiPage(
   doc.setFillColor(255, 255, 255);
   doc.roundedRect(leftX, y, colW, 80, 3, 3, "FD");
 
-  doc.setFontSize(30);
-  doc.text(isPresent ? "☹️" : "🙂", leftX + colW / 2, y + 25, {
-    align: "center",
-  });
+  // Draw status indicator circle (emojis don't render in jsPDF)
+  const circleX = leftX + colW / 2;
+  const circleY = y + 20;
+  const circleR = 8;
+  if (isPresent) {
+    doc.setFillColor(COLORS.darkRed[0], COLORS.darkRed[1], COLORS.darkRed[2]);
+  } else {
+    doc.setFillColor(34, 139, 34); // Green
+  }
+  doc.circle(circleX, circleY, circleR, "F");
+  doc.setFontSize(12);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.text(isPresent ? "X" : "OK", circleX, circleY + 4, { align: "center" });
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -1727,7 +1755,7 @@ export function renderSadhesatiPage(
     [L.moonSign || "Moon Sign", sData.moon_sign],
     [
       L.saturnRetrograde || "Saturn Retrograde",
-      sData.saturn_retrograde ? "Yes" : "No",
+      sData.is_saturn_retrograde || sData.saturn_retrograde ? "Yes" : "No",
     ],
     [
       L.isSadhesatiPresent || "Is Sadhesati present?",
@@ -1917,7 +1945,11 @@ export function renderGemstoneDetailPage(
 
   by += 10;
   doc.text(`${L.dayToWear}: ${data.wear_day || "—"}`, bx, by);
-  doc.text(`${L.deity}: ${data.deity || data.gem_deity || "—"}`, bx + boxGap, by);
+  doc.text(
+    `${L.deity}: ${data.deity || data.gem_deity || "—"}`,
+    bx + boxGap,
+    by,
+  );
   doc.text(`${L.metal}: ${data.wear_metal || "—"}`, bx + boxGap * 2, by);
 
   y += 80;
@@ -1928,13 +1960,19 @@ export function renderGemstoneDetailPage(
 
   const gridItems = [
     { title: "Description", text: "Wear this for general well-being." },
-    { title: L.timeToWear, text: data.wear_time || "—" },
+    {
+      title: L.dayToWear || "Day to Wear",
+      text: data.wear_day || data.wear_time || "—",
+    },
     { title: L.finger, text: data.wear_finger || "—" },
     {
       title: `${L.weight}/${L.metal}`,
       text: `${data.weight_caret || "—"} / ${data.wear_metal || "—"}`,
     },
-    { title: L.mantra, text: data.gem_mantra || "—" },
+    {
+      title: L.deity || "Deity",
+      text: data.gem_deity || data.gem_mantra || "—",
+    },
     {
       title: L.substitutes,
       text: data.substitue || data.substitute || data.semi_gem || "—",

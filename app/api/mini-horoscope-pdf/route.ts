@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import { getLabels, DASHA_ORDER_PAGE5, DASHA_ORDER_PAGE6 } from "./constants";
+import { logPDF, logPDFError } from "@/utils/pdfLogger";
 import {
   BirthParams,
   fetchAllMiniHoroscopeData,
@@ -37,6 +38,7 @@ interface MiniHoroscopeRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: MiniHoroscopeRequest = await request.json();
+    logPDF("mini-horoscope-pdf", 0, "Input Parameters", body);
 
     // Validate required fields
     const requiredFields: (keyof MiniHoroscopeRequest)[] = [
@@ -109,9 +111,30 @@ export async function POST(request: NextRequest) {
       lon: body.longitude,
       tzone: body.timezone,
     };
+    logPDF("mini-horoscope-pdf", 0, "API Params", params);
 
     // Fetch all horoscope data in parallel
     const apiData = await fetchAllMiniHoroscopeData(params);
+    logPDF("mini-horoscope-pdf", 0, "All API Data Keys", Object.keys(apiData));
+    logPDF("mini-horoscope-pdf", 0, "birth_details", apiData.birth_details);
+    logPDF("mini-horoscope-pdf", 0, "astro_details", apiData.astro_details);
+    logPDF("mini-horoscope-pdf", 0, "planets", apiData.planets);
+    logPDF(
+      "mini-horoscope-pdf",
+      0,
+      "planets_extended",
+      apiData.planets_extended,
+    );
+    logPDF("mini-horoscope-pdf", 0, "ghat_chakra", apiData.ghat_chakra);
+    logPDF("mini-horoscope-pdf", 0, "panchang", apiData.panchang);
+    logPDF("mini-horoscope-pdf", 0, "major_vdasha", apiData.major_vdasha);
+    logPDF("mini-horoscope-pdf", 0, "current_vdasha", apiData.current_vdasha);
+    logPDF(
+      "mini-horoscope-pdf",
+      0,
+      "general_ascendant_report",
+      apiData.general_ascendant_report,
+    );
 
     // Fetch sub-dasha (antardasha) for all 9 mahadasha planets
     const allDashaPlanets = [...DASHA_ORDER_PAGE5, ...DASHA_ORDER_PAGE6];
@@ -125,6 +148,7 @@ export async function POST(request: NextRequest) {
         subDashaData[result.value.planet] = result.value.data;
       }
     });
+    logPDF("mini-horoscope-pdf", 0, "Sub-Dasha Data", subDashaData);
 
     // ============================================
     // Generate PDF — 9 Pages
@@ -132,6 +156,12 @@ export async function POST(request: NextRequest) {
     const doc = new jsPDF();
 
     // Page 1: Cover Page
+    logPDF("mini-horoscope-pdf", 1, "Cover Page", {
+      name: body.name,
+      dob: body.date_of_birth,
+      tob: body.time_of_birth,
+      pob: body.place_of_birth,
+    });
     renderCoverPage(
       doc,
       body.name,
@@ -143,6 +173,11 @@ export async function POST(request: NextRequest) {
     );
 
     // Page 2: Basic Astrological Details
+    logPDF("mini-horoscope-pdf", 2, "Basic Astrological Details", {
+      astro_details: apiData.astro_details,
+      birth_details: apiData.birth_details,
+      panchang: apiData.panchang,
+    });
     renderBasicDetailsPage(
       doc,
       body.name,
@@ -157,24 +192,46 @@ export async function POST(request: NextRequest) {
     );
 
     // Page 3: Planetary Positions
+    logPDF("mini-horoscope-pdf", 3, "Planetary Positions", apiData.planets);
     renderPlanetaryPositionsPage(doc, apiData, L);
 
     // Page 4: Horoscope Charts
+    logPDF("mini-horoscope-pdf", 4, "Horoscope Charts", {
+      ghat_chakra: apiData.ghat_chakra,
+    });
     renderChartsPage(doc, apiData, L);
 
     // Page 5: Vimshottari Dasha I
+    logPDF("mini-horoscope-pdf", 5, "Vimshottari Dasha I", {
+      major_vdasha: apiData.major_vdasha,
+      subDashaData,
+    });
     renderDashaPage1(doc, apiData, subDashaData, L);
 
     // Page 6: Vimshottari Dasha II + Current Dasha
+    logPDF("mini-horoscope-pdf", 6, "Vimshottari Dasha II + Current Dasha", {
+      current_vdasha: apiData.current_vdasha,
+    });
     renderDashaPage2(doc, apiData, subDashaData, L);
 
     // Page 7: Ascendant Report
+    logPDF(
+      "mini-horoscope-pdf",
+      7,
+      "Ascendant Report",
+      apiData.general_ascendant_report,
+    );
     const ascName = renderAscendantPage(doc, apiData, L);
+    logPDF("mini-horoscope-pdf", 7, "Ascendant Name Returned", ascName);
 
     // Page 8: Ascendant Analysis Continued
+    logPDF("mini-horoscope-pdf", 8, "Ascendant Analysis Continued", {
+      ascName,
+    });
     renderAscendantAnalysisPage(doc, ascName, L);
 
     // Page 9: Disclaimer
+    logPDF("mini-horoscope-pdf", 9, "Disclaimer Page", "Rendering");
     renderDisclaimerPage(doc, L);
 
     // Add footers to all pages
@@ -182,6 +239,10 @@ export async function POST(request: NextRequest) {
 
     // Output PDF
     const pdfBuffer = doc.output("arraybuffer");
+    logPDF("mini-horoscope-pdf", "FINAL", "PDF Generation Complete", {
+      sizeKB: (pdfBuffer.byteLength / 1024).toFixed(1),
+      pages: doc.getNumberOfPages(),
+    });
     const safeName = body.name.replace(/\s+/g, "_");
     const safeDate = body.date_of_birth.replace(/-/g, "_");
 
@@ -193,6 +254,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
+    logPDFError("mini-horoscope-pdf", "FATAL", error);
     console.error("Mini Horoscope PDF Generation Error:", error);
     return NextResponse.json(
       {

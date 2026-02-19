@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchAllHoroscopeData } from "@/lib/horoscopeApi";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { logPDF, logPDFError } from "@/utils/pdfLogger";
 
 // Define Request Body Interface
 interface PdfRequest {
@@ -126,6 +127,7 @@ const PLANET_SYMBOLS: Record<string, string> = {
 export async function POST(request: NextRequest) {
   try {
     const { person }: PdfRequest = await request.json();
+    logPDF("horoscope-pdf", 0, "Input Parameters", person);
 
     if (!person) {
       return NextResponse.json(
@@ -147,6 +149,13 @@ export async function POST(request: NextRequest) {
       dateStr,
       person.TimezoneOffset,
     );
+    logPDF(
+      "horoscope-pdf",
+      0,
+      "Horoscope Data Keys",
+      horoscopeData ? Object.keys(horoscopeData) : null,
+    );
+    logPDF("horoscope-pdf", 0, "Horoscope Data", horoscopeData);
 
     // ============================================
     // Initialize PDF Document
@@ -174,6 +183,11 @@ export async function POST(request: NextRequest) {
     // ============================================
     // Page 1: Cover Page with Decorative Border
     // ============================================
+    logPDF("horoscope-pdf", 1, "Cover Page", {
+      name: person.Name,
+      birthTime: person.BirthTime,
+      location: person.BirthLocation,
+    });
 
     // Background gradient effect (simulated with rectangles)
     doc.setFillColor(colors.cream[0], colors.cream[1], colors.cream[2]);
@@ -758,6 +772,10 @@ export async function POST(request: NextRequest) {
     // Output PDF
     // ============================================
     const pdfBuffer = doc.output("arraybuffer");
+    logPDF("horoscope-pdf", "FINAL", "PDF Generation Complete", {
+      sizeKB: (pdfBuffer.byteLength / 1024).toFixed(1),
+      pages: doc.getNumberOfPages(),
+    });
 
     return new NextResponse(pdfBuffer, {
       status: 200,
@@ -767,6 +785,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
+    logPDFError("horoscope-pdf", "FATAL", error);
     console.error("PDF Generation Error:", error);
     return NextResponse.json(
       { message: "Failed to generate PDF", error: String(error) },
