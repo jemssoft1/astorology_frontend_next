@@ -147,10 +147,6 @@ export async function POST(req: NextRequest) {
     const maleParams = parseBirthParams(body.male);
     const femaleParams = parseBirthParams(body.female);
 
-    console.log(`📝 Generating Match Making PDF (${lang.toUpperCase()})...`);
-    logPDF("match-making-pdf", 0, "Male Params", maleParams);
-    logPDF("match-making-pdf", 0, "Female Params", femaleParams);
-
     // ── DATA FETCHING ──
     const [maleData, femaleData] = await Promise.all([
       fetchPersonData(maleParams),
@@ -179,13 +175,6 @@ export async function POST(req: NextRequest) {
           ? femaleSubDashaResults[i].value
           : null;
     });
-
-    console.log("✅ All data fetched. Rendering PDF...");
-    logPDF("match-making-pdf", 0, "Male Data Keys", Object.keys(maleData));
-    logPDF("match-making-pdf", 0, "Female Data Keys", Object.keys(femaleData));
-    logPDF("match-making-pdf", 0, "Match Data", matchData);
-    logPDF("match-making-pdf", 0, "Male Sub-Dasha", maleSubDasha);
-    logPDF("match-making-pdf", 0, "Female Sub-Dasha", femaleSubDasha);
 
     // ── INITIALIZE PDF ──
     const doc = new jsPDF({
@@ -403,10 +392,6 @@ export async function POST(req: NextRequest) {
       pages: doc.getNumberOfPages(),
     });
     const filename = `MatchMaking_${body.male.name.replace(/\s+/g, "_")}_${body.female.name.replace(/\s+/g, "_")}.pdf`;
-
-    console.log(
-      `✅ Match Making PDF generated: ${pdfBuffer.length} bytes, ${doc.getNumberOfPages()} pages`,
-    );
 
     return new NextResponse(pdfBuffer, {
       status: 200,

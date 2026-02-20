@@ -46,7 +46,7 @@ export function logPDF(
   ];
 
   const block = lines.join("\n");
-  console.log(block);
+
   appendToFile(block);
 }
 

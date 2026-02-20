@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { logPDF, logPDFError } from "@/utils/pdfLogger";
+
 import { fetchWesternData } from "./helpers";
 import {
   renderCoverPage,
@@ -56,10 +56,8 @@ function addFooters(doc: jsPDF, text: string) {
 //  POST HANDLER
 // ═══════════════════════════════════════════════
 export async function POST(req: NextRequest) {
-  console.log("🛑 HIT /api/western-natal-horoscope-pdf");
   try {
     const body = await req.json();
-    logPDF("western-natal-horoscope-pdf", 0, "Input Parameters", body);
 
     // Validate essential fields
     if (
@@ -96,16 +94,7 @@ export async function POST(req: NextRequest) {
     const name = body.name || "User";
     const place = body.place_of_birth || "Unknown Location";
 
-    // Fetch Data
-    console.log("Fetching Western Astrology Data...");
     const data = await fetchWesternData(requestPayload);
-    logPDF(
-      "western-natal-horoscope-pdf",
-      0,
-      "Fetched Data Keys",
-      data ? Object.keys(data) : null,
-    );
-    logPDF("western-natal-horoscope-pdf", 0, "Basic Data", data?.basic);
 
     if (!data || !data.basic) {
       throw new Error("Failed to fetch horoscope data from backend.");
@@ -144,19 +133,6 @@ export async function POST(req: NextRequest) {
     // aspects come from chart_data
     const aspects = chartData.aspects || [];
 
-    console.log("👉 Extracted Logic:");
-    console.log(
-      "   Planets:",
-      Array.isArray(planets) ? planets.length : "object",
-    );
-    console.log("   Cusps:", Array.isArray(cusps) ? cusps.length : "object");
-    console.log("   Aspects:", aspects.length);
-    console.log("   Wheel Image:", wheelImage ? "Present" : "Missing");
-
-    logPDF("western-natal-horoscope-pdf", 0, "Planets", planets);
-    logPDF("western-natal-horoscope-pdf", 0, "Cusps", cusps);
-    logPDF("western-natal-horoscope-pdf", 0, "Aspects", aspects);
-
     const ascendantReport = data.basic.ascendant_report;
     // House reports come from chart_data.houses or a dedicated endpoint
     const houseReports = chartData.houses || []; // List of house data with planets
@@ -164,7 +140,7 @@ export async function POST(req: NextRequest) {
     // ═══════════════════════════════════════════════
     //  PDF GENERATION
     // ═══════════════════════════════════════════════
-    console.log("Generating Western PDF...");
+
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -172,12 +148,6 @@ export async function POST(req: NextRequest) {
     });
 
     // 1. Cover
-    logPDF("western-natal-horoscope-pdf", 1, "Cover Page", {
-      name,
-      dob: body.date_of_birth,
-      tob: body.time_of_birth,
-      place,
-    });
     renderCoverPage(
       doc,
       name,
@@ -188,68 +158,41 @@ export async function POST(req: NextRequest) {
     );
 
     // 2. Intro
-    logPDF("western-natal-horoscope-pdf", 2, "Intro Page", "Rendering");
+    // Page 2: Intro / Basic Details
+
     renderIntroPage(doc, name);
 
     // 3. Natal Chart
-    logPDF(
-      "western-natal-horoscope-pdf",
-      3,
-      "Natal Wheel",
-      imageBuffer ? "Image present" : "No image",
-    );
     renderNatalWheelPage(doc, imageBuffer);
 
     // 4. Planets Table
-    logPDF(
-      "western-natal-horoscope-pdf",
-      4,
-      "Planetary Positions Table",
-      planets,
-    );
     renderPlanetaryPositionsTable(doc, planets);
 
     // 5. House Cusps Table
-    logPDF("western-natal-horoscope-pdf", 5, "House Cusps Table", cusps);
     renderHouseCuspsTable(doc, cusps);
 
     // 6. Aspect Grid
-    logPDF("western-natal-horoscope-pdf", 6, "Aspect Grid", aspects);
     renderAspectGridPage(doc, aspects);
 
     // 7. Ascendant Profile
     if (ascendantReport) {
-      logPDF(
-        "western-natal-horoscope-pdf",
-        7,
-        "Ascendant Profile",
-        ascendantReport,
-      );
       renderAscendantProfile(doc, ascendantReport);
     }
 
     // 8. Planet Profiles
-    logPDF("western-natal-horoscope-pdf", 8, "Planet Profiles", data.planets);
     renderPlanetProfiles(doc, data.planets);
 
     // 9. House Profiles
-    logPDF("western-natal-horoscope-pdf", 9, "House Profiles", houseReports);
     renderHouseProfiles(doc, houseReports);
 
     // 10. Aspect Profiles
     // We assume 'aspects' list has basic info, but interpretation might be elsewhere.
     // If 'natal_chart_interpretation' has aspects, use that.
     const aspectInterpretations = data.basic.interpretation?.aspects || aspects;
-    logPDF(
-      "western-natal-horoscope-pdf",
-      10,
-      "Aspect Profiles",
-      aspectInterpretations,
-    );
     renderAspectProfiles(doc, aspectInterpretations);
 
     // 11. Back Cover
-    logPDF("western-natal-horoscope-pdf", 11, "Back Cover", "Rendering");
+
     renderBackCover(doc);
 
     // Add Footers
@@ -257,10 +200,6 @@ export async function POST(req: NextRequest) {
 
     // Output
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
-    logPDF("western-natal-horoscope-pdf", "FINAL", "PDF Generation Complete", {
-      sizeKB: pdfBuffer ? (pdfBuffer.length / 1024).toFixed(1) : "0.0",
-      pages: doc.getNumberOfPages(),
-    });
     const filename = `Western_Natal_${name.replace(/\s+/g, "_")}.pdf`;
 
     return new NextResponse(pdfBuffer, {
@@ -272,8 +211,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    logPDFError("western-natal-horoscope-pdf", "FATAL", error);
-    console.error("Error generating Western PDF:", error);
     return NextResponse.json(
       { error: "Internal Server Error", message: error.message },
       { status: 500 },

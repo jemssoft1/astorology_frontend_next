@@ -79,7 +79,7 @@ export default function ContentProtection() {
           return "";
         },
       });
-      console.log("%c", element as any);
+    
 
       // Timing-based detection
       const endTime = performance.now();

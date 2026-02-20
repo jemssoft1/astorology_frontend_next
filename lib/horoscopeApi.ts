@@ -76,7 +76,6 @@ export function buildTimeUrl(
 async function fetchApi(endpoint: string): Promise<any> {
   try {
     const url = `${BASE_URL}/${endpoint}`;
-    // console.log(`Fetching: ${url}`); // Debug logging
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);

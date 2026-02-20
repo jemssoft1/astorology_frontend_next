@@ -121,21 +121,8 @@ export async function fetchWesternData(body: RequestBody) {
     Promise.all(planetPromises),
   ]);
 
-  console.log(
-    "👉 Basic Results Keys:",
-    basicResults.map((r) => r.key),
-  );
-  basicResults.forEach((r) => {
-    console.log(`Basic Result [${r.key}]:`, r.data ? "Received" : "MISSING");
-    if (r.key === "chart_data")
-      console.log(
-        "Chart Data Sample:",
-        JSON.stringify(r.data).substring(0, 200),
-      );
-  });
-
-  console.log("👉 Planet Results Count:", planetResults.length);
   // Organize Data
+
   const data: Record<string, any> = {
     basic: {},
     planets: {},

@@ -552,7 +552,6 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // @ts-ignore
       yPos = doc.lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);
@@ -646,7 +645,7 @@ export async function POST(request: NextRequest) {
           2: { cellWidth: 40 },
         },
       });
-      // @ts-ignore
+
       yPos = doc.lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);
@@ -794,7 +793,7 @@ export async function POST(request: NextRequest) {
           4: { cellWidth: 25 },
         },
       });
-      // @ts-ignore
+
       yPos = doc.lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);

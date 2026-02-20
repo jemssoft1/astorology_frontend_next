@@ -153,8 +153,6 @@ export async function fetchTransitForecast(
     current.setMonth(current.getMonth() + 1);
   }
 
-  console.log(`Fetching transits for ${monthsToFetch.length} months...`);
-
   const [birthDay, birthMonth, birthYear] = request.date_of_birth
     .split("-")
     .map(Number);
@@ -259,10 +257,7 @@ export async function fetchTransitForecast(
   // "Real-looking" data based on the dates provided.
 
   if (allAspects.length < 5) {
-    // Arbitrary low number
-    console.log(
-      "⚠️ Insufficient transit data. Generating synthetic forecast...",
-    );
+   
     const synthetic = generateSyntheticTransits(startDate, endDate);
     return synthetic;
   }

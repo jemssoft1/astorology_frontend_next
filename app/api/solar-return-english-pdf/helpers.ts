@@ -14,7 +14,7 @@ const BASE_URL = process.env.BACKEND_URL;
 async function fetchAPI(endpoint: string, payload: any) {
   const url = `${BASE_URL}/api/${endpoint}`;
   try {
-    console.log(`Fetching ${url} ...`);
+   
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

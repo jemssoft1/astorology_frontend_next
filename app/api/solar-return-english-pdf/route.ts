@@ -40,8 +40,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Data Fetching
-    console.log(`Generating Solar Return PDF for ${body.name}...`);
+   
 
     // Default to current year if not provided, or next birthday logic can be handled by caller
     // The previous prompt said "Dynamic based on Solar Return time", so we trust the inputs.

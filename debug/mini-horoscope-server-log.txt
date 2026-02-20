@@ -1,0 +1,186 @@
+========== MINI HOROSCOPE PDF — SERVER LOGS ==========
+Captured from dev server terminal (most recent run)
+======================================================
+
+--- renderChartsPage Logs (Partial — earlier logs scrolled off) ---
+
+Planet 7 (SATURN):
+  rawPlanet: {
+    id: 6,
+    name: 'SATURN',
+    fullDegree: 45.890422271242365,
+    normDegree: 15.890422271242365,
+    speed: 0.07566166715021745,
+    isRetro: 'false',
+    sign: 'Taurus',
+    signLord: 'Venus',
+    nakshatra: 'Rohini',
+    nakshatraLord: 'Moon',
+    nakshatra_pad: 2,
+    house: 4,
+    is_planet_set: false,
+    planet_awastha: 'Yuva'
+  }
+  resolvedName: 'SATURN'
+  signVal: 'Taurus'
+Mapped -> Planet: SATURN, House: 2, Symbol: SA, Retro:
+
+Planet 8 (RAHU):
+  rawPlanet: {
+    id: 7,
+    name: 'RAHU',
+    fullDegree: 58.13141515074082,
+    normDegree: 28.13141515074082,
+    speed: -0.052992016975859965,
+    isRetro: 'true',
+    sign: 'Taurus',
+    signLord: 'Venus',
+    nakshatra: 'Mrigshira',
+    nakshatraLord: 'Mars',
+    nakshatra_pad: 2,
+    house: 4,
+    is_planet_set: false,
+    planet_awastha: 'Bala'
+  }
+  resolvedName: 'RAHU'
+  signVal: 'Taurus'
+Mapped -> Planet: RAHU, House: 2, Symbol: RA, Retro: (R)
+
+Planet 9 (KETU):
+  rawPlanet: {
+    id: 8,
+    name: 'KETU',
+    fullDegree: 238.13141515074082,
+    normDegree: 28.13141515074082,
+    speed: -0.052992016975859965,
+    isRetro: 'true',
+    sign: 'Scorpio',
+    signLord: 'Mars',
+    nakshatra: 'Jyeshtha',
+    nakshatraLord: 'Mercury',
+    nakshatra_pad: 4,
+    house: 10,
+    is_planet_set: false,
+    planet_awastha: 'Bala'
+  }
+  resolvedName: 'KETU'
+  signVal: 'Scorpio'
+Mapped -> Planet: KETU, House: 8, Symbol: KE, Retro: (R)
+
+Planet 10 (URANUS):
+  rawPlanet: {
+    id: 9,
+    name: 'URANUS',
+    fullDegree: 303.0403599100378,
+    normDegree: 3.0403599100378074,
+    speed: 0.049202648873694084,
+    isRetro: 'false',
+    sign: 'Aquarius',
+    signLord: 'Saturn',
+    nakshatra: 'Dhanishtha',
+    nakshatraLord: 'Mars',
+    nakshatra_pad: 3,
+    house: 1,
+    is_planet_set: false,
+    planet_awastha: 'Bala'
+  }
+  resolvedName: 'URANUS'
+  signVal: 'Aquarius'
+Mapped -> Planet: URANUS, House: 11, Symbol: UR, Retro:
+
+Planet 11 (NEPTUNE):
+  rawPlanet: {
+    id: 10,
+    name: 'NEPTUNE',
+    fullDegree: 286.4190729762725,
+    normDegree: 16.419072976272503,
+    speed: 0.025769195902269827,
+    isRetro: 'false',
+    sign: 'Capricorn',
+    signLord: 'Saturn',
+    nakshatra: 'Shravan',
+    nakshatraLord: 'Moon',
+    nakshatra_pad: 2,
+    house: 12,
+    is_planet_set: false,
+    planet_awastha: 'Yuva'
+  }
+  resolvedName: 'NEPTUNE'
+  signVal: 'Capricorn'
+Mapped -> Planet: NEPTUNE, House: 10, Symbol: NE, Retro:
+
+Planet 12 (PLUTO):
+  rawPlanet: {
+    id: 11,
+    name: 'PLUTO',
+    fullDegree: 233.74213572730454,
+    normDegree: 23.742135727304543,
+    speed: -0.0019287238361706742,
+    isRetro: 'true',
+    sign: 'Scorpio',
+    signLord: 'Mars',
+    nakshatra: 'Jyeshtha',
+    nakshatraLord: 'Mercury',
+    nakshatra_pad: 3,
+    house: 10,
+    is_planet_set: false,
+    planet_awastha: 'Kumara'
+  }
+  resolvedName: 'PLUTO'
+  signVal: 'Scorpio'
+Mapped -> Planet: PLUTO, House: 8, Symbol: PL, Retro: (R)
+
+Planet 13 (Ascendant):
+  rawPlanet: {
+    id: 12,
+    name: 'Ascendant',
+    fullDegree: 315.531050977284,
+    normDegree: 15.531050977283996,
+    speed: 0,
+    isRetro: false,
+    sign: 'Aquarius',
+    signLord: 'Saturn',
+    nakshatra: 'Shatbhisha',
+    nakshatraLord: 'Rahu',
+    nakshatra_pad: 3,
+    house: 1
+  }
+  resolvedName: 'Ascendant'
+  signVal: 'Aquarius'
+Mapped -> Planet: Ascendant, House: 11, Symbol: As, Retro:
+
+--- Final Lagna Positions Map ---
+{
+  '1': [ 'MA' ],
+  '2': [ 'SA', 'RA(R)' ],
+  '3': [ 'JU' ],
+  '4': [ 'MO' ],
+  '5': [],
+  '6': [],
+  '7': [],
+  '8': [ 'KE(R)', 'PL(R)' ],
+  '9': [],
+  '10': [ 'NE' ],
+  '11': [ 'As', 'ME', 'UR', 'As' ],
+  '12': [ 'SU', 'VE' ]
+}
+
+--- Navamsha Positions Map ---
+{
+  '1': [ 'MA' ],
+  '2': [ 'SA', 'RA(R)' ],
+  '3': [ 'JU' ],
+  '4': [ 'MO' ],
+  '5': [],
+  '6': [],
+  '7': [],
+  '8': [ 'KE(R)', 'PL(R)' ],
+  '9': [],
+  '10': [ 'NE' ],
+  '11': [ 'As', 'ME', 'UR', 'As' ],
+  '12': [ 'SU', 'VE' ]
+}
+
+Legend text length: 117
+========== renderChartsPage END ==========
+POST /api/mini-horoscope-pdf 200 in 153ms

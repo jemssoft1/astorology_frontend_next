@@ -349,7 +349,7 @@ export function renderAspectReport(doc: jsPDF, aspects: SynastryAspect[]) {
         : [39, 174, 96];
 
     doc.setFontSize(14);
-    // @ts-ignore
+
     doc.setTextColor(...color);
     doc.setFont("helvetica", "bold");
     doc.text(`${a.planet1} ${a.aspect} ${a.planet2}`, 20, y);

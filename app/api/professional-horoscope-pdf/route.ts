@@ -3,7 +3,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
-import { logPDF, logPDFError } from "@/utils/pdfLogger";
 
 import {
   getProfessionalLabels,
@@ -86,7 +85,6 @@ interface ProfessionalHoroscopeRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: ProfessionalHoroscopeRequest = await request.json();
-    logPDF("professional-horoscope-pdf", 0, "Input Parameters", body);
 
     // Validate required fields
     const requiredFields = [
@@ -133,7 +131,7 @@ export async function POST(request: NextRequest) {
     // ════════════════════════════════════════════
     // PHASE 1: Parallel Data Fetching
     // ════════════════════════════════════════════
-    console.log("[Professional PDF] Starting data fetch...");
+
     const startTime = Date.now();
 
     const [
@@ -154,22 +152,6 @@ export async function POST(request: NextRequest) {
       fetchGemstoneData(birthParams),
     ]);
 
-    console.log(
-      `[Professional PDF] Data fetched in ${Date.now() - startTime}ms`,
-    );
-    logPDF(
-      "professional-horoscope-pdf",
-      0,
-      "mainData keys",
-      Object.keys(mainData),
-    );
-    logPDF("professional-horoscope-pdf", 0, "ashtakvargaData", ashtakvargaData);
-    logPDF("professional-horoscope-pdf", 0, "charDashaData", charDashaData);
-    logPDF("professional-horoscope-pdf", 0, "yoginiData", yoginiData);
-    logPDF("professional-horoscope-pdf", 0, "numerologyData", numerologyData);
-    logPDF("professional-horoscope-pdf", 0, "kalsarpaData", kalsarpaData);
-    logPDF("professional-horoscope-pdf", 0, "gemstoneData", gemstoneData);
-
     // Fetch sub-dasha for all 9 planets
     const allDashaPlanets = [...DASHA_ORDER_PAGE7, ...DASHA_ORDER_PAGE8];
     const subDashaPromises = allDashaPlanets.map((planet) =>
@@ -182,12 +164,11 @@ export async function POST(request: NextRequest) {
         subDashaData[result.value.planet] = result.value.data;
       }
     });
-    logPDF("professional-horoscope-pdf", 0, "Sub-Dasha Data", subDashaData);
 
     // ════════════════════════════════════════════
     // PHASE 2: PDF Generation
     // ════════════════════════════════════════════
-    console.log("[Professional PDF] Starting PDF generation...");
+
     const pdfStart = Date.now();
 
     const doc = new jsPDF({
@@ -197,155 +178,71 @@ export async function POST(request: NextRequest) {
     });
 
     // ── Pages 1–11 (pdf-pages-1) ──
-    logPDF("professional-horoscope-pdf", 1, "Cover Page", {
-      name: body.name,
-      dob,
-      tob,
-      pob,
-    });
+
     renderCoverPage(doc, body.name, dob, tob, pob, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      2,
-      "Basic Details Page",
-      mainData.astro_details,
-    );
+
     renderBasicDetailsPage(doc, mainData, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      3,
-      "Planetary Positions",
-      mainData.planets,
-    );
+
     renderPlanetaryPositionsPage(doc, mainData, L);
-    logPDF("professional-horoscope-pdf", 4, "Horoscope Charts", "Rendering");
+
     renderHoroscopeChartsPage(doc, mainData, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      5,
-      "House Cusps",
-      mainData.kp_house_cusps,
-    );
+
     renderHouseCuspsPage(doc, mainData, lang, L);
-    logPDF("professional-horoscope-pdf", 6, "Divisional Charts 1", "Rendering");
+
     renderDivisionalChartsPage1(doc, mainData, lang, L);
-    logPDF("professional-horoscope-pdf", 7, "Divisional Charts 2", "Rendering");
+
     renderDivisionalChartsPage2(doc, mainData, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      8,
-      "Composite Friendship",
-      "Rendering",
-    );
+
     renderCompositeFriendshipPage(doc, mainData, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      9,
-      "Five-Fold Friendship",
-      "Rendering",
-    );
+
     renderFiveFoldFriendshipPage(doc, mainData, L);
-    logPDF("professional-horoscope-pdf", 10, "KP Planetary", "Rendering");
+
     renderKPPlanetaryPage(doc, mainData, L);
-    logPDF("professional-horoscope-pdf", 11, "KP House Cusps", "Rendering");
+
     renderKPHouseCuspsPage(doc, mainData, L);
 
     // ── Pages 12–27 (pdf-pages-2) ──
-    logPDF(
-      "professional-horoscope-pdf",
-      12,
-      "Ashtakvarga Pages",
-      ashtakvargaData,
-    );
+
     renderAshtakvargaPages(doc, ashtakvargaData, lang, L);
-    logPDF("professional-horoscope-pdf", 13, "Sarvashtakvarga", "Rendering");
+
     renderSarvashtakPage(doc, ashtakvargaData, lang, L);
-    logPDF("professional-horoscope-pdf", 14, "Vimshottari Dasha I", {
-      major_vdasha: mainData.major_vdasha,
-      subDashaData,
-    });
+
     renderVimshottariDasha1Page(doc, mainData, subDashaData, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      15,
-      "Vimshottari Dasha II",
-      mainData.current_vdasha,
-    );
+
     renderVimshottariDasha2Page(doc, mainData, subDashaData, L);
-    logPDF("professional-horoscope-pdf", 16, "Yogini Dasha Pages", yoginiData);
+
     renderYoginiDashaPages(doc, yoginiData, L);
-    logPDF("professional-horoscope-pdf", 17, "Char Dasha Pages", charDashaData);
+
     renderCharDashaPages(doc, charDashaData, L);
 
     // ── Pages 28–47 (pdf-pages-3) ──
-    logPDF("professional-horoscope-pdf", 28, "Kalsarpa Pages", kalsarpaData);
-    renderKalsarpaPages(doc, kalsarpaData, lang, L);
-    logPDF("professional-horoscope-pdf", 30, "Manglik Pages", mainData.manglik);
+
     renderManglikPages(doc, mainData, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      32,
-      "Sadhesati Pages",
-      mainData.sadhesati_current_status,
-    );
+
     renderSadhesatiPages(doc, mainData, lang, L);
-    logPDF("professional-horoscope-pdf", 34, "Gemstone Pages", gemstoneData);
+
     renderGemstonePages(doc, gemstoneData, lang, L);
-    logPDF("professional-horoscope-pdf", 36, "Rudraksha Page", "Rendering");
+
     renderRudrakshaPage(doc, mainData, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      37,
-      "Favourable Points",
-      numerologyData,
-    );
+
     renderFavourablePointsPage(doc, mainData, numerologyData, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      38,
-      "Numerology Pages",
-      numerologyData,
-    );
+
     renderNumerologyPages(doc, numerologyData, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      40,
-      "Ascendant Pages",
-      mainData.general_ascendant_report,
-    );
+
     renderAscendantPages(doc, mainData, L);
 
     // ── Pages 48–66+ (pdf-pages-4) ──
-    logPDF(
-      "professional-horoscope-pdf",
-      48,
-      "Planet Profile Cover",
-      "Rendering",
-    );
-    renderPlanetProfileCover(doc, lang, L);
-    logPDF(
-      "professional-horoscope-pdf",
-      49,
-      "Planet Profile Pages",
-      mainData.planets,
-    );
+    // ── Pages 48–66+ (pdf-pages-4) ──
+
     renderPlanetProfilePages(doc, mainData, mainData.planets || [], lang, L);
 
     // ── Add Footers ──
     addFooters(doc, body.name);
 
-    console.log(
-      `[Professional PDF] PDF generated in ${Date.now() - pdfStart}ms (${doc.getNumberOfPages()} pages)`,
-    );
-
     // ════════════════════════════════════════════
     // PHASE 3: Output
     // ════════════════════════════════════════════
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
-    logPDF("professional-horoscope-pdf", "FINAL", "PDF Generation Complete", {
-      sizeKB: (pdfBuffer.length / 1024).toFixed(1),
-      pages: doc.getNumberOfPages(),
-    });
 
     return new NextResponse(pdfBuffer, {
       status: 200,
@@ -356,8 +253,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error: unknown) {
-    logPDFError("professional-horoscope-pdf", "FATAL", error);
-    console.error("[Professional PDF] Error:", error);
+    if (error instanceof Error) {
+      // Log only critical errors if needed, but keeping it minimal as requested
+    }
     const message =
       error instanceof Error ? error.message : "Unknown error occurred";
     return NextResponse.json(

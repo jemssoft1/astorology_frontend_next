@@ -303,7 +303,7 @@ export function renderInterpretations(doc: jsPDF, aspects: TransitAspect[]) {
 
     // Title
     doc.setFontSize(14);
-    // @ts-ignore
+
     doc.setTextColor(...headerColor);
     doc.setFont("helvetica", "bold");
     doc.text(

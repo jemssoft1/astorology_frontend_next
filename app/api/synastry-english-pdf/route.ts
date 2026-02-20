@@ -39,10 +39,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(
-      `Generating Synastry PDF for ${body.person1.name} & ${body.person2.name}...`,
-    );
-
     // 2. Data Fetching
     const [p1Data, p2Data] = await Promise.all([
       fetchNatalData(body.person1, body.house_system || "placidus"),

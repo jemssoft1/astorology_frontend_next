@@ -82,9 +82,6 @@ export class PdfDebugLogger {
           : level === "DATA"
             ? "📊"
             : "✅";
-    console.log(
-      `${prefix} [${entry.timestamp}] [API: ${this.apiName}]${pageStr} [${section}] ${message}${dataStr}`,
-    );
   }
 
   // ─────────────────────────────────────────────
@@ -449,7 +446,6 @@ export class PdfDebugLogger {
       lines.push(`${"=".repeat(80)}`);
 
       fs.writeFileSync(logFilePath, lines.join("\n"), "utf-8");
-      console.log(`\n📋 Debug log written to: ${logFilePath}`);
 
       // Also write a latest symlink-style log
       const latestPath = path.join(logDir, `${this.apiName}_latest.log`);

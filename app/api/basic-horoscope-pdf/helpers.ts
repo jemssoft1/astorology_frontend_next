@@ -77,9 +77,11 @@ export async function fetchYoginiDashaData(params: BirthParams) {
   const results = await Promise.allSettled(promises);
 
   const data: Record<string, any> = {};
+
   results.forEach((result, index) => {
     data[keys[index]] = result.status === "fulfilled" ? result.value : null;
   });
+
   return data;
 }
 

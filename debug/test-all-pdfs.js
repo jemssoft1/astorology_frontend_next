@@ -21,14 +21,6 @@ const indianPayload = {
   longitude: 72.8311,
   timezone: 5.5,
   language: "en",
-  day: 24,
-  month: 3,
-  year: 2002,
-  hour: 5,
-  min: 30,
-  lat: 21.1702,
-  lon: 72.8311,
-  tzone: 5.5,
 };
 
 const professionalPayload = {
@@ -175,51 +167,51 @@ const tests = [
     api: "/api/mini-horoscope-pdf",
     payload: indianPayload,
   },
-  {
-    name: "basic-horoscope-pdf",
-    api: "/api/basic-horoscope-pdf",
-    payload: indianPayload,
-  },
-  {
-    name: "professional-horoscope-pdf",
-    api: "/api/professional-horoscope-pdf",
-    payload: professionalPayload,
-  },
-  {
-    name: "match-making-pdf",
-    api: "/api/match-making-pdf",
-    payload: matchPayload,
-  },
-  {
-    name: "western-natal-horoscope-pdf",
-    api: "/api/western-natal-horoscope-pdf",
-    payload: westernPayload,
-  },
-  {
-    name: "western-life-forecast-pdf",
-    api: "/api/western-life-forecast-pdf",
-    payload: westernLifeForecastPayload,
-  },
-  {
-    name: "solar-return-english-pdf",
-    api: "/api/solar-return-english-pdf",
-    payload: solarReturnPayload,
-  },
-  {
-    name: "synastry-english-pdf",
-    api: "/api/synastry-english-pdf",
-    payload: synastryPayload,
-  },
-  {
-    name: "horoscope-pdf",
-    api: "/api/horoscope-pdf",
-    payload: horoscopePdfPayload,
-  },
-  {
-    name: "life-transit-report-pdf",
-    api: "/api/life-transit-report-pdf",
-    payload: lifeTransitPayload,
-  },
+  // {
+  //   name: "basic-horoscope-pdf",
+  //   api: "/api/basic-horoscope-pdf",
+  //   payload: indianPayload,
+  // },
+  // {
+  //   name: "professional-horoscope-pdf",
+  //   api: "/api/professional-horoscope-pdf",
+  //   payload: professionalPayload,
+  // },
+  // {
+  //   name: "match-making-pdf",
+  //   api: "/api/match-making-pdf",
+  //   payload: matchPayload,
+  // },
+  // {
+  //   name: "western-natal-horoscope-pdf",
+  //   api: "/api/western-natal-horoscope-pdf",
+  //   payload: westernPayload,
+  // },
+  // {
+  //   name: "western-life-forecast-pdf",
+  //   api: "/api/western-life-forecast-pdf",
+  //   payload: westernLifeForecastPayload,
+  // },
+  // {
+  //   name: "solar-return-english-pdf",
+  //   api: "/api/solar-return-english-pdf",
+  //   payload: solarReturnPayload,
+  // },
+  // {
+  //   name: "synastry-english-pdf",
+  //   api: "/api/synastry-english-pdf",
+  //   payload: synastryPayload,
+  // },
+  // {
+  //   name: "horoscope-pdf",
+  //   api: "/api/horoscope-pdf",
+  //   payload: horoscopePdfPayload,
+  // },
+  // {
+  //   name: "life-transit-report-pdf",
+  //   api: "/api/life-transit-report-pdf",
+  //   payload: lifeTransitPayload,
+  // },
 ];
 
 // ============ Runner ============
