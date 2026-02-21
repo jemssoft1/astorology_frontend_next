@@ -7,12 +7,10 @@ import {
   COLORS,
   DIVISIONAL_CHARTS,
   DASHA_ORDER_PAGE7,
-  YOGINI_DASHAS,
   NUMEROLOGY_FIELDS_EN,
   NUMEROLOGY_FIELDS_HI,
   HOUSE_CUSPS_DESCRIPTION_EN,
   HOUSE_CUSPS_DESCRIPTION_HI,
-  KALSARPA_TYPES,
   ASCENDANT_DATA,
   PLANET_ID_MAP,
   GEM_COLORS,
@@ -24,56 +22,77 @@ import {
   addPageBackground,
   addPageHeader,
   addSectionTitle,
-  drawCornerDecoration,
   drawNorthIndianChart,
 } from "./helpers";
-import { isDevanagari, setHindiFont } from "./font-loader";
+
+export interface AstroPlanet {
+  name?: string;
+  Name?: string;
+  planet?: string | number;
+  isRetro?: boolean | string;
+  is_retro?: boolean;
+  isRetrograde?: boolean;
+  sign?: unknown;
+  normDegree?: string;
+  fullDegree?: string;
+  norm_degree?: number;
+  full_degree?: number;
+  longitude?: { totalDegrees?: number };
+  signLord?: string;
+  sign_lord?: string;
+  nakshatra?: string;
+  Nakshatra?: string;
+  nakshatraLord?: string;
+  nakshatra_lord?: string;
+  house?: string | number;
+  House?: string | number;
+  [key: string]: unknown;
+}
+
+export interface AstroApiData {
+  astro_details?: Record<string, unknown>;
+  ghat_chakra?: Record<string, unknown>;
+  planets?: { data?: AstroPlanet[] } | AstroPlanet[];
+  planets_extended?: AstroPlanet[];
+  lagna?: { sign?: unknown };
+  ascendant?: unknown;
+  sadhesati_current_status?: Record<string, unknown> & {
+    what_is_sadhesati?: string;
+  };
+  manglik?: Record<string, unknown>;
+  simple_manglik?: Record<string, unknown>;
+  kalsarpa_details?: Record<string, unknown>;
+  basic_gem_suggestion?: Record<
+    string,
+    { name?: string; [key: string]: unknown }
+  >;
+  major_vdasha?: Record<string, unknown>;
+  current_vdasha?: Record<string, unknown>;
+  major_yogini_dasha?: Record<string, unknown>;
+  sub_yogini_dasha?: Record<string, unknown>;
+  current_yogini_dasha?: Record<string, unknown>;
+  kp_house_cusps?: unknown[];
+  numero_table?: unknown;
+  numero_report?: unknown;
+  numero_fav_time?: unknown;
+  numero_fav_lord?: unknown;
+  numero_fav_mantra?: unknown;
+  [key: string]: unknown;
+}
+
+import { getLocalImageBase64 } from "./image-loader";
 
 // Safe value extractor
-function safeVal(obj: any, ...keys: string[]): string {
+function safeVal(
+  obj: Record<string, unknown> | null | undefined,
+  ...keys: string[]
+): string {
   if (!obj) return "N/A";
   for (const k of keys) {
     const v = obj?.[k];
     if (v !== undefined && v !== null) return String(v);
   }
   return "N/A";
-}
-
-/**
- * Smart PDF text renderer — auto-detects Devanagari (Hindi/Sanskrit) text
- * and switches to NotoSansDevanagari font before rendering.
- * Falls back to helvetica for Latin text.
- *
- * Use this instead of doc.text() wherever the text might contain Hindi/Sanskrit.
- */
-function pdfText(
-  doc: any,
-  text: string | string[],
-  x: number,
-  y: number,
-  options?: Record<string, unknown>,
-): void {
-  const checkText = Array.isArray(text) ? text.join("") : text;
-  const needsHindi = isDevanagari(checkText);
-
-  if (needsHindi) {
-    // Save current font info
-    const prevFont = doc.getFont();
-    setHindiFont(doc, doc.getFontSize());
-    if (options) {
-      doc.text(text, x, y, options);
-    } else {
-      doc.text(text, x, y);
-    }
-    // Restore previous font
-    doc.setFont(prevFont.fontName, prevFont.fontStyle);
-  } else {
-    if (options) {
-      doc.text(text, x, y, options);
-    } else {
-      doc.text(text, x, y);
-    }
-  }
 }
 
 // Section title at specific X
@@ -94,13 +113,13 @@ function addSectionTitleAt(
 // PAGE 1 — COVER PAGE
 // ============================================================
 export function renderCoverPage(
-  doc: any, // or jsPDF
+  doc: jsPDF, // or jsPDF
   name: string,
   dob: string,
   tob: string,
   pob: string,
   lang: string,
-  L: any, // Labels
+  L: Labels, // Labels
 ) {
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
@@ -132,34 +151,42 @@ export function renderCoverPage(
   const cy = 70;
 
   // Premium Golden Mandala Placeholder (In place of Ganesha Image)
-  // Jab aapke paas image ho, aap is code ko hata kar doc.addImage() use kar sakte hain.
-  doc.setFillColor(255, 250, 240);
-  doc.circle(cx, cy, 35, "F");
+  const ganeshaImg = getLocalImageBase64("ganesh.png");
+  if (ganeshaImg) {
+    const imgSize = 75;
+    doc.addImage(
+      ganeshaImg,
+      "PNG",
+      cx - imgSize / 2,
+      cy - imgSize / 2,
+      imgSize,
+      imgSize,
+    );
+  } else {
+    // Fallback if image not found
+    doc.setFillColor(255, 250, 240);
+    doc.circle(cx, cy, 35, "F");
 
-  const gold = [242, 175, 41];
-  const red = [227, 53, 16];
+    const gold = [242, 175, 41];
+    doc.setDrawColor(gold[0], gold[1], gold[2]);
+    doc.setLineWidth(1.5);
+    doc.circle(cx, cy, 32, "S");
+    doc.setLineWidth(0.4);
+    doc.circle(cx, cy, 28, "S");
 
-  doc.setDrawColor(gold[0], gold[1], gold[2]);
-  doc.setLineWidth(1.5);
-  doc.circle(cx, cy, 32, "S");
-  doc.setLineWidth(0.4);
-  doc.circle(cx, cy, 28, "S");
+    // Decorative petals around circle
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * 30 * Math.PI) / 180;
+      const px = cx + Math.cos(angle) * 35;
+      const py = cy + Math.sin(angle) * 35;
+      doc.setFillColor(gold[0], gold[1], gold[2]);
+      doc.circle(px, py, 2, "F");
+    }
 
-  // Decorative petals around circle
-  for (let i = 0; i < 12; i++) {
-    const angle = (i * 30 * Math.PI) / 180;
-    const px = cx + Math.cos(angle) * 35;
-    const py = cy + Math.sin(angle) * 35;
-    doc.setFillColor(gold[0], gold[1], gold[2]);
-    doc.circle(px, py, 2, "F");
-  }
-
-  // Draw 'OM' inside the placeholder
-  const omImg = getDevanagariImage("ॐ", "#E33510", "#FFFAF0"); // Red OM on pale yellow bg
-  if (omImg) {
-    const oW = 28;
-    const oH = (omImg.h / omImg.w) * oW;
-    doc.addImage(omImg.data, "JPEG", cx - oW / 2, cy - oH / 2, oW, oH);
+    const omImg = getLocalImageBase64("Om.jpg");
+    if (omImg) {
+      doc.addImage(omImg, "JPEG", cx - 14, cy - 14, 28, 28);
+    }
   }
 
   // Shree Ganeshay Namah Text
@@ -173,6 +200,7 @@ export function renderCoverPage(
     doc.addImage(mantraImg.data, "JPEG", cx - mW / 2, mantraY, mW, mH);
   } else {
     // Fallback if canvas fails
+    const red = [227, 53, 16];
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
     doc.setTextColor(red[0], red[1], red[2]);
@@ -242,7 +270,7 @@ export function renderBasicDetailsPage(
   lat: number,
   lon: number,
   tz: number,
-  apiData: Record<string, any>,
+  apiData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -260,7 +288,7 @@ export function renderBasicDetailsPage(
   const ghatData = apiData.ghat_chakra;
 
   // Section 1: Basic Details
-  let y1 = addSectionTitleAt(doc, `1. ${L.basicDetails}`, col1X, startY);
+  const y1 = addSectionTitleAt(doc, `1. ${L.basicDetails}`, col1X, startY);
   const basicRows = [
     [L.name, name],
     [L.dob, dob],
@@ -288,7 +316,7 @@ export function renderBasicDetailsPage(
   const row1Col1EndY = doc.lastAutoTable.finalY;
 
   // Section 2: Panchang
-  let y2 = addSectionTitleAt(doc, `2. ${L.panchangDetails}`, col2X, startY);
+  const y2 = addSectionTitleAt(doc, `2. ${L.panchangDetails}`, col2X, startY);
   const panchangRows = [
     [L.tithi, safeVal(astroDetails, "Tithi", "tithi")],
     [L.nakshatra, safeVal(astroDetails, "Naksahtra", "nakshatra", "Nakshatra")],
@@ -315,7 +343,7 @@ export function renderBasicDetailsPage(
   const row2StartY = Math.max(row1Col1EndY, row1Col2EndY) + rowGap;
 
   // Section 3: Astro Details
-  let y3 = addSectionTitleAt(doc, `3. ${L.astroDetails}`, col1X, row2StartY);
+  const y3 = addSectionTitleAt(doc, `3. ${L.astroDetails}`, col1X, row2StartY);
   const astroRows = [
     [L.ascendant, safeVal(astroDetails, "ascendant", "Ascendant")],
     [
@@ -348,7 +376,7 @@ export function renderBasicDetailsPage(
 
   // Section 4: Ghat Chakra
   if (ghatData) {
-    let y4 = addSectionTitleAt(doc, `4. ${L.ghatChakra}`, col2X, row2StartY);
+    const y4 = addSectionTitleAt(doc, `4. ${L.ghatChakra}`, col2X, row2StartY);
     const ghatRows: string[][] = [];
     if (typeof ghatData === "object") {
       Object.entries(ghatData).forEach(([key, value]) => {
@@ -378,7 +406,7 @@ export function renderBasicDetailsPage(
 // ============================================================
 export function renderPlanetaryPositionsPage(
   doc: jsPDF,
-  apiData: Record<string, any>,
+  apiData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -388,17 +416,17 @@ export function renderPlanetaryPositionsPage(
   const w = doc.internal.pageSize.getWidth();
   let y = 34;
   const planets = apiData.planets_extended || apiData.planets;
-  const planetArray: any[] = Array.isArray(planets) ? planets : [];
+  const planetArray: AstroPlanet[] = Array.isArray(planets) ? planets : [];
 
   y = addSectionTitle(doc, `${L.planet} ${L.planetaryPositions}`, y);
   const tableBody: string[][] = [];
-  planetArray.forEach((p: any) => {
-    const pName = p.name || p.Name || p.planet || "—";
+  planetArray.forEach((p: AstroPlanet) => {
+    const pName = String(p.name || p.Name || p.planet || "—");
     const retro =
       p.isRetro === true || p.isRetro === "true" || p.is_retro === true
         ? "R"
         : "";
-    const sign = p.sign || p.Sign || "—";
+    const sign = String(p.sign || p.Sign || "—");
     const deg = p.normDegree
       ? `${parseFloat(p.normDegree).toFixed(2)}°`
       : p.fullDegree
@@ -468,8 +496,8 @@ export function renderPlanetaryPositionsPage(
   const cardW = (w - 40) / gridCols;
   const cardH = 28;
   let col = 0;
-  planetArray.forEach((p: any) => {
-    const pName = p.name || p.Name || p.planet || "—";
+  planetArray.forEach((p: AstroPlanet) => {
+    const pName = String(p.name || p.Name || p.planet || "—");
     const sign = p.sign || p.Sign || "—";
     const naksh = p.nakshatra || p.Nakshatra || "—";
     const cx = 14 + col * (cardW + 4);
@@ -498,11 +526,7 @@ export function renderPlanetaryPositionsPage(
 // PAGE 4 — HOROSCOPE CHARTS (Lagna, Moon, Navamsha)
 // ============================================================
 
-export function renderChartsPage(
-  doc: jsPDF,
-  apiData: Record<string, any>,
-  L: Labels,
-) {
+export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
   doc.addPage();
   addPageBackground(doc);
   addPageHeader(doc, L.horoscopeCharts || "Horoscope Charts");
@@ -510,36 +534,44 @@ export function renderChartsPage(
   const w = doc.internal.pageSize.getWidth();
 
   // Get planets data
-  const planets = apiData.planets?.data || apiData.planets_extended || [];
-  const planetArray: any[] = Array.isArray(planets) ? planets : [];
+  const rawPlanets = apiData.planets;
+  const planets = Array.isArray(rawPlanets)
+    ? rawPlanets
+    : (rawPlanets?.data ?? apiData.planets_extended ?? []);
+  const planetArray: AstroPlanet[] = Array.isArray(planets) ? planets : [];
 
   // ============ HELPER FUNCTIONS ============
 
-  const getPlanetName = (p: any): string => {
+  const getPlanetName = (p: AstroPlanet): string => {
     if (typeof p.planet === "number") {
       return PLANET_ID_MAP[p.planet] || `P${p.planet}`;
     }
     return p.name || p.Name || String(p.planet) || "Unknown";
   };
 
-  const getSignNumber = (p: any): number => {
+  const getSignNumber = (p: AstroPlanet): number => {
     if (p.sign && typeof p.sign === "object") {
-      if (typeof p.sign.id === "number" && p.sign.id >= 1 && p.sign.id <= 12) {
-        return p.sign.id;
+      const signObj = p.sign as Record<string, unknown>;
+      if (
+        typeof signObj.id === "number" &&
+        signObj.id >= 1 &&
+        signObj.id <= 12
+      ) {
+        return signObj.id;
       }
-      if (typeof p.sign.sign_number === "number") {
-        return p.sign.sign_number;
+      if (typeof signObj.sign_number === "number") {
+        return signObj.sign_number;
       }
-      if (typeof p.sign.name === "number") {
-        return p.sign.name;
+      if (typeof signObj.name === "number") {
+        return signObj.name;
       }
-      if (typeof p.sign.name === "string") {
-        const parsed = parseInt(p.sign.name, 10);
+      if (typeof signObj.name === "string") {
+        const parsed = parseInt(signObj.name, 10);
         if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) {
           return parsed;
         }
         const idx = ZODIAC_SIGNS.findIndex(
-          (s) => s.toLowerCase() === p.sign.name.toLowerCase(),
+          (s) => s.toLowerCase() === (signObj.name as string).toLowerCase(),
         );
         if (idx >= 0) return idx + 1;
       }
@@ -548,19 +580,20 @@ export function renderChartsPage(
       return p.sign;
     }
     if (typeof p.sign === "string") {
-      const parsed = parseInt(p.sign, 10);
+      const signStr = p.sign as string;
+      const parsed = parseInt(signStr, 10);
       if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) {
         return parsed;
       }
       const idx = ZODIAC_SIGNS.findIndex(
-        (s) => s.toLowerCase() === p.sign.toLowerCase(),
+        (s) => s.toLowerCase() === signStr.toLowerCase(),
       );
       return idx >= 0 ? idx + 1 : 1;
     }
     return 1;
   };
 
-  const extractSignNumber = (signData: any): number => {
+  const extractSignNumber = (signData: unknown): number => {
     if (typeof signData === "number" && signData >= 1 && signData <= 12) {
       return signData;
     }
@@ -575,9 +608,10 @@ export function renderChartsPage(
       return idx >= 0 ? idx + 1 : 1;
     }
     if (typeof signData === "object" && signData !== null) {
-      if (typeof signData.id === "number") return signData.id;
-      if (typeof signData.sign_number === "number") return signData.sign_number;
-      if (signData.name !== undefined) return extractSignNumber(signData.name);
+      const signObj = signData as Record<string, unknown>;
+      if (typeof signObj.id === "number") return signObj.id;
+      if (typeof signObj.sign_number === "number") return signObj.sign_number;
+      if (signObj.name !== undefined) return extractSignNumber(signObj.name);
     }
     return 1;
   };
@@ -596,7 +630,7 @@ export function renderChartsPage(
 
   // Get Moon Sign Number
   const moonPlanet = planetArray.find(
-    (p: any) =>
+    (p: AstroPlanet) =>
       p.planet === 1 ||
       p.name?.toLowerCase() === "moon" ||
       p.Name?.toLowerCase() === "moon",
@@ -613,7 +647,7 @@ export function renderChartsPage(
     // Add Ascendant marker in Lagna (House 1)
     positions[1].push("As");
 
-    planetArray.forEach((p: any) => {
+    planetArray.forEach((p: AstroPlanet) => {
       const planetName = getPlanetName(p);
       const signNum = getSignNumber(p);
       const sym = PLANET_SYMBOLS[planetName] || planetName.substring(0, 2);
@@ -645,7 +679,7 @@ export function renderChartsPage(
     const positions: Record<number, string[]> = {};
     for (let i = 1; i <= 12; i++) positions[i] = [];
 
-    planetArray.forEach((p: any) => {
+    planetArray.forEach((p: AstroPlanet) => {
       const planetName = getPlanetName(p);
       const signNum = getSignNumber(p);
 
@@ -683,13 +717,22 @@ export function renderChartsPage(
     const positions: Record<number, string[]> = {};
     for (let i = 1; i <= 12; i++) positions[i] = [];
 
-    planetArray.forEach((p: any) => {
+    planetArray.forEach((p: AstroPlanet) => {
       const planetName = getPlanetName(p);
 
       // Get degrees in sign (0-30)
       let degreesInSign = 0;
-      if (p.sign?.degreesInSign?.totalDegrees !== undefined) {
-        degreesInSign = p.sign.degreesInSign.totalDegrees;
+      const signObj =
+        typeof p.sign === "object" && p.sign !== null
+          ? (p.sign as Record<string, unknown>)
+          : null;
+      const signDegObj =
+        typeof signObj?.degreesInSign === "object" &&
+        signObj.degreesInSign !== null
+          ? (signObj.degreesInSign as Record<string, unknown>)
+          : null;
+      if (typeof signDegObj?.totalDegrees === "number") {
+        degreesInSign = signDegObj.totalDegrees;
       } else if (p.longitude?.totalDegrees !== undefined) {
         degreesInSign = p.longitude.totalDegrees % 30;
       } else if (p.norm_degree !== undefined) {
@@ -722,7 +765,7 @@ export function renderChartsPage(
 
     // Add Navamsha Ascendant
     if (apiData.astro_details?.ascendant_degree !== undefined) {
-      const ascDegree = apiData.astro_details.ascendant_degree % 30;
+      const ascDegree = Number(apiData.astro_details.ascendant_degree) % 30;
       const ascNavamshaNum = Math.floor(ascDegree / (30 / 9)) + 1;
       const clampedAscNavamsha = Math.min(Math.max(ascNavamshaNum, 1), 9);
 
@@ -746,7 +789,7 @@ export function renderChartsPage(
     for (let house = 1; house <= 12; house++) {
       // Calculate based on navamsha ascendant if available, else 1-12
       if (apiData.astro_details?.ascendant_degree !== undefined) {
-        const ascDegree = apiData.astro_details.ascendant_degree % 30;
+        const ascDegree = Number(apiData.astro_details.ascendant_degree) % 30;
         const ascNavamshaNum = Math.floor(ascDegree / (30 / 9)) + 1;
         const signElement = (lagnaSignNum - 1) % 4;
         const startSigns = [1, 10, 7, 4];
@@ -854,7 +897,7 @@ export function renderChartsPage(
 // PAGE 5 — DIVISIONAL CHARTS (3×3 grid)
 // ============================================================
 
-export function getDivisionalChartPositions(chartData: any): {
+export function getDivisionalChartPositions(chartData: unknown): {
   positions: Record<number, string[]>;
   signs: Record<number, number>;
 } {
@@ -867,7 +910,13 @@ export function getDivisionalChartPositions(chartData: any): {
   }
 
   if (Array.isArray(chartData)) {
-    chartData.forEach((entry: any, index: number) => {
+    chartData.forEach((rawEntry: unknown, index: number) => {
+      // Narrow type to a record so we can safely access properties
+      const entry =
+        rawEntry !== null && typeof rawEntry === "object"
+          ? (rawEntry as Record<string, unknown>)
+          : ({} as Record<string, unknown>);
+
       // 1. Array index + 1 determines the house number directly
       let houseNum = Number(entry.house || entry.House);
       if (isNaN(houseNum) || houseNum < 1 || houseNum > 12) {
@@ -902,28 +951,38 @@ export function getDivisionalChartPositions(chartData: any): {
     });
   } else if (chartData && typeof chartData === "object") {
     // Handle object-format chart data (Fallback just in case)
-    Object.entries(chartData).forEach(([key, val]: [string, any]) => {
-      if (key === "statusCode" || key === "status") return;
-      const houseNum = Number(key);
-      if (!isNaN(houseNum) && houseNum >= 1 && houseNum <= 12) {
-        if (val.sign) signs[houseNum] = Number(val.sign);
+    Object.entries(chartData as Record<string, unknown>).forEach(
+      ([key, val]) => {
+        if (key === "statusCode" || key === "status") return;
+        const houseNum = Number(key);
+        if (!isNaN(houseNum) && houseNum >= 1 && houseNum <= 12) {
+          const valObj =
+            val !== null && typeof val === "object"
+              ? (val as Record<string, unknown>)
+              : ({} as Record<string, unknown>);
 
-        const planets = Array.isArray(val.planet_small)
-          ? val.planet_small
-          : Array.isArray(val)
-            ? val
-            : [val];
+          if (valObj.sign) signs[houseNum] = Number(valObj.sign);
 
-        planets.forEach((p: any) => {
-          const pStr = typeof p === "string" ? p : p?.name || p?.planet || "";
-          if (pStr && !pStr.toLowerCase().includes("asc")) {
-            const cleanSym = pStr.trim();
-            const sym = PLANET_SYMBOLS?.[cleanSym] || cleanSym.substring(0, 2);
-            positions[houseNum].push(sym);
-          }
-        });
-      }
-    });
+          const planets = Array.isArray(valObj.planet_small)
+            ? valObj.planet_small
+            : Array.isArray(val)
+              ? (val as unknown[])
+              : [val];
+
+          planets.forEach((p: AstroPlanet) => {
+            const pStr = String(
+              typeof p === "string" ? p : p?.name || p?.planet || "",
+            );
+            if (pStr && !pStr.toLowerCase().includes("asc")) {
+              const cleanSym = pStr.trim();
+              const sym =
+                PLANET_SYMBOLS?.[cleanSym] || cleanSym.substring(0, 2);
+              positions[houseNum].push(sym);
+            }
+          });
+        }
+      },
+    );
   }
 
   return { positions, signs };
@@ -931,9 +990,9 @@ export function getDivisionalChartPositions(chartData: any): {
 
 export function renderDivisionalChartsPage(
   doc: jsPDF,
-  apiData: Record<string, any>,
+  apiData: AstroApiData,
   lang: string,
-  L: any,
+  L: Labels,
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -998,10 +1057,10 @@ export function renderDivisionalChartsPage(
 // ============================================================
 
 export function renderHouseCuspsPage(
-  doc: any, // jsPDF
-  apiData: Record<string, any>,
+  doc: jsPDF, // jsPDF
+  apiData: AstroApiData,
   lang: string,
-  L: any, // Labels type
+  L: Labels, // Labels type
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -1020,14 +1079,26 @@ export function renderHouseCuspsPage(
   let ascDeg = "—";
   let mcDeg = "—";
   if (Array.isArray(cuspsData)) {
-    const ascHouse = cuspsData.find((h: any) => h.house_id === 1);
-    const mcHouse = cuspsData.find((h: any) => h.house_id === 10);
+    const ascHouse = cuspsData.find(
+      (h: unknown) =>
+        h !== null &&
+        typeof h === "object" &&
+        (h as Record<string, unknown>).house_id === 1,
+    ) as Record<string, unknown> | undefined;
+    const mcHouse = cuspsData.find(
+      (h: unknown) =>
+        h !== null &&
+        typeof h === "object" &&
+        (h as Record<string, unknown>).house_id === 10,
+    ) as Record<string, unknown> | undefined;
     if (ascHouse)
-      ascDeg =
-        ascHouse.formatted_degree || String(ascHouse.cusp_full_degree || "—");
+      ascDeg = String(
+        ascHouse.formatted_degree || ascHouse.cusp_full_degree || "—",
+      );
     if (mcHouse)
-      mcDeg =
-        mcHouse.formatted_degree || String(mcHouse.cusp_full_degree || "—");
+      mcDeg = String(
+        mcHouse.formatted_degree || mcHouse.cusp_full_degree || "—",
+      );
   } else {
     ascDeg = safeVal(cuspsData, "ascendant", "Ascendant", "asc_degree") || "—";
     mcDeg = safeVal(cuspsData, "midheaven", "Midheaven", "mc_degree") || "—";
@@ -1042,17 +1113,23 @@ export function renderHouseCuspsPage(
 
   if (Array.isArray(cuspsData)) {
     // Naya Array format (jo aapne bheja hai)
-    cuspsData.forEach((houseData: any) => {
+    cuspsData.forEach((rawHouseData: unknown) => {
+      const houseData =
+        rawHouseData !== null && typeof rawHouseData === "object"
+          ? (rawHouseData as Record<string, unknown>)
+          : ({} as Record<string, unknown>);
       const h = String(houseData.house_id || "");
-      const sign = houseData.sign || "—";
-      const bhavMadhya =
-        houseData.formatted_degree || String(houseData.cusp_full_degree || "—");
+      const sign = String(houseData.sign || "—");
+      const bhavMadhya = String(
+        houseData.formatted_degree || houseData.cusp_full_degree || "—",
+      );
       // Sandhi aapke data mein abhi nahi hai, toh gracefully "—" dikhayega
-      const sandhi =
+      const sandhi = String(
         houseData.sandhi ||
-        houseData.bhav_sandhi ||
-        houseData.end_degree ||
-        "—";
+          houseData.bhav_sandhi ||
+          houseData.end_degree ||
+          "—",
+      );
 
       tableBody.push([h, sign, bhavMadhya, sign, sandhi]);
     });
@@ -1061,24 +1138,25 @@ export function renderHouseCuspsPage(
     for (let h = 1; h <= 12; h++) {
       const houseData =
         cuspsData?.[`house_${h}`] || cuspsData?.[String(h)] || {};
-      const sign =
-        typeof houseData === "object"
-          ? safeVal(houseData, "sign", "Sign", "rpiSign")
-          : String(houseData);
-      const bhavMadhya =
-        typeof houseData === "object"
-          ? safeVal(
-              houseData,
-              "formatted_degree",
-              "degree",
-              "cusp_degree",
-              "bhav_madhya",
-            )
-          : "—";
-      const sandhi =
-        typeof houseData === "object"
-          ? safeVal(houseData, "sandhi", "bhav_sandhi", "end_degree")
-          : "—";
+      const houseDataRecord =
+        typeof houseData === "object" && houseData !== null
+          ? (houseData as Record<string, unknown>)
+          : null;
+      const sign = houseDataRecord
+        ? safeVal(houseDataRecord, "sign", "Sign", "rpiSign")
+        : String(houseData);
+      const bhavMadhya = houseDataRecord
+        ? safeVal(
+            houseDataRecord,
+            "formatted_degree",
+            "degree",
+            "cusp_degree",
+            "bhav_madhya",
+          )
+        : "—";
+      const sandhi = houseDataRecord
+        ? safeVal(houseDataRecord, "sandhi", "bhav_sandhi", "end_degree")
+        : "—";
 
       tableBody.push([
         String(h),
@@ -1120,6 +1198,7 @@ export function renderHouseCuspsPage(
     alternateRowStyles: { fillColor: [255, 250, 240] },
   });
 
+  // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
   y = doc.lastAutoTable.finalY + 8;
 
   // Chalit Chart section
@@ -1157,8 +1236,8 @@ export function renderHouseCuspsPage(
 }
 export function renderVimshottariDasha1Page(
   doc: jsPDF,
-  apiData: Record<string, any>,
-  subDashaData: Record<string, any>,
+  apiData: AstroApiData,
+  subDashaData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -1180,8 +1259,8 @@ export function renderVimshottariDasha1Page(
     let y = colY[col];
     const colX = cols[col];
     const dasha = dashaList.find(
-      (d: any) =>
-        (d.planet || d.Planet || d.name || "").toLowerCase() ===
+      (d: Record<string, unknown>) =>
+        String(d.planet || d.Planet || d.name || "").toLowerCase() ===
         planet.toLowerCase(),
     );
 
@@ -1211,10 +1290,10 @@ export function renderVimshottariDasha1Page(
         margin: { left: colX },
         tableWidth: colWidth,
         head: [[L.planet, L.startDate, L.endDate]],
-        body: subList.map((s: any) => [
-          s.planet || s.Planet || s.name || "—",
-          s.start || s.startDate || s.start_date || "—",
-          s.end || s.endDate || s.end_date || "—",
+        body: subList.map((s: Record<string, unknown>) => [
+          String(s.planet || s.Planet || s.name || "—"),
+          String(s.start || s.startDate || s.start_date || "—"),
+          String(s.end || s.endDate || s.end_date || "—"),
         ]),
         theme: "grid",
         headStyles: {
@@ -1241,8 +1320,8 @@ export function renderVimshottariDasha1Page(
 // ============================================================
 export function renderVimshottariDasha2Page(
   doc: jsPDF,
-  apiData: Record<string, any>,
-  subDashaData: Record<string, any>,
+  apiData: AstroApiData,
+  subDashaData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -1267,49 +1346,61 @@ export function renderVimshottariDasha2Page(
   if (src) {
     const rows: string[][] = [];
     // API field names: major, minor, sub_minor, sub_sub_minor, sub_sub_sub_minor
-    const md = src.major || src.major_dasha || src.mahadasha || {};
+    const md = (src.major || src.major_dasha || src.mahadasha || {}) as Record<
+      string,
+      unknown
+    >;
     if (md.planet || md.Planet) {
       rows.push([
         L.mahadasha,
-        md.planet || md.Planet || "—",
-        md.start || md.startDate || "—",
-        md.end || md.endDate || "—",
+        String(md.planet || md.Planet || "—"),
+        String(md.start || md.startDate || "—"),
+        String(md.end || md.endDate || "—"),
       ]);
     }
-    const ad = src.minor || src.sub_dasha || src.antardasha || {};
+    const ad = (src.minor || src.sub_dasha || src.antardasha || {}) as Record<
+      string,
+      unknown
+    >;
     if (ad.planet || ad.Planet) {
       rows.push([
         L.antardasha,
-        ad.planet || ad.Planet || "—",
-        ad.start || ad.startDate || "—",
-        ad.end || ad.endDate || "—",
+        String(ad.planet || ad.Planet || "—"),
+        String(ad.start || ad.startDate || "—"),
+        String(ad.end || ad.endDate || "—"),
       ]);
     }
-    const pd = src.sub_minor || src.sub_sub_dasha || src.pratyantardasha || {};
+    const pd = (src.sub_minor ||
+      src.sub_sub_dasha ||
+      src.pratyantardasha ||
+      {}) as Record<string, unknown>;
     if (pd.planet || pd.Planet) {
       rows.push([
         L.pratyantarDasha || "Prtyantar Dasha",
-        pd.planet || pd.Planet || "—",
-        pd.start || pd.startDate || "—",
-        pd.end || pd.endDate || "—",
+        String(pd.planet || pd.Planet || "—"),
+        String(pd.start || pd.startDate || "—"),
+        String(pd.end || pd.endDate || "—"),
       ]);
     }
-    const sd = src.sub_sub_minor || src.sub_sub_sub_dasha || src.sookshm || {};
+    const sd = (src.sub_sub_minor ||
+      src.sub_sub_sub_dasha ||
+      src.sookshm ||
+      {}) as Record<string, unknown>;
     if (sd.planet || sd.Planet) {
       rows.push([
         L.sookshmDasha || "Sookshm Dasha",
-        sd.planet || sd.Planet || "—",
-        sd.start || sd.startDate || "—",
-        sd.end || sd.endDate || "—",
+        String(sd.planet || sd.Planet || "—"),
+        String(sd.start || sd.startDate || "—"),
+        String(sd.end || sd.endDate || "—"),
       ]);
     }
-    const prd = src.sub_sub_sub_minor || {};
+    const prd = (src.sub_sub_sub_minor || {}) as Record<string, unknown>;
     if (prd.planet || prd.Planet) {
       rows.push([
         "Pran Dasha",
-        prd.planet || prd.Planet || "—",
-        prd.start || prd.startDate || "—",
-        prd.end || prd.endDate || "—",
+        String(prd.planet || prd.Planet || "—"),
+        String(prd.start || prd.startDate || "—"),
+        String(prd.end || prd.endDate || "—"),
       ]);
     }
     if (rows.length > 0) {
@@ -1340,7 +1431,7 @@ export function renderVimshottariDasha2Page(
 // ============================================================
 function renderYoginiDashaGrid(
   doc: jsPDF,
-  yoginiData: Record<string, any>,
+  yoginiData: AstroApiData,
   startIndex: number,
   endIndex: number,
   L: Labels,
@@ -1362,7 +1453,7 @@ function renderYoginiDashaGrid(
   // Get the dashas for this page (by index from majorList)
   const dashesToRender = majorList.slice(startIndex, endIndex);
 
-  dashesToRender.forEach((dasha: any, idx: number) => {
+  dashesToRender.forEach((dasha: Record<string, unknown>, idx: number) => {
     const col = idx % 3;
     let y = colY[col];
     const colX = cols[col];
@@ -1402,10 +1493,10 @@ function renderYoginiDashaGrid(
         head: [
           [L.dasha || "Dasha", L.startDate || "Start", L.endDate || "End"],
         ],
-        body: subList.map((s: any) => [
-          s.dasha_name || s.name || "—",
-          s.start_date || s.start || "—",
-          s.end_date || s.end || "—",
+        body: subList.map((s: Record<string, unknown>) => [
+          String(s.dasha_name || s.name || "—"),
+          String(s.start_date || s.start || "—"),
+          String(s.end_date || s.end || "—"),
         ]),
         theme: "grid",
         headStyles: {
@@ -1434,23 +1525,71 @@ function renderYoginiDashaGrid(
 
 // PAGE 9 — YOGINI DASHA I
 // PAGE 9 — YOGINI DASHA I (First 6 dashas: index 0-5)
+// export function renderYoginiDasha1Page(
+//   doc: jsPDF,
+//   yoginiData: AstroApiData,
+//   L: Labels,
+// ) {
+//   doc.addPage();
+//   addPageBackground(doc);
+//   addPageHeader(doc, L.yoginiDasha1 || "Yogini Dasha - I");
+
+//   // Render first 6 major dashas (index 0 to 5)
+//   renderYoginiDashaGrid(doc, yoginiData, 0, 12, L);
+// }
+
 export function renderYoginiDasha1Page(
   doc: jsPDF,
-  yoginiData: Record<string, any>,
+  yoginiData: AstroApiData,
   L: Labels,
 ) {
-  doc.addPage();
-  addPageBackground(doc);
-  addPageHeader(doc, L.yoginiDasha1 || "Yogini Dasha - I");
+  const pageTitle = L.yoginiDasha1 || "Yogini Dasha - I";
 
-  // Render first 6 major dashas (index 0 to 5)
-  renderYoginiDashaGrid(doc, yoginiData, 0, 12, L);
+  // 1. Data Integrity Log
+  if (process.env.NODE_ENV === "development") {
+    console.group(`PDF Debug: ${pageTitle}`);
+    console.log("📊 Data received:", yoginiData);
+    console.log("🏷️ Labels:", L);
+
+    if (!yoginiData || Object.keys(yoginiData).length === 0) {
+      console.warn(
+        "⚠️ Warning: yoginiData is empty. PDF might render blank tables.",
+      );
+    }
+  }
+
+  try {
+    doc.addPage();
+    addPageBackground(doc);
+    addPageHeader(doc, pageTitle);
+
+    // 2. Visual Layout Debugging (Optional)
+    // Uncomment the line below to draw a red border around your "safe area"
+    // doc.setDrawColor(255, 0, 0); doc.rect(10, 10, 190, 277);
+
+    // Render first 6 major dashas (index 0 to 5)
+    renderYoginiDashaGrid(doc, yoginiData, 0, 12, L);
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("✅ Successfully rendered Yogini Dasha Grid.");
+      console.groupEnd();
+    }
+  } catch (error) {
+    console.error(`❌ Error rendering ${pageTitle}:`, error);
+    console.groupEnd();
+
+    // Optional: Render error text directly on the PDF for easier troubleshooting
+    if (process.env.NODE_ENV === "development") {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      doc.setTextColor(255, 0, 0);
+      doc.text(`Render Error: ${errMsg}`, 20, 50);
+    }
+  }
 }
-
 // PAGE 10 — YOGINI DASHA II (Next 6 dashas: index 6-11)
 export function renderYoginiDasha2Page(
   doc: jsPDF,
-  yoginiData: Record<string, any>,
+  yoginiData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -1464,7 +1603,7 @@ export function renderYoginiDasha2Page(
 // // PAGE 11 — YOGINI DASHA III (Next 6 dashas: index 12-17)
 // export function renderYoginiDasha3Page(
 //   doc: jsPDF,
-//   yoginiData: Record<string, any>,
+//   yoginiData: AstroApiData,
 //   L: Labels,
 // ) {
 //   doc.addPage();
@@ -1485,12 +1624,12 @@ const NUMBER_COLORS = [
 
 export function renderFavourablePointsPage(
   doc: jsPDF,
-  apiData: Record<string, any>,
-  numerologyData: Record<string, any>,
+  apiData: AstroApiData,
+  numerologyData: AstroApiData,
   name: string,
   dob: string,
   lang: string,
-  L: any,
+  L: Labels,
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -1606,10 +1745,10 @@ export function renderFavourablePointsPage(
 // ============================================================
 
 export function renderNumerologyReportPage(
-  doc: any, // or jsPDF
-  numerologyData: Record<string, any>,
+  doc: jsPDF, // or jsPDF
+  numerologyData: AstroApiData,
   lang: string,
-  L: any, // or Labels
+  L: Labels, // or Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -1683,11 +1822,9 @@ export function renderNumerologyReportPage(
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
 
   if (numReport && typeof numReport === "object") {
+    const nr = numReport as Record<string, unknown>;
     const reportText =
-      numReport.description ||
-      numReport.report ||
-      numReport.prediction ||
-      JSON.stringify(numReport);
+      nr.description || nr.report || nr.prediction || JSON.stringify(numReport);
 
     const textPad = 8;
     const textWidth = colW - textPad * 2;
@@ -1704,7 +1841,10 @@ export function renderNumerologyReportPage(
   let ry = y + 15; // Thoda neeche se start hoga
 
   // Helper function for Right Sections (Title + Deco Line + Text)
-  const drawRightSection = (title: string, dataObj: any) => {
+  const drawRightSection = (
+    title: string,
+    dataObj: Record<string, unknown>,
+  ) => {
     if (!dataObj || typeof dataObj !== "object") return;
 
     const text =
@@ -1734,17 +1874,20 @@ export function renderNumerologyReportPage(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
-    const lines = doc.splitTextToSize(String(text), colW);
+    const lines = doc.splitTextToSize(String(text), colW) as string[];
     doc.text(lines, rightX, ry);
 
     // Add gap for the next section
     ry += lines.length * 4 + 25;
   };
 
-  drawRightSection(L.favTimeForYou || "Favourable Time For You", numFavTime);
+  drawRightSection(
+    L.favTimeForYou || "Favourable Time For You",
+    numFavTime as Record<string, unknown>,
+  );
   drawRightSection(
     L.favGayatriMantra || "Favourable Gayatri Mantra For You",
-    numFavMantra,
+    numFavMantra as Record<string, unknown>,
   );
 }
 // ============================================================
@@ -1752,9 +1895,9 @@ export function renderNumerologyReportPage(
 // ============================================================
 
 export function renderKalsarpaDoshaPage(
-  doc: any, // or jsPDF
-  kalsarpaData: Record<string, any>,
-  L: any, // Labels type
+  doc: jsPDF, // or jsPDF
+  kalsarpaData: AstroApiData,
+  L: Labels, // Labels type
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -1771,26 +1914,31 @@ export function renderKalsarpaDoshaPage(
   const imgH = 50;
 
   // 1. Draw Placeholder Astrological Image
-  doc.setFillColor(248, 240, 225); // Light sandy background
-  doc.setDrawColor(210, 180, 140);
-  doc.setLineWidth(0.5);
-  doc.rect(14, y, imgW, imgH, "FD");
+  const ksImg = getLocalImageBase64("Kalsarpa_Dosha.jpg");
+  if (ksImg) {
+    doc.addImage(ksImg, "JPEG", 14, y, imgW, imgH);
+  } else {
+    doc.setFillColor(248, 240, 225); // Light sandy background
+    doc.setDrawColor(210, 180, 140);
+    doc.setLineWidth(0.5);
+    doc.rect(14, y, imgW, imgH, "FD");
 
-  // Drawing some geometric mandala-style shapes inside placeholder
-  const cx = 14 + imgW / 2;
-  const cy = y + imgH / 2;
-  doc.setDrawColor(200, 160, 110);
-  doc.setLineWidth(0.3);
-  doc.circle(cx, cy, 18, "S");
-  doc.circle(cx, cy, 14, "S");
-  doc.circle(cx, cy, 6, "S");
-  doc.line(cx - 18, cy, cx + 18, cy);
-  doc.line(cx, cy - 18, cx, cy + 18);
-  doc.line(cx - 12, cy - 12, cx + 12, cy + 12);
-  doc.line(cx + 12, cy - 12, cx - 12, cy + 12);
-  doc.setFontSize(7);
-  doc.setTextColor(180, 140, 90);
-  doc.text("Rahu/Ketu Symbol", cx, y + imgH - 4, { align: "center" });
+    // Drawing some geometric mandala-style shapes inside placeholder
+    const cx = 14 + imgW / 2;
+    const cy = y + imgH / 2;
+    doc.setDrawColor(200, 160, 110);
+    doc.setLineWidth(0.3);
+    doc.circle(cx, cy, 18, "S");
+    doc.circle(cx, cy, 14, "S");
+    doc.circle(cx, cy, 6, "S");
+    doc.line(cx - 18, cy, cx + 18, cy);
+    doc.line(cx, cy - 18, cx, cy + 18);
+    doc.line(cx - 12, cy - 12, cx + 12, cy + 12);
+    doc.line(cx + 12, cy - 12, cx - 12, cy + 12);
+    doc.setFontSize(7);
+    doc.setTextColor(180, 140, 90);
+    doc.text("Rahu/Ketu Symbol", cx, y + imgH - 4, { align: "center" });
+  }
 
   // 2. Right Side Description Text
   const textX = 14 + imgW + 10;
@@ -1809,7 +1957,7 @@ export function renderKalsarpaDoshaPage(
   const lines1 = doc.splitTextToSize(p1, textW);
   doc.text(lines1, textX, y + 4);
 
-  let ty = y + 4 + lines1.length * 4.5 + 4;
+  const ty = y + 4 + lines1.length * 4.5 + 4;
 
   doc.setFont("helvetica", "bold"); // Bold for 2nd para
   const lines2 = doc.splitTextToSize(p2, textW);
@@ -1971,7 +2119,7 @@ export function renderKalsarpaDoshaPage(
 // ============================================================
 export function renderKalsarpaEffectPage(
   doc: jsPDF,
-  kalsarpaData: Record<string, any>,
+  kalsarpaData: AstroApiData,
   L: Labels,
 ) {
   doc.addPage();
@@ -1982,22 +2130,18 @@ export function renderKalsarpaEffectPage(
   const h = doc.internal.pageSize.getHeight();
   let y = 34;
 
-  const kd = kalsarpaData.kalsarpa_details || {};
+  const kd = (kalsarpaData.kalsarpa_details || {}) as Record<string, unknown>;
   // Report
   // Report
-  const report = kd.report || {};
-  let reportText = report.report || report.bot_response;
-
-  if (!reportText) {
-    if (kd.one_line) {
-      reportText = kd.one_line;
-    } else if (kd.present === false) {
-      reportText =
-        "Kalsarpa Dosha is not present in the horoscope. No remedial measures are required.";
-    } else {
-      reportText = "No detailed report available.";
-    }
-  }
+  const reportRaw = kd.report as Record<string, unknown> | undefined;
+  let reportText: string = String(
+    reportRaw?.report ||
+      reportRaw?.bot_response ||
+      kd.one_line ||
+      (kd.present === false
+        ? "Kalsarpa Dosha is not present in the horoscope. No remedial measures are required."
+        : "No detailed report available."),
+  );
 
   // Strip HTML tags if present (e.g. <p>)
   reportText = reportText.replace(/<[^>]+>/g, "");
@@ -2005,13 +2149,13 @@ export function renderKalsarpaEffectPage(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
-  const lines = doc.splitTextToSize(reportText, w - 28);
+  const lines = doc.splitTextToSize(reportText, w - 28) as string[];
   doc.text(lines, 14, y);
   y += lines.length * 4.5 + 10;
 
   // Remedies
   // Remedies
-  const remedies = report.remedies || kd.remedies || [];
+  const remedies = (reportRaw?.remedies ?? kd.remedies ?? []) as string[];
 
   if (Array.isArray(remedies) && remedies.length > 0) {
     y = addSectionTitle(doc, L.remediesOfKalsarpa || "Remedies", y);
@@ -2036,10 +2180,10 @@ export function renderKalsarpaEffectPage(
 // ============================================================
 
 export function renderManglik1Page(
-  doc: any, // or jsPDF
-  manglikData: Record<string, any>,
-  simpleManglikParam: Record<string, any> | null,
-  L: any, // Labels
+  doc: jsPDF, // or jsPDF
+  manglikData: AstroApiData,
+  simpleManglikParam: AstroApiData | null,
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -2061,22 +2205,27 @@ export function renderManglik1Page(
   const margin = 14;
 
   // Placeholder Image
-  doc.setFillColor(245, 240, 230);
-  doc.setDrawColor(200, 190, 180);
-  doc.setLineWidth(0.5);
-  doc.rect(margin, y, imgW, imgH, "FD");
+  const manglikImg = getLocalImageBase64("Manglik_Analysis.jpg");
+  if (manglikImg) {
+    doc.addImage(manglikImg, "JPEG", margin, y, imgW, imgH);
+  } else {
+    doc.setFillColor(245, 240, 230);
+    doc.setDrawColor(200, 190, 180);
+    doc.setLineWidth(0.5);
+    doc.rect(margin, y, imgW, imgH, "FD");
 
-  doc.setDrawColor(180, 150, 120);
-  doc.setLineWidth(0.3);
-  doc.rect(margin + 5, y + 5, imgW - 10, imgH - 10);
-  doc.circle(margin + imgW / 2, y + imgH / 2, 10, "S");
-  doc.line(margin + 5, y + imgH / 2, margin + imgW - 5, y + imgH / 2);
-  doc.line(margin + imgW / 2, y + 5, margin + imgW / 2, y + imgH - 5);
-  doc.setFontSize(7);
-  doc.setTextColor(150, 130, 110);
-  doc.text("Manglik Image", margin + imgW / 2, y + imgH / 2 + 15, {
-    align: "center",
-  });
+    doc.setDrawColor(180, 150, 120);
+    doc.setLineWidth(0.3);
+    doc.rect(margin + 5, y + 5, imgW - 10, imgH - 10);
+    doc.circle(margin + imgW / 2, y + imgH / 2, 10, "S");
+    doc.line(margin + 5, y + imgH / 2, margin + imgW - 5, y + imgH / 2);
+    doc.line(margin + imgW / 2, y + 5, margin + imgW / 2, y + imgH - 5);
+    doc.setFontSize(7);
+    doc.setTextColor(150, 130, 110);
+    doc.text("Manglik Image", margin + imgW / 2, y + imgH / 2 + 15, {
+      align: "center",
+    });
+  }
 
   // Text Content Next to Image
   const textX = margin + imgW + 10;
@@ -2270,10 +2419,10 @@ function getDevanagariImage(text: string, colorHex: string, _bgColor?: string) {
 // ============================================================
 
 export function renderManglik2Page(
-  doc: any, // or jsPDF
-  manglikData: Record<string, any>,
-  simpleManglik: Record<string, any> | null,
-  L: any, // Labels
+  doc: jsPDF, // or jsPDF
+  manglikData: AstroApiData,
+  simpleManglik: AstroApiData | null,
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -2323,7 +2472,11 @@ export function renderManglik2Page(
   doc.setFontSize(8);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
 
-  const houseList = mData.manglik_present_rule?.based_on_house || [];
+  const mDataR = mData as Record<string, unknown>;
+  const mPresentRule = mDataR.manglik_present_rule as
+    | Record<string, unknown>
+    | undefined;
+  const houseList = (mPresentRule?.based_on_house as string[]) || [];
   if (Array.isArray(houseList) && houseList.length > 0) {
     houseList.forEach((text: string) => {
       const hLines = doc.splitTextToSize(text, colW);
@@ -2364,7 +2517,7 @@ export function renderManglik2Page(
   doc.setFontSize(8);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
 
-  const aspectList = mData.manglik_present_rule?.based_on_aspect || [];
+  const aspectList = (mPresentRule?.based_on_aspect as string[]) || [];
   if (Array.isArray(aspectList) && aspectList.length > 0) {
     aspectList.forEach((text: string, index: number) => {
       const aLines = doc.splitTextToSize(text, colW - 4);
@@ -2419,15 +2572,15 @@ export function renderManglik2Page(
     const innerW = boxW - boxTextPad * 2 - 4; // -4 for the thick left border
 
     let totalTextH = 0;
-    const formattedRemedies: any[] = [];
+    const formattedRemedies: string[][] = [];
 
     remedies.forEach((rem: string) => {
       // Clean up HTML tags like <br> that might come from API
-      let cleanText = rem
+      const cleanText = rem
         .replace(/<br\s*\/?>/gi, "\n")
         .replace(/<[^>]*>?/gm, "");
       const bulletText = `- ${cleanText}`;
-      const lines = doc.splitTextToSize(bulletText, innerW);
+      const lines = doc.splitTextToSize(bulletText, innerW) as string[];
       formattedRemedies.push(lines);
       totalTextH += lines.length * 4.5 + 6;
     });
@@ -2453,7 +2606,7 @@ export function renderManglik2Page(
     doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
     let textY = y + boxTextPad + 3;
 
-    formattedRemedies.forEach((lines) => {
+    formattedRemedies.forEach((lines: string[]) => {
       doc.text(lines, margin + 4 + boxTextPad, textY);
       textY += lines.length * 4.5 + 6;
     });
@@ -2464,9 +2617,9 @@ export function renderManglik2Page(
 // ============================================================
 
 export function renderSadhesatiPage(
-  doc: any, // or jsPDF
-  apiData: Record<string, any>,
-  L: any, // Labels
+  doc: jsPDF, // or jsPDF
+  apiData: AstroApiData,
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -2488,23 +2641,28 @@ export function renderSadhesatiPage(
   const imgH = 55;
 
   // 1. Placeholder Image (Saturn/Shani Theme)
-  doc.setFillColor(245, 240, 230); // Premium light beige background
-  doc.setDrawColor(200, 190, 180);
-  doc.setLineWidth(0.5);
-  doc.rect(margin, y, imgW, imgH, "FD");
+  const sadhesatiImg = getLocalImageBase64("Sadhesati_Analysis.webp");
+  if (sadhesatiImg) {
+    doc.addImage(sadhesatiImg, "WEBP", margin, y, imgW, imgH);
+  } else {
+    doc.setFillColor(245, 240, 230); // Premium light beige background
+    doc.setDrawColor(200, 190, 180);
+    doc.setLineWidth(0.5);
+    doc.rect(margin, y, imgW, imgH, "FD");
 
-  // Draw abstract Saturn (Planet with rings)
-  const cx = margin + imgW / 2;
-  const cy = y + imgH / 2 - 5;
-  doc.setDrawColor(180, 150, 120);
-  doc.setFillColor(200, 180, 150);
-  doc.circle(cx, cy, 12, "FD"); // Planet body
-  // Draw Ring
-  doc.setLineWidth(1.5);
-  doc.ellipse(cx, cy, 22, 6, "S");
-  doc.setFontSize(7);
-  doc.setTextColor(150, 130, 110);
-  doc.text("Shani (Saturn) Symbol", cx, y + imgH - 6, { align: "center" });
+    // Draw abstract Saturn (Planet with rings)
+    const cx = margin + imgW / 2;
+    const cy = y + imgH / 2 - 5;
+    doc.setDrawColor(180, 150, 120);
+    doc.setFillColor(200, 180, 150);
+    doc.circle(cx, cy, 12, "FD"); // Planet body
+    // Draw Ring
+    doc.setLineWidth(1.5);
+    doc.ellipse(cx, cy, 22, 6, "S");
+    doc.setFontSize(7);
+    doc.setTextColor(150, 130, 110);
+    doc.text("Shani (Saturn) Symbol", cx, y + imgH - 6, { align: "center" });
+  }
 
   // 2. Text Content Next to Image
   const textX = margin + imgW + 10;
@@ -2520,9 +2678,10 @@ export function renderSadhesatiPage(
   doc.setFontSize(8);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
 
-  const rawDesc =
+  const rawDesc = String(
     sData.what_is_sadhesati ||
-    "Sadhe Sati refers to the seven-and-a-half year period in which Saturn moves through three signs, the moon sign, one before the moon and the one after it.";
+      "Sadhe Sati refers to the seven-and-a-half year period in which Saturn moves through three signs, the moon sign, one before the moon and the one after it.",
+  );
 
   // Split into paragraphs for better readability
   const sentences = rawDesc.split(". ");
@@ -2670,9 +2829,9 @@ export function renderSadhesatiPage(
 // ============================================================
 
 export function renderGemstoneSuggestionsPage(
-  doc: any, // or jsPDF
-  gemData: Record<string, any>,
-  L: any, // Labels
+  doc: jsPDF, // or jsPDF
+  gemData: AstroApiData,
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -2767,58 +2926,79 @@ export function renderGemstoneSuggestionsPage(
     doc.text(stone.title, px + colW / 2, cardY + 7, { align: "center" });
 
     // ==========================================
-    // 3. 3D GLOSSY GEMSTONE DRAWING LOGIC
+    // 3. 3D GLOSSY GEMSTONE DRAWING LOGIC OR IMAGE
     // ==========================================
-    const cx = px + colW / 2;
-    const cy = cardY + headerH + imageH / 2 - 4;
-    const r = 14; // Size of the gem
+    const imgFilename =
+      stone.title === L.lifeStone || stone.title === "LIFE STONE"
+        ? "LIFE_STONE.jpg"
+        : stone.title === L.beneficStone || stone.title === "BENEFIC STONE"
+          ? "BENEFIC_STONE.jpg"
+          : "LUCKY_STONE.jpg";
 
-    const safeName = stoneName.toLowerCase().trim();
-    let gColor = GEM_COLORS[safeName] || [130, 130, 130];
+    const gemImg = getLocalImageBase64(imgFilename);
 
-    // A. Soft Realistic Drop Shadow (Multiple layers)
-    const shadowY = cy + r + 6;
-    doc.setFillColor(245, 245, 245);
-    doc.ellipse(cx, shadowY, r * 1.5, r * 0.4, "F");
-    doc.setFillColor(230, 230, 230);
-    doc.ellipse(cx, shadowY, r * 1.1, r * 0.25, "F");
-    doc.setFillColor(210, 210, 210);
-    doc.ellipse(cx, shadowY, r * 0.7, r * 0.15, "F");
-
-    // B. 3D Sphere Gradient Generation
-    const steps = 20;
-    const highlightX = cx - r * 0.35;
-    const highlightY = cy - r * 0.35;
-
-    for (let i = 0; i <= steps; i++) {
-      const stepR = r - (r * i) / steps;
-      const stepX = cx + ((highlightX - cx) * i) / steps;
-      const stepY = cy + ((highlightY - cy) * i) / steps;
-
-      // Calculate color interpolation (Dark base -> Bright White)
-      const factor = i / steps;
-      const easeFactor = Math.pow(factor, 1.4); // Creates a glossy curve
-      const rCol = Math.min(
-        255,
-        Math.floor(gColor[0] + (255 - gColor[0]) * easeFactor),
+    if (gemImg) {
+      // Draw image filling the space
+      doc.addImage(
+        gemImg,
+        "JPEG",
+        px + 4,
+        cardY + headerH + 4,
+        colW - 8,
+        imageH - 8,
       );
-      const gCol = Math.min(
-        255,
-        Math.floor(gColor[1] + (255 - gColor[1]) * easeFactor),
-      );
-      const bCol = Math.min(
-        255,
-        Math.floor(gColor[2] + (255 - gColor[2]) * easeFactor),
-      );
+    } else {
+      const cx = px + colW / 2;
+      const cy = cardY + headerH + imageH / 2 - 4;
+      const r = 14; // Size of the gem
 
-      doc.setFillColor(rCol, gCol, bCol);
-      doc.setDrawColor(rCol, gCol, bCol); // Avoid anti-aliasing gaps
-      doc.circle(stepX, stepY, stepR, "FD");
+      const safeName = stoneName.toLowerCase().trim();
+      const gColor = GEM_COLORS[safeName] || [130, 130, 130];
+
+      // A. Soft Realistic Drop Shadow (Multiple layers)
+      const shadowY = cy + r + 6;
+      doc.setFillColor(245, 245, 245);
+      doc.ellipse(cx, shadowY, r * 1.5, r * 0.4, "F");
+      doc.setFillColor(230, 230, 230);
+      doc.ellipse(cx, shadowY, r * 1.1, r * 0.25, "F");
+      doc.setFillColor(210, 210, 210);
+      doc.ellipse(cx, shadowY, r * 0.7, r * 0.15, "F");
+
+      // B. 3D Sphere Gradient Generation
+      const steps = 20;
+      const highlightX = cx - r * 0.35;
+      const highlightY = cy - r * 0.35;
+
+      for (let i = 0; i <= steps; i++) {
+        const stepR = r - (r * i) / steps;
+        const stepX = cx + ((highlightX - cx) * i) / steps;
+        const stepY = cy + ((highlightY - cy) * i) / steps;
+
+        // Calculate color interpolation (Dark base -> Bright White)
+        const factor = i / steps;
+        const easeFactor = Math.pow(factor, 1.4); // Creates a glossy curve
+        const rCol = Math.min(
+          255,
+          Math.floor(gColor[0] + (255 - gColor[0]) * easeFactor),
+        );
+        const gCol = Math.min(
+          255,
+          Math.floor(gColor[1] + (255 - gColor[1]) * easeFactor),
+        );
+        const bCol = Math.min(
+          255,
+          Math.floor(gColor[2] + (255 - gColor[2]) * easeFactor),
+        );
+
+        doc.setFillColor(rCol, gCol, bCol);
+        doc.setDrawColor(rCol, gCol, bCol); // Avoid anti-aliasing gaps
+        doc.circle(stepX, stepY, stepR, "FD");
+      }
+
+      // C. Strong Specular Highlight (The white reflection dot)
+      doc.setFillColor(255, 255, 255);
+      doc.ellipse(highlightX - 1, highlightY - 1, r * 0.25, r * 0.15, "F");
     }
-
-    // C. Strong Specular Highlight (The white reflection dot)
-    doc.setFillColor(255, 255, 255);
-    doc.ellipse(highlightX - 1, highlightY - 1, r * 0.25, r * 0.15, "F");
 
     // ==========================================
     // 4. Footer Box
@@ -2840,7 +3020,7 @@ export function renderGemstoneSuggestionsPage(
     );
 
     // 5. Explanatory Paragraph
-    let textY = cardY + cardH + 12;
+    const textY = cardY + cardH + 12;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
     doc.setTextColor(100, 100, 100);
@@ -2854,10 +3034,10 @@ export function renderGemstoneSuggestionsPage(
 // ============================================================
 
 export function renderGemstoneDetailPage(
-  doc: any, // or jsPDF
-  gemData: Record<string, any>,
+  doc: jsPDF, // or jsPDF
+  gemData: AstroApiData,
   type: "life" | "benefic" | "lucky",
-  L: any, // Labels
+  L: Labels, // Labels
 ) {
   const gd = gemData?.basic_gem_suggestion || {};
   const data = gd?.[type] || gd?.[type?.toUpperCase()] || {};
@@ -2899,53 +3079,69 @@ export function renderGemstoneDetailPage(
   doc.setLineWidth(1);
   doc.line(margin + 20, y, margin + 30, y); // Thick center
 
-  // 3D Gemstone Drawing
+  // ==========================================
+  // ── 3D Gemstone Image OR Drawing ──
+  // ==========================================
   y += 20;
   const cx = margin + 25;
   const cy = y;
   const r = 16;
   const safeName = stoneName.toLowerCase().trim();
-  let gColor = GEM_COLORS[safeName] || [130, 130, 130];
+  const gColor = GEM_COLORS[safeName] || [130, 130, 130];
 
-  // Shadow
-  doc.setFillColor(240, 240, 240);
-  doc.ellipse(cx, cy + r + 6, r * 1.5, r * 0.4, "F");
-  doc.setFillColor(220, 220, 220);
-  doc.ellipse(cx, cy + r + 6, r * 1.1, r * 0.25, "F");
+  const imgFilename =
+    type === "life"
+      ? "LIFE_STONE.jpg"
+      : type === "benefic"
+        ? "BENEFIC_STONE.jpg"
+        : "LUCKY_STONE.jpg";
 
-  // 3D Sphere Gradient
-  const steps = 20;
-  const highlightX = cx - r * 0.35;
-  const highlightY = cy - r * 0.35;
+  const gemImg = getLocalImageBase64(imgFilename);
 
-  for (let i = 0; i <= steps; i++) {
-    const stepR = r - (r * i) / steps;
-    const stepX = cx + ((highlightX - cx) * i) / steps;
-    const stepY = cy + ((highlightY - cy) * i) / steps;
+  if (gemImg) {
+    // Draw the actual gemstone image
+    doc.addImage(gemImg, "JPEG", cx - r, cy - r, r * 2, r * 2);
+  } else {
+    // Shadow
+    doc.setFillColor(240, 240, 240);
+    doc.ellipse(cx, cy + r + 6, r * 1.5, r * 0.4, "F");
+    doc.setFillColor(220, 220, 220);
+    doc.ellipse(cx, cy + r + 6, r * 1.1, r * 0.25, "F");
 
-    const factor = i / steps;
-    const easeFactor = Math.pow(factor, 1.4);
-    const rCol = Math.min(
-      255,
-      Math.floor(gColor[0] + (255 - gColor[0]) * easeFactor),
-    );
-    const gCol = Math.min(
-      255,
-      Math.floor(gColor[1] + (255 - gColor[1]) * easeFactor),
-    );
-    const bCol = Math.min(
-      255,
-      Math.floor(gColor[2] + (255 - gColor[2]) * easeFactor),
-    );
+    // 3D Sphere Gradient
+    const steps = 20;
+    const highlightX = cx - r * 0.35;
+    const highlightY = cy - r * 0.35;
 
-    doc.setFillColor(rCol, gCol, bCol);
-    doc.setDrawColor(rCol, gCol, bCol);
-    doc.circle(stepX, stepY, stepR, "FD");
+    for (let i = 0; i <= steps; i++) {
+      const stepR = r - (r * i) / steps;
+      const stepX = cx + ((highlightX - cx) * i) / steps;
+      const stepY = cy + ((highlightY - cy) * i) / steps;
+
+      const factor = i / steps;
+      const easeFactor = Math.pow(factor, 1.4);
+      const rCol = Math.min(
+        255,
+        Math.floor(gColor[0] + (255 - gColor[0]) * easeFactor),
+      );
+      const gCol = Math.min(
+        255,
+        Math.floor(gColor[1] + (255 - gColor[1]) * easeFactor),
+      );
+      const bCol = Math.min(
+        255,
+        Math.floor(gColor[2] + (255 - gColor[2]) * easeFactor),
+      );
+
+      doc.setFillColor(rCol, gCol, bCol);
+      doc.setDrawColor(rCol, gCol, bCol);
+      doc.circle(stepX, stepY, stepR, "FD");
+    }
+
+    // Specular Highlight
+    doc.setFillColor(255, 255, 255);
+    doc.ellipse(highlightX - 1, highlightY - 1, r * 0.25, r * 0.15, "F");
   }
-
-  // Specular Highlight
-  doc.setFillColor(255, 255, 255);
-  doc.ellipse(highlightX - 1, highlightY - 1, r * 0.25, r * 0.15, "F");
 
   // ==========================================
   // ── TOP RIGHT: Basic Details Table ──
@@ -3037,11 +3233,32 @@ export function renderGemstoneDetailPage(
   const boxGap = 6;
   const boxW = (w - margin * 2 - boxGap * (colCount - 1)) / colCount;
 
-  // Track Y positions for each column to create a masonry-like staggered layout
+  // Distinct badge color per icon type
+  const BADGE_COLORS: Record<string, number[]> = {
+    i: [104, 131, 168], // blue — Description
+    t: [86, 175, 154], // teal — Time to wear
+    f: [160, 100, 180], // purple — Finger
+    w: [242, 114, 0], // orange — Weight & metal
+    m: [220, 60, 60], // red — Mantra
+    s: [60, 160, 100], // green — Substitutes
+    e: [230, 150, 40], // amber — Energizing Rituals
+    c: [100, 110, 125], // slate — Caution
+  };
+  const BADGE_LABELS: Record<string, string> = {
+    i: "i",
+    t: "T",
+    f: "F",
+    w: "W",
+    m: "M",
+    s: "S",
+    e: "E",
+    c: "!",
+  };
+
   let colY = [y, y, y];
 
-  gridItems.forEach((item, i) => {
-    // Find shortest column to put the next box
+  gridItems.forEach((item) => {
+    // Find shortest column
     let shortestCol = 0;
     for (let c = 1; c < colCount; c++) {
       if (colY[c] < colY[shortestCol]) shortestCol = c;
@@ -3050,55 +3267,69 @@ export function renderGemstoneDetailPage(
     const bx = margin + shortestCol * (boxW + boxGap);
     let by = colY[shortestCol];
 
-    // Estimate text height
+    // Measure body text
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    const lines = doc.splitTextToSize(item.text, boxW - 12);
-    const textH = lines.length * 4.5;
-    const boxH = textH + 30; // padding + title space
+    doc.setFontSize(7.5);
+    const lines = doc.splitTextToSize(item.text, boxW - 10);
+    const boxH = lines.length * 4.5 + 26; // header row 16 + top pad 5 + bottom pad 5
 
-    // If box goes off page, add new page and reset Y tracker
+    // Page break guard
     if (by + boxH > doc.internal.pageSize.getHeight() - 15) {
       doc.addPage();
       addPageBackground(doc);
       by = 30;
-      colY = [30, 30, 30]; // Reset column tracker
+      colY = [30, 30, 30];
     }
 
-    // Draw Box Background & Border
-    doc.setDrawColor(220, 220, 220);
+    // Box background & border
     doc.setLineWidth(0.3);
-
     if (item.highlight) {
-      doc.setFillColor(255, 245, 215); // Light yellow highlight for Mantra
+      doc.setFillColor(255, 245, 215);
       doc.setDrawColor(240, 200, 100);
     } else {
       doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(215, 215, 215);
     }
+    doc.roundedRect(bx, by, boxW, boxH, 2, 2, "FD");
 
-    doc.rect(bx, by, boxW, boxH, "FD");
+    // ── FILLED ICON BADGE ──
+    const badgeColor = BADGE_COLORS[item.icon] || orange;
+    const badgeX = bx + 5;
+    const badgeY = by + 4;
+    const badgeSize = 10;
 
-    // Draw small orange icon placeholder circle
-    doc.setDrawColor(orange[0], orange[1], orange[2]);
-    doc.circle(bx + 10, by + 10, 5, "S");
-    // Pseudo Icon symbol
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(orange[0], orange[1], orange[2]);
-    doc.text(item.icon.toUpperCase(), bx + 10, by + 12, { align: "center" });
+    doc.setFillColor(badgeColor[0], badgeColor[1], badgeColor[2]);
+    doc.setDrawColor(badgeColor[0], badgeColor[1], badgeColor[2]);
+    doc.roundedRect(badgeX, badgeY, badgeSize, badgeSize, 2, 2, "F");
 
-    // Box Title
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    // White letter inside badge
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(255, 255, 255);
+    doc.text(
+      BADGE_LABELS[item.icon] ?? item.icon.toUpperCase(),
+      badgeX + badgeSize / 2,
+      badgeY + 7,
+      { align: "center" },
+    );
+
+    // Title beside badge (same row)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
     doc.setTextColor(titleBlue[0], titleBlue[1], titleBlue[2]);
-    doc.text(item.title, bx + 6, by + 22);
+    doc.text(item.title, badgeX + badgeSize + 3, by + 11);
 
-    // Box Text
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text(lines, bx + 6, by + 28);
+    // Thin separator line below header
+    doc.setDrawColor(230, 230, 230);
+    doc.setLineWidth(0.2);
+    doc.line(bx + 3, by + 16, bx + boxW - 3, by + 16);
 
-    // Update column height tracker
+    // Body text
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(90, 90, 90);
+    doc.text(lines, bx + 5, by + 22);
+
     colY[shortestCol] = by + boxH + boxGap;
   });
 }
@@ -3106,9 +3337,9 @@ export function renderGemstoneDetailPage(
 // PAGE 23 — ASCENDANT REPORT I
 // ============================================================
 export function renderAscendantReport1Page(
-  doc: any, // or jsPDF
+  doc: jsPDF, // or jsPDF
   ascendantName: string,
-  L: any, // Labels
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -3124,32 +3355,42 @@ export function renderAscendantReport1Page(
   const margin = 14;
 
   // ==========================================
-  // ── TOP LEFT: Premium Zodiac Illustration ──
+  // ── TOP LEFT: Ascendant Report Image ──
   // ==========================================
   const imgW = 70;
   const imgH = 70;
-  const cx = margin + imgW / 2;
-  const cy = y + imgH / 2;
 
-  // Draw premium vector mandala/badge
-  doc.setDrawColor(210, 190, 160);
-  doc.setLineWidth(0.3);
-  doc.setFillColor(252, 248, 242);
-  doc.circle(cx, cy, 30, "FD"); // Outer circle
+  // Try zodiac specific first, then fallback to generic
+  const ascReportImg =
+    getLocalImageBase64(`${ascendantName}.jpg`) ||
+    getLocalImageBase64("Ascendant_Report.jpg");
 
-  doc.setLineWidth(1.5);
-  doc.setDrawColor(180, 160, 130);
-  doc.circle(cx, cy, 26, "S"); // Inner ring
+  if (ascReportImg) {
+    doc.addImage(ascReportImg, "JPEG", margin, y, imgW, imgH);
+  } else {
+    const cx = margin + imgW / 2;
+    const cy = y + imgH / 2;
 
-  // Zodiac Glyph
-  const glyph = ZODIAC_GLYPHS[ascendantName] || "☉";
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(55);
-  doc.setTextColor(titleBlue[0], titleBlue[1], titleBlue[2]);
-  doc.text(glyph, cx, cy + 18, { align: "center" });
+    // Draw premium vector mandala/badge
+    doc.setDrawColor(210, 190, 160);
+    doc.setLineWidth(0.3);
+    doc.setFillColor(252, 248, 242);
+    doc.circle(cx, cy, 30, "FD"); // Outer circle
 
-  doc.setFontSize(10);
-  doc.text(ascendantName.toUpperCase(), cx, cy + 38, { align: "center" });
+    doc.setLineWidth(1.5);
+    doc.setDrawColor(180, 160, 130);
+    doc.circle(cx, cy, 26, "S"); // Inner ring
+
+    // Zodiac Glyph
+    const glyph = ZODIAC_GLYPHS[ascendantName] || "☉";
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(55);
+    doc.setTextColor(titleBlue[0], titleBlue[1], titleBlue[2]);
+    doc.text(glyph, cx, cy + 18, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.text(ascendantName.toUpperCase(), cx, cy + 38, { align: "center" });
+  }
 
   // ==========================================
   // ── TOP RIGHT: Clean Information Table ──
@@ -3305,10 +3546,10 @@ export function renderAscendantReport1Page(
 }
 
 export function renderAscendantReport2Page(
-  doc: any, // or jsPDF
+  doc: jsPDF, // or jsPDF
   ascendantName: string,
   apiReport: any,
-  L: any, // Labels
+  L: Labels, // Labels
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -3440,14 +3681,14 @@ export function renderAscendantReport2Page(
     doc.text(title, cx, currentY, { align: "center" });
 
     // Decorative line
-    let ly = currentY + 4;
+    const ly = currentY + 4;
     doc.setDrawColor(decoColor[0], decoColor[1], decoColor[2]);
     doc.setLineWidth(0.3);
     doc.line(cx - 15, ly, cx + 15, ly);
     doc.setLineWidth(1);
     doc.line(cx - 3, ly, cx + 3, ly);
 
-    let py = ly + 10;
+    const py = ly + 10;
 
     // Draw Pills centered
     if (Array.isArray(traits) && traits.length > 0) {

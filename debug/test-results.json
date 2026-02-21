@@ -2,7 +2,13 @@
   {
     "name": "mini-horoscope-pdf",
     "status": "PASS",
-    "size": "329.5",
-    "time": 399
+    "size": "2920.5",
+    "time": 2286
+  },
+  {
+    "name": "basic-horoscope-pdf",
+    "status": "PASS",
+    "size": "3817.5",
+    "time": 2386
   }
 ]

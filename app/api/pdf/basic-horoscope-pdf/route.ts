@@ -268,13 +268,13 @@ export async function POST(request: NextRequest) {
     renderNumerologyReportPage(doc, numerologyData, lang, L);
 
     // Page 14: Kalsarpa Dosha
-    if (kalsarpaData.kalsarpa_details.present) {
+    if (kalsarpaData?.kalsarpa_details?.present) {
       renderKalsarpaDoshaPage(doc, kalsarpaData, L);
     }
 
     // Page 15: Kalsarpa Report
 
-    if (kalsarpaData.kalsarpa_details.present) {
+    if (kalsarpaData?.kalsarpa_details?.present) {
       renderKalsarpaEffectPage(doc, kalsarpaData, L);
     }
 

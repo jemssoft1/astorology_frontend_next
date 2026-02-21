@@ -22,6 +22,7 @@ function getFontBase64(): string {
     process.cwd(),
     "app",
     "api",
+    "pdf",
     "basic-horoscope-pdf",
     "fonts",
     FONT_FILE,

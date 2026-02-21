@@ -164,52 +164,52 @@ const lifeTransitPayload = {
 const tests = [
   {
     name: "mini-horoscope-pdf",
-    api: "/api/mini-horoscope-pdf",
+    api: "/api/pdf/mini-horoscope-pdf",
+    payload: indianPayload,
+  },
+  {
+    name: "basic-horoscope-pdf",
+    api: "/api/pdf/basic-horoscope-pdf",
     payload: indianPayload,
   },
   // {
-  //   name: "basic-horoscope-pdf",
-  //   api: "/api/basic-horoscope-pdf",
-  //   payload: indianPayload,
-  // },
-  // {
   //   name: "professional-horoscope-pdf",
-  //   api: "/api/professional-horoscope-pdf",
+  //   api: "/api/pdf/professional-horoscope-pdf",
   //   payload: professionalPayload,
   // },
   // {
   //   name: "match-making-pdf",
-  //   api: "/api/match-making-pdf",
+  //   api: "/api/pdf/match-making-pdf",
   //   payload: matchPayload,
   // },
   // {
   //   name: "western-natal-horoscope-pdf",
-  //   api: "/api/western-natal-horoscope-pdf",
+  //   api: "/api/pdf/western-natal-horoscope-pdf",
   //   payload: westernPayload,
   // },
   // {
   //   name: "western-life-forecast-pdf",
-  //   api: "/api/western-life-forecast-pdf",
+  //   api: "/api/pdf/western-life-forecast-pdf",
   //   payload: westernLifeForecastPayload,
   // },
   // {
   //   name: "solar-return-english-pdf",
-  //   api: "/api/solar-return-english-pdf",
+  //   api: "/api/pdf/solar-return-english-pdf",
   //   payload: solarReturnPayload,
   // },
   // {
   //   name: "synastry-english-pdf",
-  //   api: "/api/synastry-english-pdf",
+  //   api: "/api/pdf/synastry-english-pdf",
   //   payload: synastryPayload,
   // },
   // {
   //   name: "horoscope-pdf",
-  //   api: "/api/horoscope-pdf",
+  //   api: "/api/pdf/horoscope-pdf",
   //   payload: horoscopePdfPayload,
   // },
   // {
   //   name: "life-transit-report-pdf",
-  //   api: "/api/life-transit-report-pdf",
+  //   api: "/api/pdf/life-transit-report-pdf",
   //   payload: lifeTransitPayload,
   // },
 ];
@@ -237,7 +237,9 @@ async function runTest(test) {
 
     if (response.ok && contentType.includes("application/pdf")) {
       const buffer = Buffer.from(await response.arrayBuffer());
-      const filename = `${test.name}.pdf`;
+      const disposition = response.headers.get("content-disposition") || "";
+      const match = disposition.match(/filename="?([^"]+)"?/);
+      const filename = match ? match[1] : `${test.name}.pdf`;
       const filepath = path.join(OUT_DIR, filename);
       fs.writeFileSync(filepath, buffer);
       const sizeKB = (buffer.length / 1024).toFixed(1);
