@@ -1,13 +1,13 @@
 export const COLORS = {
-  primary: [231, 76, 60], // Passion Red / Love
-  secondary: [44, 62, 80], // Deep Blue
-  accent: [241, 196, 15], // Golden
-  text: [50, 50, 50],
-  background: [255, 255, 255],
-  lightGray: [245, 245, 245],
+  primary: [231, 76, 60] as [number, number, number], // Passion Red / Love
+  secondary: [44, 62, 80] as [number, number, number], // Deep Blue
+  accent: [241, 196, 15] as [number, number, number], // Golden
+  text: [50, 50, 50] as [number, number, number],
+  background: [255, 255, 255] as [number, number, number],
+  lightGray: [245, 245, 245] as [number, number, number],
   tables: {
-    header: [231, 76, 60],
-    alternateRow: [253, 237, 236], // Light Reddish
+    header: [231, 76, 60] as [number, number, number],
+    alternateRow: [253, 237, 236] as [number, number, number], // Light Reddish
   },
 };
 

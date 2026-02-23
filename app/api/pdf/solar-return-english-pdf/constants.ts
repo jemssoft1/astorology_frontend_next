@@ -1,13 +1,13 @@
 export const COLORS = {
-  primary: [155, 89, 182], // Amethyst Purple for Solar Return / Spiritual
-  secondary: [52, 73, 94], // Dark Slate
-  accent: [241, 196, 15], // Sun Gold
-  text: [50, 50, 50],
-  background: [255, 255, 255],
-  lightGray: [245, 245, 245],
+  primary: [155, 89, 182] as [number, number, number], // Amethyst Purple for Solar Return / Spiritual
+  secondary: [52, 73, 94] as [number, number, number], // Dark Slate
+  accent: [241, 196, 15] as [number, number, number], // Sun Gold
+  text: [50, 50, 50] as [number, number, number],
+  background: [255, 255, 255] as [number, number, number],
+  lightGray: [245, 245, 245] as [number, number, number],
   tables: {
-    header: [155, 89, 182],
-    alternateRow: [250, 240, 255],
+    header: [155, 89, 182] as [number, number, number],
+    alternateRow: [250, 240, 255] as [number, number, number],
   },
 };
 

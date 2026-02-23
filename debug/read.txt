@@ -418,3 +418,1197 @@ Data: {
 }
 ======================================
 
+======================================
+Timestamp: 2026-02-23T04:37:59.428Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:38:13.029Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2920.5",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:41:33.760Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:41:35.629Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2921.6",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:51:44.847Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:51:46.705Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2921.7",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:58:04.902Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T04:58:06.754Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2921.9",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T05:04:05.820Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T05:04:07.648Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T05:59:04.208Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T05:59:07.463Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:02:44.723Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:02:47.366Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:21:22.334Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:21:26.366Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:30:03.107Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:30:05.051Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:31:17.992Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:31:19.928Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:34:33.870Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:34:35.780Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:35:51.241Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:35:53.690Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:40:58.772Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:41:00.690Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:42:22.570Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:42:24.492Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2922.4",
+  "pages": 10
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:48:41.028Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+❌ PDF ERROR
+Timestamp: 2026-02-23T06:48:42.931Z
+API: mini-horoscope-pdf
+Section: FATAL
+Error: (0 , _pdf_pages__WEBPACK_IMPORTED_MODULE_5__.renderDashaPage2) is not a function
+Stack: TypeError: (0 , _pdf_pages__WEBPACK_IMPORTED_MODULE_5__.renderDashaPage2) is not a function
+    at POST (webpack-internal:///(rsc)/./app/api/pdf/mini-horoscope-pdf/route.ts:116:69)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:57228
+    at async eT.execute (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:46851)
+    at async eT.handle (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:6:58760)
+    at async doRender (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:1366:42)
+    at async cacheEntry.responseCache.get.routeKind (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:1588:28)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:1496:28)
+    at async DevServer.renderPageComponent (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:1924:24)
+    at async DevServer.renderToResponseImpl (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:1962:32)
+    at async DevServer.pipeImpl (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\base-server.js:818:17)
+    at async D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (D:\jemsoftech\clientbase\astro\nextjs-app\node_modules\next\dist\server\lib\start-server.js:141:13)
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:49:47.508Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:49:49.475Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:52:23.301Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:52:25.308Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:55:11.709Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T06:55:13.679Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:10:05.197Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:10:07.170Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:11:53.265Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:11:55.261Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:15:18.443Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:15:20.346Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:16:15.264Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:16:17.104Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:16:51.139Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:16:53.189Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:19:41.614Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:19:43.705Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:24:38.630Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:24:40.612Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:28:10.416Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:28:12.322Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:32:53.703Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T07:32:55.574Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:18:42.698Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:18:44.524Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:20:08.809Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:20:10.652Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:20:53.938Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:20:55.799Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:21:22.996Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:21:25.572Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:21:51.158Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:21:53.035Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:22:39.263Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:22:41.111Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:23:36.692Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T08:23:38.524Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:01:46.900Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:01:59.109Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:05:06.661Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:05:08.522Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:11:42.701Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:11:44.432Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:18:45.468Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:18:47.290Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:24:22.365Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:24:24.131Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:29:33.012Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:29:34.833Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:30:00.740Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:30:02.573Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:37:35.254Z
+API: mini-horoscope-pdf
+Page: 0
+Section: Input Parameters
+Data: {
+  "name": "Ronik Gorasiya",
+  "date_of_birth": "24-03-2002",
+  "time_of_birth": "05:30",
+  "place_of_birth": "Surat, Gujarat, India",
+  "latitude": 21.1702,
+  "longitude": 72.8311,
+  "timezone": 5.5,
+  "language": "en"
+}
+======================================
+
+======================================
+Timestamp: 2026-02-23T09:37:37.061Z
+API: mini-horoscope-pdf
+Page: FINAL
+Section: PDF Generation Complete
+Data: {
+  "sizeKB": "2891.1",
+  "pages": 9
+}
+======================================
+

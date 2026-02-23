@@ -811,7 +811,7 @@ export default function BasicAstroPage() {
                   {selectedPerson.Name}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {selectedPerson.PlaceOfBirth}
+                  {selectedPerson?.PlaceOfBirth}
                 </p>
               </div>
             )}

@@ -1633,16 +1633,6 @@ export default function CharDashaPage() {
     return match ? parseInt(match[1]) : 0;
   };
 
-  const isCurrentDasha = (
-    dasha: CharDashaPeriod | SubCharDashaPeriod,
-  ): boolean => {
-    if (dasha.start_ms && dasha.end_ms) {
-      const now = Date.now();
-      return now >= dasha.start_ms && now <= dasha.end_ms;
-    }
-    return false;
-  };
-
   // Calculate total cycle years
   const totalCycleYears = useMemo(() => {
     if (!charDashaData?.data?.major_chardasha) return 0;
@@ -2002,7 +1992,6 @@ export default function CharDashaPage() {
   // Sub Dasha Section
   const SubDashaSection = () => {
     const subDetails = charDashaData?.data?.sub_chardasha_details;
-    const majorDashas = charDashaData?.data?.major_chardasha || [];
 
     if (!subDetails || Object.keys(subDetails).length === 0) {
       return (
@@ -2041,7 +2030,8 @@ export default function CharDashaPage() {
               const elementColor = getElementColor(signName);
               const isSelected = selectedMajorSign === signName;
               const isCurrent = signName === currentMajor;
-              const hasData = subDetails[signName]?.sub_dasha?.length > 0;
+              const hasData =
+                (subDetails?.[signName]?.sub_dasha?.length ?? 0) > 0;
 
               return (
                 <button

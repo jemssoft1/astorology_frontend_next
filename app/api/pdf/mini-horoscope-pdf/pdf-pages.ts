@@ -1,26 +1,17 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import {
-  ZODIAC_SIGNS,
-  SIGN_LORDS,
-  PLANET_SYMBOLS,
-  DASHA_ORDER_PAGE5,
-  DASHA_ORDER_PAGE6,
-  COLORS,
-  Labels,
-  ASCENDANT_DATA,
-} from "./constants";
+import { DASHA_ORDER_PAGE5, DASHA_ORDER_PAGE6, Labels } from "./constants";
 import {
   addPageBackground,
   addPageHeader,
   addSectionTitle,
-  drawCornerDecoration,
   drawNorthIndianChart,
   drawDecoLine, // Now from helpers
   getDevanagariImage,
   getGaneshaImage,
   getLocalImageBase64,
 } from "./helpers";
+import { AstroApiData } from "../basic-horoscope-pdf/pdf-pages";
 
 type Color3 = [number, number, number];
 
@@ -687,10 +678,10 @@ export function renderChartsPage(
 // PAGE 5 — VIMSHOTTARI DASHA I
 // ============================================================
 export function renderDashaPage1(
-  doc: any,
-  apiData: Record<string, any>,
-  subDashaData: Record<string, any>,
-  L: any,
+  doc: jsPDF,
+  apiData: AstroApiData,
+  subDashaData: AstroApiData,
+  L: Labels,
 ) {
   doc.addPage();
   const w = doc.internal.pageSize.getWidth();
@@ -805,134 +796,6 @@ export function renderDashaPage1(
 }
 
 // ============================================================
-// PAGE 6 — VIMSHOTTARI DASHA II
-// ============================================================
-export function renderDashaPage2(
-  doc: jsPDF,
-  apiData: Record<string, any>,
-  subDashaData: Record<string, any>,
-  L: any,
-  DASHA_ORDER: string[] = ["Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter"],
-) {
-  try {
-    const w = doc.internal.pageSize.getWidth();
-    const h = doc.internal.pageSize.getHeight();
-
-    doc.addPage();
-
-    // ✅ USE MINI HELPERS
-    addPageBackground(doc);
-    const title = L.vimshottariDasha2 || "Vimshottari Dasha - II";
-    addPageHeader(doc, title);
-
-    const majorDasha = apiData?.major_vdasha;
-    const dashaList = Array.isArray(majorDasha) ? majorDasha : [];
-
-    const margin = 15;
-    const gap = 10;
-    const colWidth = (w - margin * 2 - gap * 2) / 3;
-    const cols = [
-      margin,
-      margin + colWidth + gap,
-      margin + (colWidth + gap) * 2,
-    ];
-    let colY = [38, 38, 38];
-
-    DASHA_ORDER.forEach((planet, idx) => {
-      const col = idx % 3;
-      const colX = cols[col];
-      let y = colY[col];
-
-      if (y > h - 60) {
-        doc.addPage();
-        addPageBackground(doc);
-        addPageHeader(doc, title + " (contd.)");
-        colY.fill(38);
-        y = 38;
-      }
-
-      const dasha = dashaList.find(
-        (d: any) =>
-          (d.planet || d.Planet || d.name || "").toLowerCase() ===
-          planet.toLowerCase(),
-      );
-
-      const startDate = dasha ? dasha.start || dasha.startDate || "" : "";
-      const endDate = dasha ? dasha.end || dasha.endDate || "" : "";
-
-      doc.setFontSize(10);
-      doc.setTextColor(34, 46, 93);
-      doc.setFont("helvetica", "bold");
-      doc.text(planet.toUpperCase(), colX + colWidth / 2, y, {
-        align: "center",
-      });
-      y += 4;
-
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.3);
-      doc.line(colX, y, colX + colWidth, y);
-      y += 5;
-
-      doc.setFontSize(8);
-      doc.setTextColor(100, 100, 100);
-      doc.setFont("helvetica", "normal");
-      doc.text(`${startDate}\n${endDate}`, colX + colWidth / 2, y, {
-        align: "center",
-        lineHeightFactor: 1.5,
-      });
-      y += 8;
-
-      doc.line(colX, y, colX + colWidth, y);
-      y += 3;
-
-      const subData = subDashaData?.[planet];
-      const subList = Array.isArray(subData) ? subData : [];
-
-      if (subList.length > 0) {
-        autoTable(doc, {
-          startY: y,
-          margin: { left: colX },
-          tableWidth: colWidth,
-          showHead: "never",
-          body: subList.map((s: any) => [
-            s.planet || s.Planet || s.name || "—",
-            s.end || s.endDate || s.end_date || "—",
-          ]),
-          theme: "plain",
-          styles: {
-            cellPadding: { top: 2, bottom: 2, left: 1, right: 1 },
-            fontSize: 8,
-          },
-          columnStyles: {
-            0: { fontStyle: "bold", textColor: [106, 26, 26], halign: "left" },
-            1: { halign: "right", textColor: [80, 80, 80] },
-          },
-          alternateRowStyles: { fillColor: [252, 238, 238] },
-        });
-        // @ts-ignore
-        colY[col] = doc.lastAutoTable.finalY + 12;
-      } else {
-        colY[col] = y + 10;
-      }
-    });
-
-    const finalY = Math.max(...colY) + 10;
-    if (finalY < h - 20) {
-      doc.setFontSize(9);
-      doc.setTextColor(34, 46, 93);
-      doc.setFont("helvetica", "bold");
-      doc.text(
-        "* NOTE : All the dates are indicating dasha end date.",
-        15,
-        finalY,
-      );
-    }
-  } catch (error) {
-    console.error("Error rendering Dasha Page 2: ", error);
-  }
-}
-
-// ============================================================
 // PAGE 7 — VIMSHOTTARI DASHA III + CURRENT DASHA
 // ============================================================
 export function renderDashaPage3(
@@ -940,7 +803,6 @@ export function renderDashaPage3(
   apiData: Record<string, any>,
   subDashaData: Record<string, any>,
   L: any,
-  DASHA_ORDER: string[] = ["Saturn", "Mercury", "Ketu"],
 ) {
   try {
     const w = doc.internal.pageSize.getWidth();
@@ -966,7 +828,7 @@ export function renderDashaPage3(
     ];
     let colY = [38, 38, 38];
 
-    DASHA_ORDER.forEach((planet, idx) => {
+    DASHA_ORDER_PAGE6.forEach((planet, idx) => {
       const col = idx % 3;
       const colX = cols[col];
       let y = colY[col];

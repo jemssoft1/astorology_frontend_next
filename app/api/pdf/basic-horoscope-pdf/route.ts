@@ -39,6 +39,7 @@ import {
   renderGemstoneDetailPage,
   renderAscendantReport1Page,
   renderAscendantReport2Page,
+  renderYoginiDasha3Page,
 } from "./pdf-pages";
 
 // Request body interface
@@ -249,7 +250,7 @@ export async function POST(request: NextRequest) {
 
     // Page 11: Yogini Dasha III
 
-    //renderYoginiDasha3Page(doc, yoginiData, L);
+    renderYoginiDasha3Page(doc, yoginiData, L);
 
     // Page 12: Favourable Points
 

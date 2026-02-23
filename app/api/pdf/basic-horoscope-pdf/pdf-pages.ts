@@ -1,6 +1,7 @@
 // pdf-pages.ts — Page rendering functions for Basic Horoscope PDF (Pages 1–13)
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+type Color3 = [number, number, number];
 import {
   ZODIAC_SIGNS,
   PLANET_SYMBOLS,
@@ -81,6 +82,8 @@ export interface AstroApiData {
 }
 
 import { getLocalImageBase64 } from "./image-loader";
+import { tableStyles } from "@/components/TableStyle";
+import { DASHA_ORDER_PAGE6 } from "../mini-horoscope-pdf/constants";
 
 // Safe value extractor
 function safeVal(
@@ -304,12 +307,13 @@ export function renderBasicDetailsPage(
     margin: { left: col1X },
     tableWidth: colWidth,
     body: basicRows,
-    theme: "grid",
-    bodyStyles: { textColor: COLORS.text, fontSize: 8 },
+    theme: "plain",
+    bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 35, fillColor: COLORS.chartBg },
+      0: { fontStyle: "bold", cellWidth: 35, textColor: [50, 50, 50] },
     },
-    styles: { cellPadding: 2.5, lineColor: COLORS.accent, lineWidth: 0.3 },
+    styles: { cellPadding: 2.5, font: "helvetica" },
+    alternateRowStyles: { fillColor: [253, 240, 243] },
   });
 
   // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
@@ -330,12 +334,13 @@ export function renderBasicDetailsPage(
     margin: { left: col2X },
     tableWidth: colWidth,
     body: panchangRows,
-    theme: "grid",
-    bodyStyles: { textColor: COLORS.text, fontSize: 8 },
+    theme: "plain",
+    bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 35, fillColor: COLORS.chartBg },
+      0: { fontStyle: "bold", cellWidth: 35, textColor: [50, 50, 50] },
     },
-    styles: { cellPadding: 2.5, lineColor: COLORS.accent, lineWidth: 0.3 },
+    styles: { cellPadding: 2.5, font: "helvetica" },
+    alternateRowStyles: { fillColor: [253, 240, 243] },
   });
 
   // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
@@ -366,12 +371,13 @@ export function renderBasicDetailsPage(
     margin: { left: col1X },
     tableWidth: colWidth,
     body: astroRows,
-    theme: "grid",
-    bodyStyles: { textColor: COLORS.text, fontSize: 8 },
+    theme: "plain",
+    bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 35, fillColor: COLORS.chartBg },
+      0: { fontStyle: "bold", cellWidth: 35, textColor: [50, 50, 50] },
     },
-    styles: { cellPadding: 2.5, lineColor: COLORS.accent, lineWidth: 0.3 },
+    styles: { cellPadding: 2.5, font: "helvetica" },
+    alternateRowStyles: { fillColor: [253, 240, 243] },
   });
 
   // Section 4: Ghat Chakra
@@ -390,12 +396,13 @@ export function renderBasicDetailsPage(
         margin: { left: col2X },
         tableWidth: colWidth,
         body: ghatRows,
-        theme: "grid",
-        bodyStyles: { textColor: COLORS.text, fontSize: 8 },
+        theme: "plain",
+        bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
         columnStyles: {
-          0: { fontStyle: "bold", cellWidth: 35, fillColor: COLORS.chartBg },
+          0: { fontStyle: "bold", cellWidth: 35, textColor: [50, 50, 50] },
         },
-        styles: { cellPadding: 2.5, lineColor: COLORS.accent, lineWidth: 0.3 },
+        styles: { cellPadding: 2.5, font: "helvetica" },
+        alternateRowStyles: { fillColor: [253, 240, 243] },
       });
     }
   }
@@ -451,10 +458,11 @@ export function renderPlanetaryPositionsPage(
   if (tableBody.length > 0) {
     autoTable(doc, {
       startY: y,
+      margin: { left: 14, right: 14 },
       head: [
         [
           L.planet,
-          L.retrograde,
+          "R",
           L.sign,
           L.degrees,
           L.signLord,
@@ -464,26 +472,20 @@ export function renderPlanetaryPositionsPage(
         ],
       ],
       body: tableBody,
-      theme: "grid",
+      theme: "plain",
       headStyles: {
-        fillColor: COLORS.primary,
-        textColor: COLORS.white,
+        fillColor: [242, 114, 0] as [number, number, number],
+        textColor: 255,
         fontStyle: "bold",
-        fontSize: 8,
-        halign: "center",
+        fontSize: 7.5,
+        halign: "left",
       },
-      bodyStyles: { textColor: COLORS.text, fontSize: 8 },
-      styles: {
-        cellPadding: 3,
-        halign: "center",
-        lineColor: COLORS.accent,
-        lineWidth: 0.3,
+      bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
+      styles: { cellPadding: 2.2 },
+      alternateRowStyles: {
+        fillColor: [253, 240, 243] as [number, number, number],
       },
-      alternateRowStyles: { fillColor: [255, 250, 240] },
-      columnStyles: {
-        0: { halign: "left", fontStyle: "bold" },
-        1: { cellWidth: 10 },
-      },
+      columnStyles: { 0: { fontStyle: "bold", textColor: [50, 50, 50] } },
     });
 
     // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
@@ -541,7 +543,6 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
   const planetArray: AstroPlanet[] = Array.isArray(planets) ? planets : [];
 
   // ============ HELPER FUNCTIONS ============
-
   const getPlanetName = (p: AstroPlanet): string => {
     if (typeof p.planet === "number") {
       return PLANET_ID_MAP[p.planet] || `P${p.planet}`;
@@ -559,32 +560,23 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
       ) {
         return signObj.id;
       }
-      if (typeof signObj.sign_number === "number") {
-        return signObj.sign_number;
-      }
-      if (typeof signObj.name === "number") {
-        return signObj.name;
-      }
+      if (typeof signObj.sign_number === "number") return signObj.sign_number;
+      if (typeof signObj.name === "number") return signObj.name;
       if (typeof signObj.name === "string") {
         const parsed = parseInt(signObj.name, 10);
-        if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) {
-          return parsed;
-        }
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) return parsed;
         const idx = ZODIAC_SIGNS.findIndex(
           (s) => s.toLowerCase() === (signObj.name as string).toLowerCase(),
         );
         if (idx >= 0) return idx + 1;
       }
     }
-    if (typeof p.sign === "number" && p.sign >= 1 && p.sign <= 12) {
+    if (typeof p.sign === "number" && p.sign >= 1 && p.sign <= 12)
       return p.sign;
-    }
     if (typeof p.sign === "string") {
       const signStr = p.sign as string;
       const parsed = parseInt(signStr, 10);
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) {
-        return parsed;
-      }
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) return parsed;
       const idx = ZODIAC_SIGNS.findIndex(
         (s) => s.toLowerCase() === signStr.toLowerCase(),
       );
@@ -594,14 +586,11 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
   };
 
   const extractSignNumber = (signData: unknown): number => {
-    if (typeof signData === "number" && signData >= 1 && signData <= 12) {
+    if (typeof signData === "number" && signData >= 1 && signData <= 12)
       return signData;
-    }
     if (typeof signData === "string") {
       const parsed = parseInt(signData, 10);
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) {
-        return parsed;
-      }
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 12) return parsed;
       const idx = ZODIAC_SIGNS.findIndex(
         (s) => s.toLowerCase() === signData.toLowerCase(),
       );
@@ -617,8 +606,6 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
   };
 
   // ============ GET ASCENDANT AND MOON SIGNS ============
-
-  // Get Lagna (Ascendant) Sign Number
   let lagnaSignNum = 1;
   if (apiData.astro_details?.ascendant !== undefined) {
     lagnaSignNum = extractSignNumber(apiData.astro_details.ascendant);
@@ -628,7 +615,6 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
     lagnaSignNum = extractSignNumber(apiData.ascendant);
   }
 
-  // Get Moon Sign Number
   const moonPlanet = planetArray.find(
     (p: AstroPlanet) =>
       p.planet === 1 ||
@@ -638,13 +624,9 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
   const moonSignNum = moonPlanet ? getSignNumber(moonPlanet) : 1;
 
   // ============ BUILD CHART POSITIONS AND SIGNS ============
-
-  // Build Lagna Chart (D1) Positions
   const buildLagnaPositions = (): Record<number, string[]> => {
     const positions: Record<number, string[]> = {};
     for (let i = 1; i <= 12; i++) positions[i] = [];
-
-    // Add Ascendant marker in Lagna (House 1)
     positions[1].push("As");
 
     planetArray.forEach((p: AstroPlanet) => {
@@ -652,29 +634,20 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
       const signNum = getSignNumber(p);
       const sym = PLANET_SYMBOLS[planetName] || planetName.substring(0, 2);
       const retro = p.isRetrograde === true || p.is_retro === true ? "(R)" : "";
-
-      // Calculate house number: Lagna sign becomes House 1
       const houseNum = ((signNum - lagnaSignNum + 12) % 12) + 1;
-
-      if (positions[houseNum]) {
-        positions[houseNum].push(sym + retro);
-      }
+      if (positions[houseNum]) positions[houseNum].push(sym + retro);
     });
-
     return positions;
   };
 
-  // Build Lagna Signs Mapping (House 1 = Lagna Sign, House 2 = Next Sign, etc.)
   const buildLagnaSigns = (): Record<number, number> => {
     const signs: Record<number, number> = {};
     for (let house = 1; house <= 12; house++) {
-      // House 1 has lagnaSignNum, House 2 has next sign, etc.
       signs[house] = ((lagnaSignNum - 1 + house - 1) % 12) + 1;
     }
     return signs;
   };
 
-  // Build Moon Chart Positions
   const buildMoonPositions = (): Record<number, string[]> => {
     const positions: Record<number, string[]> = {};
     for (let i = 1; i <= 12; i++) positions[i] = [];
@@ -682,28 +655,17 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
     planetArray.forEach((p: AstroPlanet) => {
       const planetName = getPlanetName(p);
       const signNum = getSignNumber(p);
-
-      // Calculate house relative to Moon's sign (Moon's sign becomes House 1)
       const houseNum = ((signNum - moonSignNum + 12) % 12) + 1;
-
       const sym = PLANET_SYMBOLS[planetName] || planetName.substring(0, 2);
       const retro = p.isRetrograde === true || p.is_retro === true ? "(R)" : "";
-
-      if (positions[houseNum]) {
-        positions[houseNum].push(sym + retro);
-      }
+      if (positions[houseNum]) positions[houseNum].push(sym + retro);
     });
 
-    // Add Ascendant relative to Moon
     const ascHouseInMoon = ((lagnaSignNum - moonSignNum + 12) % 12) + 1;
-    if (positions[ascHouseInMoon]) {
-      positions[ascHouseInMoon].push("As");
-    }
-
+    if (positions[ascHouseInMoon]) positions[ascHouseInMoon].push("As");
     return positions;
   };
 
-  // Build Moon Signs Mapping (House 1 = Moon Sign)
   const buildMoonSigns = (): Record<number, number> => {
     const signs: Record<number, number> = {};
     for (let house = 1; house <= 12; house++) {
@@ -712,15 +674,12 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
     return signs;
   };
 
-  // Build Navamsha (D9) Positions
   const buildNavamshaPositions = (): Record<number, string[]> => {
     const positions: Record<number, string[]> = {};
     for (let i = 1; i <= 12; i++) positions[i] = [];
 
     planetArray.forEach((p: AstroPlanet) => {
       const planetName = getPlanetName(p);
-
-      // Get degrees in sign (0-30)
       let degreesInSign = 0;
       const signObj =
         typeof p.sign === "object" && p.sign !== null
@@ -731,6 +690,7 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
         signObj.degreesInSign !== null
           ? (signObj.degreesInSign as Record<string, unknown>)
           : null;
+
       if (typeof signDegObj?.totalDegrees === "number") {
         degreesInSign = signDegObj.totalDegrees;
       } else if (p.longitude?.totalDegrees !== undefined) {
@@ -742,52 +702,38 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
       }
 
       const signNum = getSignNumber(p);
-
-      // Calculate Navamsha division (1-9)
       const navamshaNum = Math.floor(degreesInSign / (30 / 9)) + 1;
       const clampedNavamshaNum = Math.min(Math.max(navamshaNum, 1), 9);
-
-      // Navamsha starting sign based on sign element
-      const signElement = (signNum - 1) % 4; // 0=Fire, 1=Earth, 2=Air, 3=Water
+      const signElement = (signNum - 1) % 4;
       const startSigns = [1, 10, 7, 4];
       const startSign = startSigns[signElement];
-
       const navamshaSignNum =
         ((startSign - 1 + clampedNavamshaNum - 1) % 12) + 1;
-
       const sym = PLANET_SYMBOLS[planetName] || planetName.substring(0, 2);
       const retro = p.isRetrograde === true || p.is_retro === true ? "(R)" : "";
 
-      if (positions[navamshaSignNum]) {
+      if (positions[navamshaSignNum])
         positions[navamshaSignNum].push(sym + retro);
-      }
     });
 
-    // Add Navamsha Ascendant
     if (apiData.astro_details?.ascendant_degree !== undefined) {
       const ascDegree = Number(apiData.astro_details.ascendant_degree) % 30;
       const ascNavamshaNum = Math.floor(ascDegree / (30 / 9)) + 1;
       const clampedAscNavamsha = Math.min(Math.max(ascNavamshaNum, 1), 9);
-
       const signElement = (lagnaSignNum - 1) % 4;
       const startSigns = [1, 10, 7, 4];
       const startSign = startSigns[signElement];
-
       const navamshaAscSign =
         ((startSign - 1 + clampedAscNavamsha - 1) % 12) + 1;
-      if (positions[navamshaAscSign]) {
-        positions[navamshaAscSign].push("As");
-      }
+      if (positions[navamshaAscSign]) positions[navamshaAscSign].push("As");
     }
 
     return positions;
   };
 
-  // Build Navamsha Signs Mapping (Simple 1-12 for now)
   const buildNavamshaSigns = (): Record<number, number> => {
     const signs: Record<number, number> = {};
     for (let house = 1; house <= 12; house++) {
-      // Calculate based on navamsha ascendant if available, else 1-12
       if (apiData.astro_details?.ascendant_degree !== undefined) {
         const ascDegree = Number(apiData.astro_details.ascendant_degree) % 30;
         const ascNavamshaNum = Math.floor(ascDegree / (30 / 9)) + 1;
@@ -803,95 +749,156 @@ export function renderChartsPage(doc: jsPDF, apiData: AstroApiData, L: Labels) {
     return signs;
   };
 
-  // ============ CHART LAYOUT ============
-  const chartSize = 85;
-  const gap = 15;
-  const row1Y = 40;
-  const row1X1 = (w - (chartSize * 2 + gap)) / 2;
-  const row1X2 = row1X1 + chartSize + gap;
-  const row2Y = row1Y + chartSize + 25;
-  const row2X = (w - chartSize) / 2;
+  // ============ 2×2 GRID CHART LAYOUT ============
+  // Layout: [Lagna Chart | Lagna Description Text]
+  //         [Moon Chart  | Navamsha Chart        ]
+  const margin = 12;
+  const colGap = 8;
+  const rowGap = 18;
+  const colW = (w - margin * 2 - colGap) / 2;
 
-  // ============ DRAW LAGNA CHART (D1) ============
+  // ── ROW 1: Lagna Chart (left) + Description Text (right) ──
+  const row1Y = 34;
+  const lagnaChartSize = colW; // Fill left column
+  const lagnaChartX = margin;
+
   const lagnaPos = buildLagnaPositions();
-  const lagnaSigns = buildLagnaSigns(); // ⭐ Signs banaye
-
+  const lagnaSigns = buildLagnaSigns();
   drawNorthIndianChart(
     doc,
-    row1X1,
+    lagnaChartX,
     row1Y,
-    chartSize,
+    lagnaChartSize,
     lagnaPos,
-    lagnaSigns, // ⭐ Signs pass kiye
+    lagnaSigns,
     "D1",
   );
 
+  // Lagna Chart Title (bold, below chart)
   doc.setFontSize(10);
-  doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
   doc.setFont("helvetica", "bold");
+  doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
   doc.text(
-    L.lagnaChart || "Lagna Chart (D1)",
-    row1X1 + chartSize / 2,
-    row1Y + chartSize + 10,
+    L.lagnaChart || "Lagna Chart (Birth Chart)",
+    lagnaChartX + lagnaChartSize / 2,
+    row1Y + lagnaChartSize + 7,
     { align: "center" },
   );
 
-  // ============ DRAW MOON CHART ============
-  const moonPos = buildMoonPositions();
-  const moonSigns = buildMoonSigns(); // ⭐ Signs banaye
+  // Lagna Description Text (right column)
+  const textColX = margin + colW + colGap;
+  const textColW = colW;
+  let textY = row1Y + 6;
 
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
+  doc.text("Ascendant or Lagna", textColX, textY);
+  textY += 6;
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
+  const lagnaDesc =
+    "Ascendant or Lagna, is the degree of the sign which is rising on the eastern horizon at the time of birth. The Lagna is the most influential and important sign within the natal or lagna chart. This sign will be considered the first house of the horoscope, and the enumeration of the other houses follows in sequence through the rest of the signs of the zodiac. In this way, the Lagna does not only delineate the rising sign, but also all the other houses in the chart.";
+  const lagnaDescLines = doc.splitTextToSize(lagnaDesc, textColW);
+  lagnaDescLines.forEach((line: string) => {
+    if (textY < row1Y + lagnaChartSize + 2) {
+      doc.text(line, textColX, textY);
+      textY += 5;
+    }
+  });
+
+  // ── ROW 2: Moon Chart (left) + Navamsha Chart (right) ──
+  const row2Y = row1Y + lagnaChartSize + rowGap;
+  const smallChartSize = colW;
+
+  // Moon Chart
+  const moonPos = buildMoonPositions();
+  const moonSigns = buildMoonSigns();
   drawNorthIndianChart(
     doc,
-    row1X2,
-    row1Y,
-    chartSize,
+    lagnaChartX,
+    row2Y,
+    smallChartSize,
     moonPos,
-    moonSigns, // ⭐ Signs pass kiye
+    moonSigns,
     "Moon",
   );
 
+  // Moon Chart title
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
   doc.text(
     L.moonChart || "Moon Chart",
-    row1X2 + chartSize / 2,
-    row1Y + chartSize + 10,
+    lagnaChartX + smallChartSize / 2,
+    row2Y + smallChartSize + 7,
     { align: "center" },
   );
 
-  // ============ DRAW NAVAMSHA CHART (D9) ============
-  const navPos = buildNavamshaPositions();
-  const navSigns = buildNavamshaSigns(); // ⭐ Signs banaye
-
-  drawNorthIndianChart(
-    doc,
-    row2X,
-    row2Y,
-    chartSize,
-    navPos,
-    navSigns, // ⭐ Signs pass kiye
-    "D9",
-  );
-
-  doc.text(
-    L.navamshaChart || "Navamsha Chart (D9)",
-    row2X + chartSize / 2,
-    row2Y + chartSize + 10,
-    { align: "center" },
-  );
-
-  // Legend
-  const y = row2Y + chartSize + 25;
-  doc.setFontSize(7);
+  // Moon description
+  doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(
     COLORS.lightText[0],
     COLORS.lightText[1],
     COLORS.lightText[2],
   );
+  const moonDesc =
+    "Moon Chart is an important tool of prediction and the results of planetary combinations are more prominent when the yogas or certain combinations happen in both Moon and Lagna Chart.";
+  const moonDescLines = doc.splitTextToSize(moonDesc, smallChartSize);
+  doc.text(moonDescLines, lagnaChartX, row2Y + smallChartSize + 13);
 
+  // Navamsha Chart
+  const navPos = buildNavamshaPositions();
+  const navSigns = buildNavamshaSigns();
+  drawNorthIndianChart(
+    doc,
+    textColX,
+    row2Y,
+    smallChartSize,
+    navPos,
+    navSigns,
+    "D9",
+  );
+
+  // Navamsha Chart title
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
+  doc.text(
+    L.navamshaChart || "Navamsha Chart(D9)",
+    textColX + smallChartSize / 2,
+    row2Y + smallChartSize + 7,
+    { align: "center" },
+  );
+
+  // Navamsha description
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(
+    COLORS.lightText[0],
+    COLORS.lightText[1],
+    COLORS.lightText[2],
+  );
+  const navDesc =
+    "Navamsha Chart is the most important divisional chart. Navamsha means nine part of a particular Rashi in which each Amsa consists of 3 degrees and 20 minutes.";
+  const navDescLines = doc.splitTextToSize(navDesc, smallChartSize);
+  doc.text(navDescLines, textColX, row2Y + smallChartSize + 13);
+
+  // ── Legend ──
+  const legendY = row2Y + smallChartSize + 35;
+  doc.setFontSize(7);
+  doc.setFont("helvetica", "italic");
+  doc.setTextColor(
+    COLORS.lightText[0],
+    COLORS.lightText[1],
+    COLORS.lightText[2],
+  );
   const legendText =
     "Su=Sun, Mo=Moon, Ma=Mars, Me=Mercury, Ju=Jupiter, Ve=Venus, Sa=Saturn, Ra=Rahu, Ke=Ketu, As=Ascendant, (R)=Retrograde";
-  const legendLines = doc.splitTextToSize(legendText, w - 28);
-  doc.text(legendLines, w / 2, y, { align: "center" });
+  const legendLines = doc.splitTextToSize(legendText, w - 40);
+  doc.text(legendLines, w / 2, legendY, { align: "center" });
 }
 // ============================================================
 // PAGE 5 — DIVISIONAL CHARTS (3×3 grid)
@@ -1053,14 +1060,14 @@ export function renderDivisionalChartsPage(
 }
 
 // ============================================================
-// PAGE 7 — VIMSHOTTARI DASHA I (3×2 grid)
+// PAGE 6 — HOUSE CUSPS AND SANDHI
 // ============================================================
 
 export function renderHouseCuspsPage(
-  doc: jsPDF, // jsPDF
+  doc: jsPDF,
   apiData: AstroApiData,
   lang: string,
-  L: Labels, // Labels type
+  L: Labels,
 ) {
   doc.addPage();
   addPageBackground(doc);
@@ -1171,31 +1178,30 @@ export function renderHouseCuspsPage(
   // Draw the Table
   autoTable(doc, {
     startY: y,
+    margin: { left: 14, right: 14 },
     head: [
       [
         L.house || "House",
         L.sign || "Sign",
         L.bhavMadhya || "Bhav Madhya",
-        L.sign || "Sign", // Often sign lord is kept here, keeping as per your layout
+        L.sign || "Sign",
         L.bhavSandhi || "Bhav Sandhi",
       ],
     ],
     body: tableBody,
-    theme: "grid",
+    theme: "plain",
     headStyles: {
-      fillColor: COLORS.primary,
-      textColor: COLORS.white,
+      fillColor: [242, 114, 0] as [number, number, number],
+      textColor: 255,
       fontStyle: "bold",
-      fontSize: 8,
-    },
-    bodyStyles: { textColor: COLORS.text, fontSize: 8 },
-    styles: {
-      cellPadding: 2.5,
+      fontSize: 7.5,
       halign: "center",
-      lineColor: COLORS.accent,
-      lineWidth: 0.3,
     },
-    alternateRowStyles: { fillColor: [255, 250, 240] },
+    bodyStyles: { textColor: [80, 80, 80], fontSize: 7.5 },
+    styles: { cellPadding: 2.2, halign: "center" },
+    alternateRowStyles: {
+      fillColor: [253, 240, 243] as [number, number, number],
+    },
   });
 
   // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
@@ -1234,6 +1240,9 @@ export function renderHouseCuspsPage(
   const descLines = doc.splitTextToSize(descText, textW);
   doc.text(descLines, textX, chartY + 8);
 }
+// ============================================================
+// PAGE 7 — VIMSHOTTARI DASHA I (3×2 grid)
+// ============================================================
 export function renderVimshottariDasha1Page(
   doc: jsPDF,
   apiData: AstroApiData,
@@ -1241,76 +1250,113 @@ export function renderVimshottariDasha1Page(
   L: Labels,
 ) {
   doc.addPage();
-  addPageBackground(doc);
-  addPageHeader(doc, L.vimshottariDasha1);
-
   const w = doc.internal.pageSize.getWidth();
-  const majorDasha = apiData.major_vdasha;
+  const h = doc.internal.pageSize.getHeight();
 
+  // ✅ USE MINI HELPERS
+  addPageBackground(doc);
+  const titleText = L.vimshottariDasha1 || "Vimshottari Dasha - I";
+  addPageHeader(doc, titleText);
+
+  const titleBlue: Color3 = [30, 50, 100];
+  const rowPink: Color3 = [253, 240, 243];
+  const orange: Color3 = [242, 114, 0];
+
+  const majorDasha = apiData?.major_vdasha;
   const dashaList = Array.isArray(majorDasha) ? majorDasha : [];
-  const margin = 10;
-  const gap = 6;
+
+  const planetsToRender =
+    typeof DASHA_ORDER_PAGE7 !== "undefined"
+      ? DASHA_ORDER_PAGE7
+      : ["Mars", "Rahu", "Jupiter", "Saturn", "Mercury", "Ketu"];
+
+  const margin = 14;
+  const gap = 12;
   const colWidth = (w - margin * 2 - gap * 2) / 3;
   const cols = [margin, margin + colWidth + gap, margin + (colWidth + gap) * 2];
-  const colY = [34, 34, 34];
+  const colY = [35, 35, 35];
 
-  DASHA_ORDER_PAGE7.forEach((planet, idx) => {
+  planetsToRender.forEach((planet, idx) => {
     const col = idx % 3;
-    let y = colY[col];
     const colX = cols[col];
+    const centerColX = colX + colWidth / 2;
+    let y = colY[col];
+
+    // Page Break Logic
+    if (y > h - 45) {
+      doc.addPage();
+      addPageBackground(doc);
+      addPageHeader(doc, titleText + " (contd.)");
+      colY.fill(35);
+      y = 35;
+    }
+
     const dasha = dashaList.find(
-      (d: Record<string, unknown>) =>
-        String(d.planet || d.Planet || d.name || "").toLowerCase() ===
+      (d: any) =>
+        (d.planet || d.Planet || d.name || "").toLowerCase() ===
         planet.toLowerCase(),
     );
+    const startDate = dasha ? dasha.start || dasha.startDate || "" : "";
+    const endDate = dasha ? dasha.end || dasha.endDate || "" : "";
 
+    // Planet Header
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
-    const startD = dasha
-      ? dasha.start || dasha.startDate || dasha.start_date || ""
-      : "";
-    const endD = dasha
-      ? dasha.end || dasha.endDate || dasha.end_date || ""
-      : "";
-    doc.text(planet, colX, y);
-    if (startD || endD) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(6);
-      doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
-      doc.text(`${startD} - ${endD}`, colX, y + 4);
-    }
-    y += 8;
+    doc.setFontSize(10);
+    doc.setTextColor(titleBlue[0], titleBlue[1], titleBlue[2]);
+    doc.text(planet, centerColX, y + 10, { align: "center" });
 
-    const subData = subDashaData[planet];
+    if (startDate || endDate) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(100, 100, 100);
+      if (startDate)
+        doc.text(startDate.replace("  ", " "), centerColX, y + 14, {
+          align: "center",
+        });
+      if (endDate)
+        doc.text(endDate.replace("  ", " "), centerColX, y + 17.5, {
+          align: "center",
+        });
+    }
+
+    y += 21;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.3);
+    doc.line(colX + 5, y, colX + colWidth - 5, y);
+    y += 4;
+
+    // Antardasha Table
+    const subData = subDashaData?.[planet];
     const subList = Array.isArray(subData) ? subData : [];
+
     if (subList.length > 0) {
+      const tableBody = subList.map((s: any) => [
+        s.planet || s.Planet || s.name || "—",
+        (s.end || s.endDate || s.end_date || "—").replace("  ", " "),
+      ]);
+
       autoTable(doc, {
         startY: y,
-        margin: { left: colX },
+        margin: { left: colX, right: 14 },
         tableWidth: colWidth,
-        head: [[L.planet, L.startDate, L.endDate]],
-        body: subList.map((s: Record<string, unknown>) => [
-          String(s.planet || s.Planet || s.name || "—"),
-          String(s.start || s.startDate || s.start_date || "—"),
-          String(s.end || s.endDate || s.end_date || "—"),
-        ]),
-        theme: "grid",
-        headStyles: {
-          fillColor: COLORS.accent,
-          textColor: COLORS.white,
-          fontSize: 6,
-          cellPadding: 1.2,
+        body: tableBody,
+        theme: "plain",
+        bodyStyles: { fontSize: 7.5, cellPadding: 2 },
+        alternateRowStyles: { fillColor: rowPink },
+        columnStyles: {
+          0: { fontStyle: "bold", textColor: titleBlue, halign: "left" },
+          1: { textColor: [100, 100, 100], halign: "right" },
         },
-        bodyStyles: { textColor: COLORS.text, fontSize: 6, cellPadding: 1.2 },
-        styles: { lineColor: COLORS.accent, lineWidth: 0.2 },
-        alternateRowStyles: { fillColor: [255, 250, 240] },
       });
 
-      // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
-      colY[col] = doc.lastAutoTable.finalY + 6;
+      // @ts-ignore
+      colY[col] = doc.lastAutoTable?.finalY + 15;
     } else {
-      colY[col] = y + 4;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(150, 150, 150);
+      doc.text("(data unavailable)", centerColX, y + 5, { align: "center" });
+      colY[col] = y + 15;
     }
   });
 }
@@ -1320,109 +1366,197 @@ export function renderVimshottariDasha1Page(
 // ============================================================
 export function renderVimshottariDasha2Page(
   doc: jsPDF,
-  apiData: AstroApiData,
-  subDashaData: AstroApiData,
-  L: Labels,
+  apiData: Record<string, any>,
+  subDashaData: Record<string, any>,
+  L: any,
 ) {
-  doc.addPage();
-  addPageBackground(doc);
-  addPageHeader(doc, L.vimshottariDasha2);
+  try {
+    const w = doc.internal.pageSize.getWidth();
+    const h = doc.internal.pageSize.getHeight();
 
-  const colY = [34, 34, 34];
-
-  // Current Dasha section
-  let y = Math.max(...colY);
-  if (y > doc.internal.pageSize.getHeight() - 70) {
     doc.addPage();
-    addPageBackground(doc);
-    y = 30;
-  }
-  y = addSectionTitle(doc, L.currentDasha, y + 4);
-  const currentDasha = apiData.current_vdasha;
-  // Prefer current_vdasha (flat structure with planet/start/end)
-  // over current_vdasha_all (has dasha_period arrays, not directly usable)
-  const src = currentDasha;
 
-  if (src) {
-    const rows: string[][] = [];
-    // API field names: major, minor, sub_minor, sub_sub_minor, sub_sub_sub_minor
-    const md = (src.major || src.major_dasha || src.mahadasha || {}) as Record<
-      string,
-      unknown
-    >;
-    if (md.planet || md.Planet) {
-      rows.push([
-        L.mahadasha,
-        String(md.planet || md.Planet || "—"),
-        String(md.start || md.startDate || "—"),
-        String(md.end || md.endDate || "—"),
-      ]);
-    }
-    const ad = (src.minor || src.sub_dasha || src.antardasha || {}) as Record<
-      string,
-      unknown
-    >;
-    if (ad.planet || ad.Planet) {
-      rows.push([
-        L.antardasha,
-        String(ad.planet || ad.Planet || "—"),
-        String(ad.start || ad.startDate || "—"),
-        String(ad.end || ad.endDate || "—"),
-      ]);
-    }
-    const pd = (src.sub_minor ||
-      src.sub_sub_dasha ||
-      src.pratyantardasha ||
-      {}) as Record<string, unknown>;
-    if (pd.planet || pd.Planet) {
-      rows.push([
-        L.pratyantarDasha || "Prtyantar Dasha",
-        String(pd.planet || pd.Planet || "—"),
-        String(pd.start || pd.startDate || "—"),
-        String(pd.end || pd.endDate || "—"),
-      ]);
-    }
-    const sd = (src.sub_sub_minor ||
-      src.sub_sub_sub_dasha ||
-      src.sookshm ||
-      {}) as Record<string, unknown>;
-    if (sd.planet || sd.Planet) {
-      rows.push([
-        L.sookshmDasha || "Sookshm Dasha",
-        String(sd.planet || sd.Planet || "—"),
-        String(sd.start || sd.startDate || "—"),
-        String(sd.end || sd.endDate || "—"),
-      ]);
-    }
-    const prd = (src.sub_sub_sub_minor || {}) as Record<string, unknown>;
-    if (prd.planet || prd.Planet) {
-      rows.push([
-        "Pran Dasha",
-        String(prd.planet || prd.Planet || "—"),
-        String(prd.start || prd.startDate || "—"),
-        String(prd.end || prd.endDate || "—"),
-      ]);
-    }
-    if (rows.length > 0) {
-      autoTable(doc, {
-        startY: y,
-        head: [[L.dashaName, L.planet, L.startDate, L.endDate]],
-        body: rows,
-        theme: "grid",
-        headStyles: {
-          fillColor: COLORS.darkRed,
-          textColor: COLORS.white,
-          fontStyle: "bold",
-          fontSize: 9,
-        },
-        bodyStyles: {
-          textColor: COLORS.text,
-          fontSize: 9,
-          fillColor: COLORS.highlight,
-        },
-        styles: { cellPadding: 3.5, lineColor: COLORS.primary, lineWidth: 0.5 },
+    // ✅ USE MINI HELPERS
+    addPageBackground(doc);
+    const title = L.vimshottariDasha3 || "Vimshottari Dasha - III";
+    addPageHeader(doc, title);
+
+    const majorDasha = apiData?.major_vdasha;
+    const dashaList = Array.isArray(majorDasha) ? majorDasha : [];
+
+    const margin = 15;
+    const gap = 10;
+    const colWidth = (w - margin * 2 - gap * 2) / 3;
+    const cols = [
+      margin,
+      margin + colWidth + gap,
+      margin + (colWidth + gap) * 2,
+    ];
+    let colY = [38, 38, 38];
+
+    DASHA_ORDER_PAGE6.forEach((planet, idx) => {
+      const col = idx % 3;
+      const colX = cols[col];
+      let y = colY[col];
+
+      if (y > h - 60) {
+        doc.addPage();
+        addPageBackground(doc);
+        addPageHeader(doc, title + " (contd.)");
+        colY.fill(38);
+        y = 38;
+      }
+
+      const dasha = dashaList.find(
+        (d: any) =>
+          (d.planet || d.Planet || d.name || "").toLowerCase() ===
+          planet.toLowerCase(),
+      );
+
+      const startDate = dasha ? dasha.start || dasha.startDate || "" : "";
+      const endDate = dasha ? dasha.end || dasha.endDate || "" : "";
+
+      doc.setFontSize(10);
+      doc.setTextColor(34, 46, 93);
+      doc.setFont("helvetica", "bold");
+      doc.text(planet.toUpperCase(), colX + colWidth / 2, y, {
+        align: "center",
       });
+      y += 4;
+
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.3);
+      doc.line(colX, y, colX + colWidth, y);
+      y += 5;
+
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont("helvetica", "normal");
+      doc.text(`${startDate}\n${endDate}`, colX + colWidth / 2, y, {
+        align: "center",
+        lineHeightFactor: 1.5,
+      });
+      y += 8;
+
+      doc.line(colX, y, colX + colWidth, y);
+      y += 3;
+
+      const subData = subDashaData?.[planet];
+      const subList = Array.isArray(subData) ? subData : [];
+
+      if (subList.length > 0) {
+        autoTable(doc, {
+          startY: y,
+          margin: { left: colX },
+          tableWidth: colWidth,
+          showHead: "never",
+          body: subList.map((s: any) => [
+            s.planet || s.Planet || s.name || "—",
+            s.end || s.endDate || s.end_date || "—",
+          ]),
+          theme: "plain",
+          styles: {
+            cellPadding: { top: 2, bottom: 2, left: 1, right: 1 },
+            fontSize: 8,
+          },
+          columnStyles: {
+            0: { fontStyle: "bold", textColor: [106, 26, 26], halign: "left" },
+            1: { halign: "right", textColor: [80, 80, 80] },
+          },
+          alternateRowStyles: { fillColor: [252, 238, 238] },
+        });
+        // @ts-ignore
+        colY[col] = doc.lastAutoTable.finalY + 12;
+      } else {
+        colY[col] = y + 10;
+      }
+    });
+
+    // Current Dasha Section
+    let finalY = Math.max(...colY) + 10;
+
+    if (finalY > h - 70) {
+      doc.addPage();
+      addPageBackground(doc);
+      finalY = 30;
     }
+
+    // ✅ USE MINI SECTION TITLE
+    finalY = addSectionTitle(
+      doc,
+      L.currentDasha || "Current Undergoing Dasha",
+      finalY,
+    );
+
+    const currentDasha = apiData?.current_vdasha;
+    if (currentDasha) {
+      const rows: string[][] = [];
+
+      const addRow = (label: string, obj: any) => {
+        if (!obj) return;
+        const planet = obj.planet || obj.Planet || "—";
+        const start = obj.start || obj.startDate || "—";
+        const end = obj.end || obj.endDate || "—";
+        rows.push([label, planet, start, end]);
+      };
+
+      addRow(
+        L.mahadasha || "MAHADASHA",
+        currentDasha.major || currentDasha.major_dasha,
+      );
+      addRow(
+        L.antardasha || "ANTARDASHA",
+        currentDasha.minor || currentDasha.sub_dasha,
+      );
+      addRow(
+        "PRTYANTAR DASHA",
+        currentDasha.sub_minor || currentDasha.sub_sub_dasha,
+      );
+      addRow(
+        "SOOKSHM DASHA",
+        currentDasha.sub_sub_minor || currentDasha.sub_sub_sub_dasha,
+      );
+
+      if (rows.length > 0) {
+        autoTable(doc, {
+          startY: finalY,
+          margin: { left: 15, right: 15 },
+          head: [
+            [
+              L.dashaName || "Dasha Name",
+              L.planet || "Planets",
+              L.startDate || "Start Date",
+              L.endDate || "End Date",
+            ],
+          ],
+          body: rows,
+          theme: "plain",
+          headStyles: {
+            fillColor: [239, 126, 34],
+            textColor: 255,
+            fontStyle: "bold",
+            halign: "left",
+          },
+          styles: { cellPadding: 4, fontSize: 9, textColor: [34, 46, 93] },
+          alternateRowStyles: { fillColor: [252, 238, 238] },
+        });
+        // @ts-ignore
+        finalY = doc.lastAutoTable.finalY + 12;
+      }
+    }
+
+    if (finalY < h - 20) {
+      doc.setFontSize(9);
+      doc.setTextColor(34, 46, 93);
+      doc.setFont("helvetica", "bold");
+      doc.text(
+        "* NOTE : All the dates are indicating dasha end date.",
+        15,
+        finalY,
+      );
+    }
+  } catch (error) {
+    console.error("Error rendering Dasha Page 3: ", error);
   }
 }
 
@@ -1432,11 +1566,15 @@ export function renderVimshottariDasha2Page(
 function renderYoginiDashaGrid(
   doc: jsPDF,
   yoginiData: AstroApiData,
+  titleText: string,
+  titleBlue: Color3,
+  rowPink: Color3,
   startIndex: number,
   endIndex: number,
   L: Labels,
 ) {
   const w = doc.internal.pageSize.getWidth();
+  const h = doc.internal.pageSize.getHeight();
   const margin = 10;
   const gap = 6;
   const colWidth = (w - margin * 2 - gap * 2) / 3;
@@ -1446,97 +1584,164 @@ function renderYoginiDashaGrid(
   const majorList = Array.isArray(yoginiData.major_yogini_dasha)
     ? yoginiData.major_yogini_dasha
     : [];
-  const subDashaList = Array.isArray(yoginiData.sub_yogini_dasha)
+  const subDashaData = Array.isArray(yoginiData.sub_yogini_dasha)
     ? yoginiData.sub_yogini_dasha
     : [];
 
   // Get the dashas for this page (by index from majorList)
   const dashesToRender = majorList.slice(startIndex, endIndex);
 
-  dashesToRender.forEach((dasha: Record<string, unknown>, idx: number) => {
+  dashesToRender.forEach((planetObj, idx) => {
     const col = idx % 3;
-    let y = colY[col];
     const colX = cols[col];
+    const centerColX = colX + colWidth / 2;
+    let y = colY[col];
 
-    const dashaName = dasha.dasha_name || dasha.name || "Unknown";
-    const startD = dasha.start_date || dasha.start || "";
-    const endD = dasha.end_date || dasha.end || "";
-    const duration = dasha.duration || "";
-
-    // Dasha Title
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
-    doc.text(`${dashaName} (${duration} Years)`, colX, y);
-
-    // Date Range
-    if (startD || endD) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(6);
-      doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
-      doc.text(`${startD} - ${endD}`, colX, y + 4);
+    // Page Break Logic
+    if (y > h - 45) {
+      doc.addPage();
+      addPageBackground(doc);
+      addPageHeader(doc, titleText + " (contd.)");
+      colY.fill(35);
+      y = 35;
     }
-    y += 8;
 
-    // Find matching sub-dasha entry by index (same index as major dasha)
-    const actualIndex = startIndex + idx;
-    const subEntry = subDashaList[actualIndex];
-    const subList = Array.isArray(subEntry?.sub_dasha)
-      ? subEntry.sub_dasha
-      : [];
+    const planetName =
+      typeof planetObj === "string"
+        ? planetObj
+        : planetObj?.planet ||
+          planetObj?.Planet ||
+          planetObj?.name ||
+          planetObj?.dasha_name ||
+          "—";
+
+    const dasha = Array.isArray(subDashaData)
+      ? subDashaData.find((d: any) => {
+          const dName =
+            d?.major_dasha?.dasha_name ||
+            d?.planet ||
+            d?.Planet ||
+            d?.name ||
+            d?.dasha_name ||
+            "";
+          return (
+            String(dName).toLowerCase() === String(planetName).toLowerCase()
+          );
+        })
+      : null;
+
+    const startDate =
+      typeof planetObj === "object"
+        ? planetObj?.start_date ||
+          planetObj?.start ||
+          planetObj?.startDate ||
+          ""
+        : dasha
+          ? dasha?.major_dasha?.start_date ||
+            dasha?.start ||
+            dasha?.startDate ||
+            ""
+          : "";
+
+    const endDate =
+      typeof planetObj === "object"
+        ? planetObj?.end_date || planetObj?.end || planetObj?.endDate || ""
+        : dasha
+          ? dasha?.major_dasha?.end_date || dasha?.end || dasha?.endDate || ""
+          : "";
+
+    // Planet Header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(titleBlue[0], titleBlue[1], titleBlue[2]);
+    doc.text(planetName, centerColX, y + 10, { align: "center" });
+
+    if (startDate || endDate) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(100, 100, 100);
+      if (startDate)
+        doc.text(startDate.replace("  ", " "), centerColX, y + 14, {
+          align: "center",
+        });
+      if (endDate)
+        doc.text(endDate.replace("  ", " "), centerColX, y + 17.5, {
+          align: "center",
+        });
+    }
+
+    y += 21;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.3);
+    doc.line(colX + 5, y, colX + colWidth - 5, y);
+    y += 4;
+
+    // Antardasha Table
+    let subData = null;
+    if (dasha && Array.isArray(dasha.sub_dasha)) {
+      subData = dasha.sub_dasha;
+    } else if (
+      typeof planetObj === "object" &&
+      Array.isArray(planetObj?.sub_dasha)
+    ) {
+      subData = planetObj.sub_dasha;
+    } else if (
+      !Array.isArray(subDashaData) &&
+      typeof subDashaData === "object" &&
+      subDashaData !== null
+    ) {
+      subData = (subDashaData as any)[planetName];
+    }
+
+    const subList = Array.isArray(subData) ? subData : [];
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "Checking planetName:",
+        planetName,
+        "Found dasha:",
+        !!dasha,
+        "subList length:",
+        subList.length,
+      );
+    }
 
     if (subList.length > 0) {
+      const tableBody = subList.map((s: any) => [
+        s.planet || s.Planet || s.name || s.dasha_name || "—",
+        (s.end || s.endDate || s.end_date || "—").replace("  ", " "),
+      ]);
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("Table Body for", planetName, ":", tableBody);
+      }
+
       autoTable(doc, {
         startY: y,
-        margin: { left: colX },
+        margin: { left: colX, right: 14 },
         tableWidth: colWidth,
-        head: [
-          [L.dasha || "Dasha", L.startDate || "Start", L.endDate || "End"],
-        ],
-        body: subList.map((s: Record<string, unknown>) => [
-          String(s.dasha_name || s.name || "—"),
-          String(s.start_date || s.start || "—"),
-          String(s.end_date || s.end || "—"),
-        ]),
-        theme: "grid",
-        headStyles: {
-          fillColor: COLORS.accent,
-          textColor: COLORS.white,
-          fontSize: 6,
-          cellPadding: 1.2,
+        body: tableBody,
+        theme: "plain",
+        bodyStyles: { fontSize: 7.5, cellPadding: 2 },
+        alternateRowStyles: { fillColor: rowPink },
+        columnStyles: {
+          0: { fontStyle: "bold", textColor: titleBlue, halign: "left" },
+          1: { textColor: [100, 100, 100], halign: "right" },
         },
-        bodyStyles: { textColor: COLORS.text, fontSize: 6, cellPadding: 1.2 },
-        styles: { lineColor: COLORS.accent, lineWidth: 0.2 },
-        alternateRowStyles: { fillColor: [255, 250, 240] },
       });
 
-      // @ts-expect-error - lastAutoTable is added by jspdf-autotable plugin at runtime
-      colY[col] = doc.lastAutoTable.finalY + 6;
+      // @ts-ignore
+      colY[col] = doc.lastAutoTable?.finalY + 15;
     } else {
-      // No sub-dasha, show placeholder
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(6);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
       doc.setTextColor(150, 150, 150);
-      doc.text("No sub-dasha data", colX, y);
-      colY[col] = y + 8;
+      doc.text("(data unavailable)", centerColX, y + 5, { align: "center" });
+      colY[col] = y + 15;
     }
   });
 }
 
-// PAGE 9 — YOGINI DASHA I
 // PAGE 9 — YOGINI DASHA I (First 6 dashas: index 0-5)
-// export function renderYoginiDasha1Page(
-//   doc: jsPDF,
-//   yoginiData: AstroApiData,
-//   L: Labels,
-// ) {
-//   doc.addPage();
-//   addPageBackground(doc);
-//   addPageHeader(doc, L.yoginiDasha1 || "Yogini Dasha - I");
-
-//   // Render first 6 major dashas (index 0 to 5)
-//   renderYoginiDashaGrid(doc, yoginiData, 0, 12, L);
-// }
 
 export function renderYoginiDasha1Page(
   doc: jsPDF,
@@ -1562,13 +1767,24 @@ export function renderYoginiDasha1Page(
     doc.addPage();
     addPageBackground(doc);
     addPageHeader(doc, pageTitle);
+    const titleBlue: Color3 = [30, 50, 100];
+    const rowPink: Color3 = [253, 240, 243];
 
     // 2. Visual Layout Debugging (Optional)
     // Uncomment the line below to draw a red border around your "safe area"
     // doc.setDrawColor(255, 0, 0); doc.rect(10, 10, 190, 277);
 
     // Render first 6 major dashas (index 0 to 5)
-    renderYoginiDashaGrid(doc, yoginiData, 0, 12, L);
+    renderYoginiDashaGrid(
+      doc,
+      yoginiData,
+      pageTitle,
+      titleBlue,
+      rowPink,
+      0,
+      6,
+      L,
+    );
 
     if (process.env.NODE_ENV === "development") {
       console.log("✅ Successfully rendered Yogini Dasha Grid.");
@@ -1595,24 +1811,44 @@ export function renderYoginiDasha2Page(
   doc.addPage();
   addPageBackground(doc);
   addPageHeader(doc, L.yoginiDasha2 || "Yogini Dasha - II");
-
+  const titleBlue: Color3 = [30, 50, 100];
+  const rowPink: Color3 = [253, 240, 243];
   // Render dashas 7-12 (index 6 to 11)
-  renderYoginiDashaGrid(doc, yoginiData, 12, 18, L);
+  renderYoginiDashaGrid(
+    doc,
+    yoginiData,
+    "Yogini Dasha - II",
+    titleBlue,
+    rowPink,
+    7,
+    13,
+    L,
+  );
 }
 
-// // PAGE 11 — YOGINI DASHA III (Next 6 dashas: index 12-17)
-// export function renderYoginiDasha3Page(
-//   doc: jsPDF,
-//   yoginiData: AstroApiData,
-//   L: Labels,
-// ) {
-//   doc.addPage();
-//   addPageBackground(doc);
-//   addPageHeader(doc, L.yoginiDasha3 || "Yogini Dasha - III");
-
-//   // Render dashas 13-18 (index 12 to 17)
-//   renderYoginiDashaGrid(doc, yoginiData, 12, 18, L);
-// }
+// PAGE 11 — YOGINI DASHA III (Next 6 dashas: index 12-17)
+export function renderYoginiDasha3Page(
+  doc: jsPDF,
+  yoginiData: AstroApiData,
+  L: Labels,
+) {
+  doc.addPage();
+  addPageBackground(doc);
+  addPageHeader(doc, L.yoginiDasha3 || "Yogini Dasha - III");
+  const titleBlue: Color3 = [30, 50, 100];
+  const rowPink: Color3 = [253, 240, 243];
+  // Render dashas 13-18 (index 12 to 17)
+  renderYoginiDashaGrid(
+    doc,
+    yoginiData,
+    "Yogini Dasha - III",
+    titleBlue,
+    rowPink,
+    13,
+    19,
+    L,
+  );
+}
 const NUMBER_COLORS = [
   [0, 180, 80], // Green for Destiny Number
   [255, 80, 60], // Orange-Red for Radical Number
@@ -1637,7 +1873,10 @@ export function renderFavourablePointsPage(
 
   const w = doc.internal.pageSize.getWidth();
   let y = 38;
-  const numTable = numerologyData?.numero_table;
+  const numTable = numerologyData?.numero_table as
+    | Record<string, unknown>
+    | null
+    | undefined;
 
   // Top row: 3 number boxes, styled like Image 1
   const boxW = (w - 40 - 16) / 3;
@@ -1730,14 +1969,17 @@ export function renderFavourablePointsPage(
 
   autoTable(doc, {
     startY: y,
+    margin: { left: 14, right: 14 },
     body: tableRows,
-    theme: "grid",
-    bodyStyles: { textColor: COLORS.text, fontSize: 9 },
+    theme: "plain",
+    bodyStyles: { textColor: [80, 80, 80], fontSize: 8.5 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 60, fillColor: COLORS.chartBg },
+      0: { fontStyle: "bold", cellWidth: 60, textColor: [50, 50, 50] },
     },
-    styles: { cellPadding: 3.5, lineColor: COLORS.accent, lineWidth: 0.3 },
-    alternateRowStyles: { fillColor: [255, 250, 240] },
+    styles: { cellPadding: 3, font: "helvetica" },
+    alternateRowStyles: {
+      fillColor: [253, 240, 243] as [number, number, number],
+    },
   });
 }
 // ============================================================
@@ -1757,7 +1999,10 @@ export function renderNumerologyReportPage(
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
   const y = 38;
-  const numTable = numerologyData?.numero_table;
+  const numTable = numerologyData?.numero_table as
+    | Record<string, unknown>
+    | null
+    | undefined;
   const numReport = numerologyData?.numero_report;
   const numFavTime = numerologyData?.numero_fav_time;
   const numFavMantra = numerologyData?.numero_fav_mantra;
@@ -2060,11 +2305,12 @@ export function renderKalsarpaDoshaPage(
     { align: "center" },
   );
 
-  const oneLineDesc =
+  const oneLineDesc = String(
     kd.one_line ||
-    (isPresent
-      ? "You have descending kalsarpa dosha direction. The KalSarpa Dosha is having full effect in your horoscope."
-      : "Kalsarpa dosha is not detected in your horoscope.");
+      (isPresent
+        ? "You have descending kalsarpa dosha direction. The KalSarpa Dosha is having full effect in your horoscope."
+        : "Kalsarpa dosha is not detected in your horoscope."),
+  );
 
   doc.setFontSize(8);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
@@ -2108,8 +2354,8 @@ export function renderKalsarpaDoshaPage(
     ry += 15;
   };
 
-  const kName = kd.type || (isPresent ? "SHANKHCHOOR" : "—");
-  const kDir = kd.direction || (isPresent ? "FULL DESCENDING" : "—");
+  const kName = String(kd.type || (isPresent ? "SHANKHCHOOR" : "—"));
+  const kDir = String(kd.direction || (isPresent ? "FULL DESCENDING" : "—"));
 
   drawRightItem(L.kalsarpaName || "Kalsarpa Name", kName);
   drawRightItem(L.kalsarpaDirection || "Direction", kDir);
@@ -2367,11 +2613,13 @@ export function renderManglik1Page(
   let reportText = "";
 
   if (simpleManglik?.is_present === false && simpleManglik?.msg) {
-    reportText = simpleManglik.msg;
+    reportText = String(simpleManglik.msg);
   } else if (mData?.is_present === false && mReport) {
-    reportText = mReport;
+    reportText = String(mReport);
   } else {
-    reportText = mReport || sReport || "Manglik analysis not available.";
+    reportText = String(
+      mReport || sReport || "Manglik analysis not available.",
+    );
   }
 
   doc.setFont("helvetica", "normal");
@@ -2629,7 +2877,10 @@ export function renderSadhesatiPage(
   let y = 38;
 
   // Extract proper sections
-  const sData = apiData?.sadhesati_current_status || apiData || {};
+  const sData = (apiData?.sadhesati_current_status || apiData || {}) as Record<
+    string,
+    unknown
+  >;
 
   const titleBlue = [104, 131, 168];
   const margin = 14;
@@ -2762,11 +3013,12 @@ export function renderSadhesatiPage(
   doc.text(statusHeading, faceX, y + 45, { align: "center" });
 
   // Status Description Text
-  const statusMsg =
+  const statusMsg = String(
     sData.is_undergoing_sadhesati ||
-    (isPresent
-      ? "You are currently undergoing Sadhe Sati."
-      : "No, currently you are not undergoing Sadhesati.");
+      (isPresent
+        ? "You are currently undergoing Sadhe Sati."
+        : "No, currently you are not undergoing Sadhesati."),
+  );
   doc.setFontSize(8);
   doc.setTextColor(COLORS.text[0], COLORS.text[1], COLORS.text[2]);
   const leftLines = doc.splitTextToSize(statusMsg, boxW - 14);
@@ -2814,9 +3066,9 @@ export function renderSadhesatiPage(
     ry += 14; // Proper gap before next item
   };
 
-  const cDate = sData.consideration_date || "—";
-  const mSign = sData.moon_sign || "—";
-  const sSign = sData.saturn_sign || "—";
+  const cDate = String(sData.consideration_date || "—");
+  const mSign = String(sData.moon_sign || "—");
+  const sSign = String(sData.saturn_sign || "—");
   const sRetro = sData.is_saturn_retrograde ? "YES" : "NO";
 
   drawRightItem(L.considerationDate || "Consideration Date", cDate);
@@ -3181,20 +3433,26 @@ export function renderGemstoneDetailPage(
     tableY += 6;
   };
 
-  const substitutes =
-    data?.substitue || data?.substitute || data?.semi_gem || "—";
-  drawTableRow("Substitutes", substitutes, "Day", data?.wear_day || "—");
+  const substitutes = String(
+    data?.substitue || data?.substitute || data?.semi_gem || "—",
+  );
+  drawTableRow(
+    "Substitutes",
+    substitutes,
+    "Day",
+    String(data?.wear_day || "—"),
+  );
   drawTableRow(
     "Finger",
-    data?.wear_finger || "—",
+    String(data?.wear_finger || "—"),
     "Deity",
-    data?.deity || data?.gem_deity || "—",
+    String(data?.deity || data?.gem_deity || "—"),
   );
   drawTableRow(
     "Weight",
-    data?.weight_caret || "—",
+    String(data?.weight_caret || "—"),
     "Metal",
-    data?.wear_metal || "—",
+    String(data?.wear_metal || "—"),
   );
 
   y += 35; // Move down below the top section
@@ -3548,7 +3806,7 @@ export function renderAscendantReport1Page(
 export function renderAscendantReport2Page(
   doc: jsPDF, // or jsPDF
   ascendantName: string,
-  apiReport: any,
+  apiReport: Record<string, unknown>,
   L: Labels, // Labels
 ) {
   doc.addPage();
@@ -3583,12 +3841,14 @@ export function renderAscendantReport2Page(
   // ── DETAILED ANALYSIS (API Report) ──
   // ==========================================
   if (apiReport) {
+    const r = apiReport as {
+      asc_report?: { report?: string };
+      report?: string;
+      description?: string;
+      Report?: string;
+    };
     const apiText =
-      apiReport?.asc_report?.report ||
-      apiReport?.report ||
-      apiReport?.description ||
-      apiReport?.Report ||
-      "";
+      r?.asc_report?.report || r?.report || r?.description || r?.Report || "";
 
     if (apiText) {
       const apiLines = doc.splitTextToSize(String(apiText), w - 28);

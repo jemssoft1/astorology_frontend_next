@@ -162,16 +162,16 @@ const lifeTransitPayload = {
 // ============ Test Definitions ============
 
 const tests = [
-  {
-    name: "mini-horoscope-pdf",
-    api: "/api/pdf/mini-horoscope-pdf",
-    payload: indianPayload,
-  },
-  {
-    name: "basic-horoscope-pdf",
-    api: "/api/pdf/basic-horoscope-pdf",
-    payload: indianPayload,
-  },
+  // {
+  //   name: "mini-horoscope-pdf",
+  //   api: "/api/pdf/mini-horoscope-pdf",
+  //   payload: indianPayload,
+  // },
+  // {
+  //   name: "basic-horoscope-pdf",
+  //   api: "/api/pdf/basic-horoscope-pdf",
+  //   payload: indianPayload,
+  // },
   // {
   //   name: "professional-horoscope-pdf",
   //   api: "/api/pdf/professional-horoscope-pdf",
@@ -182,11 +182,11 @@ const tests = [
   //   api: "/api/pdf/match-making-pdf",
   //   payload: matchPayload,
   // },
-  // {
-  //   name: "western-natal-horoscope-pdf",
-  //   api: "/api/pdf/western-natal-horoscope-pdf",
-  //   payload: westernPayload,
-  // },
+  {
+    name: "western-natal-horoscope-pdf",
+    api: "/api/pdf/western-natal-horoscope-pdf",
+    payload: westernPayload,
+  },
   // {
   //   name: "western-life-forecast-pdf",
   //   api: "/api/pdf/western-life-forecast-pdf",

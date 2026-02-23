@@ -17,7 +17,6 @@ import {
   renderPlanetaryPositionsPage,
   renderChartsPage,
   renderDashaPage1,
-  renderDashaPage2,
   renderAscendantPage,
   renderAscendantAnalysisPage,
   renderDisclaimerPage,
@@ -165,10 +164,6 @@ export async function POST(request: NextRequest) {
 
     // Page 5: Vimshottari Dasha I
     renderDashaPage1(doc, apiData, subDashaData, L);
-
-    // Page 6: Vimshottari Dasha II + Current Dasha
-
-    renderDashaPage2(doc, apiData, subDashaData, L);
 
     // Page 7: Vimshottari Dasha II + Current Dasha
 

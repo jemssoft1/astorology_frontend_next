@@ -1,6 +1,3 @@
-// lib/horoscopeApi.ts
-import "server-only";
-
 const BASE_URL = process.env.BACKEND_URL
   ? `${process.env.BACKEND_URL}/api/Calculate`
   : "http://localhost:3000/api/Calculate"; // Fallback for dev

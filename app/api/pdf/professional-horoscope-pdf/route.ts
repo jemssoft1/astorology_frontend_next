@@ -4,11 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 
-import {
-  getProfessionalLabels,
-  DASHA_ORDER_PAGE7,
-  DASHA_ORDER_PAGE8,
-} from "./constants";
+import { getProfessionalLabels, DASHA_ORDER_PAGE7 } from "./constants";
 import {
   fetchAllProfessionalData,
   fetchAshtakvargaData,
@@ -47,7 +43,6 @@ import {
 } from "./pdf-pages-2";
 
 import {
-  renderKalsarpaPages,
   renderManglikPages,
   renderSadhesatiPages,
   renderGemstonePages,
@@ -57,10 +52,7 @@ import {
   renderAscendantPages,
 } from "./pdf-pages-3";
 
-import {
-  renderPlanetProfileCover,
-  renderPlanetProfilePages,
-} from "./pdf-pages-4";
+import { renderPlanetProfilePages } from "./pdf-pages-4";
 
 // ──────────────────────────────────────────────
 // Request Interface
@@ -132,8 +124,6 @@ export async function POST(request: NextRequest) {
     // PHASE 1: Parallel Data Fetching
     // ════════════════════════════════════════════
 
-    const startTime = Date.now();
-
     const [
       mainData,
       ashtakvargaData,
@@ -153,7 +143,7 @@ export async function POST(request: NextRequest) {
     ]);
 
     // Fetch sub-dasha for all 9 planets
-    const allDashaPlanets = [...DASHA_ORDER_PAGE7, ...DASHA_ORDER_PAGE8];
+    const allDashaPlanets = [...DASHA_ORDER_PAGE7];
     const subDashaPromises = allDashaPlanets.map((planet) =>
       fetchSubDasha(planet, birthParams).then((data) => ({ planet, data })),
     );

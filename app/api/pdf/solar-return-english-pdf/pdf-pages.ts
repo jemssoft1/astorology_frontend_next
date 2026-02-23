@@ -217,11 +217,11 @@ export function renderAspectsTable(doc: jsPDF, aspects: Aspect[]) {
   doc.text("Solar Return vs Natal Aspects", 20, 30);
 
   const body = aspects.map((a) => [
-    a.planet1,
-    a.aspect,
-    a.planet2,
+    a.planet1 ?? "",
+    a.aspect ?? "",
+    a.planet2 ?? "",
     a.orb.toFixed(2) + "°",
-    a.nature,
+    a.nature ?? "",
   ]);
 
   autoTable(doc, {
@@ -310,7 +310,7 @@ export function renderAspectInterpretations(doc: jsPDF, aspects: Aspect[]) {
     }
 
     // Header
-    const color =
+    const color: [number, number, number] =
       a.nature === "Challenging" || a.nature === "Tension"
         ? [192, 57, 43]
         : [39, 174, 96];

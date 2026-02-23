@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import { Resvg } from "@resvg/resvg-js";
 
 import { fetchWesternData } from "./helpers";
 import {
@@ -27,7 +28,7 @@ export const maxDuration = 60; // Set timeout to 60s
 // ═══════════════════════════════════════════════
 //  HELPER: ADD FOOTERS & PAGE NUMBERS
 // ═══════════════════════════════════════════════
-function addFooters(doc: jsPDF, text: string) {
+function addFooters(doc: jsPDF, name: string) {
   const pageCount = doc.getNumberOfPages();
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
@@ -37,18 +38,25 @@ function addFooters(doc: jsPDF, text: string) {
     if (i === 1 || i === pageCount) continue;
 
     doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
 
-    // Left: Text
-    doc.text(text, 10, h - 10);
+    // Header Band
+    doc.setFillColor(212, 196, 232); // Light purple
+    doc.rect(0, 0, w, 12, "F");
+    doc.setTextColor(59, 56, 101); // Dark blue/purple
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Natal Report", 15, 8);
+    doc.text(name, w - 15, 8, { align: "right" });
 
-    // Right: Page Number
-    doc.text(`Page ${i} of ${pageCount}`, w - 20, h - 10, { align: "right" });
-
-    // Decor line
-    doc.setDrawColor(230, 230, 230);
-    doc.line(10, h - 15, w - 10, h - 15);
+    // Footer Band
+    const footerH = 12;
+    doc.setFillColor(212, 196, 232); // Light purple
+    doc.rect(0, h - footerH, w, footerH, "F");
+    doc.setTextColor(59, 56, 101); // Dark blue/purple
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(i.toString(), w / 2, h - 4, { align: "center" });
+    doc.text("astrologyapi.com", w - 15, h - 4, { align: "right" });
   }
 }
 
@@ -108,20 +116,36 @@ export async function POST(req: NextRequest) {
       wheelImage = data.basic.natal_wheel;
     }
 
-    let imageBuffer: Uint8Array | string | null = null;
+    console.log(data.basic.natal_wheel?.chart_url);
+    let imageContent: Uint8Array | string | null = null;
     if (wheelImage && wheelImage.startsWith("http")) {
       try {
         const imgRes = await fetch(wheelImage);
+
         if (imgRes.ok) {
-          const arrayBuffer = await imgRes.arrayBuffer();
-          imageBuffer = new Uint8Array(arrayBuffer);
+          // Check if it's an SVG url
+          if (wheelImage.toLowerCase().endsWith(".svg")) {
+            const svgString = await imgRes.text();
+
+            // Dynamic import to avoid issues in Edge runtime if applicable,
+            // but we are in Node runtime here so standard import works.
+            const resvg = new Resvg(svgString, {
+              background: "rgba(255, 255, 255, 0)",
+              fitTo: { mode: "width", value: 800 },
+            });
+            const pngData = resvg.render();
+            imageContent = pngData.asPng(); // Returns Buffer (Uint8Array)
+          } else {
+            const arrayBuffer = await imgRes.arrayBuffer();
+            imageContent = new Uint8Array(arrayBuffer);
+          }
         }
       } catch (err) {
         console.warn("Failed to fetch natal wheel image:", err);
       }
     } else if (wheelImage) {
-      // Assume base64
-      imageBuffer = wheelImage;
+      // Assume base64 or raw svg string
+      imageContent = wheelImage;
     }
 
     // planets/tropical and house_cusps/tropical are fetched as separate endpoints
@@ -163,7 +187,16 @@ export async function POST(req: NextRequest) {
     renderIntroPage(doc, name);
 
     // 3. Natal Chart
-    renderNatalWheelPage(doc, imageBuffer);
+    renderNatalWheelPage(
+      doc,
+      imageContent,
+      body.date_of_birth,
+      body.time_of_birth,
+      body.latitude,
+      body.longitude,
+      body.timezone,
+      requestPayload.house_type,
+    );
 
     // 4. Planets Table
     renderPlanetaryPositionsTable(doc, planets);
@@ -196,7 +229,7 @@ export async function POST(req: NextRequest) {
     renderBackCover(doc);
 
     // Add Footers
-    addFooters(doc, `Natal Report for ${name}`);
+    addFooters(doc, name);
 
     // Output
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));

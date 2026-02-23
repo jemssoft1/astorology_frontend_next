@@ -581,7 +581,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      yPos = doc.lastAutoTable.finalY + 20;
+      yPos = (doc as any).lastAutoTable.finalY + 20;
     }
 
     // ============================================

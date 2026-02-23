@@ -552,7 +552,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      yPos = doc.lastAutoTable.finalY + 20;
+      yPos = (doc as any).lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);
       doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -646,7 +646,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      yPos = doc.lastAutoTable.finalY + 20;
+      yPos = (doc as any).lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);
       doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -794,7 +794,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      yPos = doc.lastAutoTable.finalY + 20;
+      yPos = (doc as any).lastAutoTable.finalY + 20;
     } else {
       doc.setFontSize(12);
       doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);

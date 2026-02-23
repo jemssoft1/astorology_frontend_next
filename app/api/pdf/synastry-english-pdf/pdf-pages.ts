@@ -343,7 +343,7 @@ export function renderAspectReport(doc: jsPDF, aspects: SynastryAspect[]) {
     }
 
     // Header
-    const color =
+    const color: [number, number, number] =
       a.nature === "Challenging" || a.nature === "Tension"
         ? [192, 57, 43]
         : [39, 174, 96];

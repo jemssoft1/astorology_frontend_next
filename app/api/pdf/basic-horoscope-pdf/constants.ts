@@ -22,13 +22,11 @@ export const DASHA_ORDER_PAGE7 = [
   "Sun",
   "Moon",
   "Mars",
-  "Rahu",
-  "Jupiter",
-  "Saturn",
   "Mercury",
-  "Ketu",
+  "Jupiter",
   "Venus",
 ];
+export const DASHA_ORDER_PAGE8 = ["Saturn", "Rahu", "Ketu"];
 // Planet ID to Name mapping (Vedic Astrology API format)
 export const PLANET_ID_MAP: Record<number, string> = {
   0: "Sun",

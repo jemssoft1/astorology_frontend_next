@@ -33,6 +33,7 @@ export interface Person {
   TimezoneOffset: string;
   CreatedAt?: string;
   UpdatedAt?: string;
+  PlaceOfBirth?: string;
 }
 
 export type Gender = "Male" | "Female";

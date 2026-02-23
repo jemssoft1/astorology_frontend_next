@@ -1,14 +1,8 @@
 [
   {
-    "name": "mini-horoscope-pdf",
+    "name": "western-natal-horoscope-pdf",
     "status": "PASS",
-    "size": "2920.5",
-    "time": 2286
-  },
-  {
-    "name": "basic-horoscope-pdf",
-    "status": "PASS",
-    "size": "3817.5",
-    "time": 2386
+    "size": "2608.6",
+    "time": 3668
   }
 ]

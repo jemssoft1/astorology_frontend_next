@@ -5,13 +5,10 @@ import autoTable from "jspdf-autotable";
 import {
   ZODIAC_SIGNS,
   COLORS,
-  ASHTAKVARGA_PLANETS,
   ASHTAKVARGA_SIGNIFICANCE,
   DASHA_ORDER_PAGE7,
-  DASHA_ORDER_PAGE8,
   YOGINI_DASHAS,
   CHAR_DASHA_SIGNS,
-  PLANET_SYMBOLS,
 } from "./constants";
 import type { Labels } from "./constants";
 import { addPageBackground, addPageHeader, addSectionTitle } from "./helpers";
@@ -383,7 +380,7 @@ export function renderVimshottariDasha2Page(
   let y = 35;
   const majorDasha = apiData.major_vdasha;
 
-  DASHA_ORDER_PAGE8.forEach((planet, idx) => {
+  DASHA_ORDER_PAGE7.forEach((planet, idx) => {
     const dashaEntry = Array.isArray(majorDasha)
       ? majorDasha.find(
           (d: any) =>
@@ -431,7 +428,7 @@ export function renderVimshottariDasha2Page(
       });
     }
 
-    if (col === 2 || idx === DASHA_ORDER_PAGE8.length - 1) {
+    if (col === 2 || idx === DASHA_ORDER_PAGE7.length - 1) {
       y = (doc as any).lastAutoTable?.finalY ?? y + 60;
       y += 5;
     }

@@ -148,7 +148,7 @@ export function renderNatalWheelPage(
   doc.setTextColor(80, 80, 80);
 
   const symbols = Object.entries(PLANETS)
-    .map(([k, v]) => `${k}`)
+    .map(([k]) => `${k}`)
     .join(", ");
   const lines = doc.splitTextToSize(symbols, w - 40);
   doc.text(lines, 20, y);
@@ -279,7 +279,7 @@ export function renderInterpretations(doc: jsPDF, aspects: TransitAspect[]) {
 
   y = 45;
 
-  aspects.forEach((aspect, index) => {
+  aspects.forEach((aspect) => {
     // Check if we need new page
     if (y > 230) {
       doc.addPage();
@@ -294,7 +294,9 @@ export function renderInterpretations(doc: jsPDF, aspects: TransitAspect[]) {
       ) ||
       aspect.aspect === "Square" ||
       aspect.aspect === "Opposition";
-    const headerColor = isHard ? [192, 57, 43] : [39, 174, 96];
+    const headerColor: [number, number, number] = isHard
+      ? [192, 57, 43]
+      : [39, 174, 96];
 
     // Box
     doc.setDrawColor(200, 200, 200);
