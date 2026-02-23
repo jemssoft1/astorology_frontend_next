@@ -14,6 +14,7 @@ import {
   renderPlanetaryPositionsTable,
   renderHouseCuspsTable,
   renderAspectGridPage,
+  renderAspectsTablePage,
 } from "./pdf-pages-1";
 import {
   renderAscendantProfile,
@@ -207,13 +208,16 @@ export async function POST(req: NextRequest) {
     // 6. Aspect Grid
     renderAspectGridPage(doc, aspects);
 
+    // 6b. Aspects Table (Page 7)
+    renderAspectsTablePage(doc, aspects);
+
     // 7. Ascendant Profile
     if (ascendantReport) {
       renderAscendantProfile(doc, ascendantReport);
     }
 
     // 8. Planet Profiles
-    renderPlanetProfiles(doc, data.planets);
+    renderPlanetProfiles(doc, data.planets, planets);
 
     // 9. House Profiles
     renderHouseProfiles(doc, houseReports);

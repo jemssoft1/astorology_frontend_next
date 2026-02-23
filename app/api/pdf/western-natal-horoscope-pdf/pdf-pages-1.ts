@@ -3,7 +3,7 @@
 
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import { COLORS, ZODIAC_ICONS, PLANET_ICONS } from "./constants";
+import { ZODIAC_ICONS, PLANET_ICONS, ASPECT_ICONS } from "./constants";
 import { addPageBackground, safeFixed } from "./helpers";
 
 // ═══════════════════════════════════════════════
@@ -576,92 +576,550 @@ export function renderHouseCuspsTable(doc: jsPDF, cusps: any[]) {
   doc.addPage();
   addPageBackground(doc);
 
-  doc.setFontSize(18);
-  doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
-  doc.text("House Cusps", 20, 20);
+  const w = doc.internal.pageSize.getWidth();
 
-  const tableBody = cusps.map((c: any) => [
-    `House ${c.house}`,
-    safeFixed(c.degree) + "°",
-    c.sign,
-  ]);
+  // 1. Header
+  doc.setFontSize(22);
+  doc.setTextColor(110, 120, 140); // Greyish blue matching Image 1
+  doc.setFont("helvetica", "bold");
+  doc.text("Natal House Cusp", w / 2, 25, { align: "center" });
+
+  // Thin line below header
+  doc.setDrawColor(210, 200, 190);
+  doc.setLineWidth(0.5);
+  doc.line(15, 32, w - 15, 32);
+
+  // Helper for DD° MM' SS"
+  const formatDegree = (deg: number) => {
+    let abs = Math.abs(deg || 0);
+    if (abs >= 30) abs = abs % 30; // Keep it within 0-29 for sign
+    const d = Math.floor(abs);
+    const minFloat = (abs - d) * 60;
+    const m = Math.floor(minFloat);
+    const secFloat = (minFloat - m) * 60;
+    const s = Math.round(secFloat);
+    return {
+      d: d.toString().padStart(2, "0"),
+      m: m.toString().padStart(2, "0"),
+      s: s.toString().padStart(2, "0"),
+    };
+  };
+
+  const tableBody = cusps.map((c: any) => {
+    return [
+      { content: "", raw: c },
+      { content: "", raw: c },
+    ];
+  });
 
   autoTable(doc, {
-    startY: 30,
-    head: [["House", "Degree", "Sign"]],
+    startY: 40,
+    head: [["House", "Degree"]],
     body: tableBody,
-    theme: "grid",
-    headStyles: { fillColor: COLORS.secondary },
-    styles: { fontSize: 11 },
+    theme: "plain",
+    headStyles: {
+      fillColor: [228, 205, 235], // Light purple
+      textColor: [115, 80, 140], // Darker purple text
+      fontStyle: "bold",
+      halign: "center",
+      fontSize: 10,
+    },
+    styles: {
+      fontSize: 10,
+      font: "helvetica",
+      cellPadding: 5,
+      valign: "middle",
+    },
+    columnStyles: {
+      0: { halign: "left" },
+      1: { halign: "center" },
+    },
+    margin: { left: 15, right: 15 },
+    didParseCell: (hookData) => {
+      // Create alternating row background
+      if (hookData.section === "body") {
+        if (hookData.row.index % 2 === 0) {
+          hookData.cell.styles.fillColor = [255, 255, 255];
+        } else {
+          hookData.cell.styles.fillColor = [246, 238, 250]; // Extremely light purple
+        }
+      }
+
+      // Left align the first column header
+      if (hookData.section === "head" && hookData.column.index === 0) {
+        hookData.cell.styles.halign = "left";
+      }
+    },
+    didDrawCell: (hookData) => {
+      if (hookData.section === "body") {
+        const c = hookData.cell.raw && (hookData.cell.raw as any).raw;
+        if (!c) return;
+
+        const x = hookData.cell.x;
+        const y = hookData.cell.y + hookData.cell.height / 2 + 3;
+
+        const zodiacColors: Record<string, number[]> = {
+          Aries: [211, 47, 47],
+          Taurus: [25, 118, 210],
+          Gemini: [245, 124, 0],
+          Cancer: [2, 136, 209],
+          Leo: [211, 47, 47],
+          Virgo: [25, 118, 210],
+          Libra: [245, 124, 0],
+          Scorpio: [25, 118, 210],
+          Sagittarius: [211, 47, 47],
+          Capricorn: [56, 142, 60],
+          Aquarius: [245, 124, 0],
+          Pisces: [25, 118, 210],
+        };
+
+        if (hookData.column.index === 0) {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(90, 80, 110); // Dark grey/purple text
+
+          let houseLabel = `house ${c.house}`;
+          if (c.house === 1) houseLabel = "AC (Ascendant)";
+          if (c.house === 10) houseLabel = "MC (MidHeaven)";
+
+          doc.text(houseLabel, x + 4, y);
+        } else if (hookData.column.index === 1) {
+          const rawDeg =
+            c.normDegree !== undefined
+              ? c.normDegree
+              : c.fullDegree !== undefined
+                ? c.fullDegree
+                : c.degree;
+          const { d, m, s } = formatDegree(rawDeg);
+          const zIcon = ZODIAC_ICONS[c.sign] || "";
+          const zColor = zodiacColors[c.sign] || [100, 100, 100];
+          const signStr = c.sign ? c.sign : "";
+
+          // 1. Degree
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(110, 110, 110);
+          const degW = doc.getTextWidth(`${d}° `);
+
+          doc.setFont("helvetica", "bold");
+          const iconW = doc.getTextWidth(zIcon + " ");
+
+          doc.setFont("helvetica", "normal");
+          const signW = doc.getTextWidth(`(${signStr}) `);
+          const msW = doc.getTextWidth(`${m}'${s}"`);
+
+          const totalW = degW + iconW + signW + msW;
+          let currX = x + hookData.cell.width / 2 - totalW / 2;
+
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(110, 110, 110);
+          doc.text(`${d}°`, currX, y);
+          currX += degW;
+
+          // 2. Zodiac Icon
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(zColor[0], zColor[1], zColor[2]);
+          doc.text(zIcon, currX, y);
+          currX += iconW;
+
+          // 3. (Sign)
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(110, 110, 110);
+          doc.text(`(${signStr})`, currX, y);
+          currX += signW;
+
+          // 4. Minutes & Seconds
+          doc.text(`${m}'${s}"`, currX, y);
+        }
+      }
+    },
   });
 
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
+  doc.setFont("helvetica", "bold");
   doc.text(
-    "Note: Placidus System of House Division is used.",
-    20,
-    (doc as any).lastAutoTable.finalY + 10,
+    "NOTE - PLACIDUS SYSTEM OF HOUSE DIVISION IS USED.",
+    30,
+    (doc as any).lastAutoTable.finalY + 15,
   );
 }
 
 // ═══════════════════════════════════════════════
 //  PAGE 6 — ASPECTS GRID
 // ═══════════════════════════════════════════════
+
 export function renderAspectGridPage(doc: jsPDF, aspects: any[]) {
   doc.addPage();
   addPageBackground(doc);
 
-  doc.setFontSize(18);
-  doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
-  doc.text("Aspect Chart", 20, 20);
+  const w = doc.internal.pageSize.getWidth();
 
-  // NOTE: A full triangular aspect grid is complex to draw procedurally with just lines.
-  // For this simplified version, we'll render a table of Aspects first, then try a simplified grid if needed.
-  // The user requested a "Aspect Chart (Triangle)"... we can approximate or just list them cleanly.
-  // Let's stick to a clean list for reliability first, as drawing the triangle grid dynamically
-  // without a library is error-prone.
+  // 1. Header
+  doc.setFontSize(22);
+  doc.setTextColor(110, 120, 140);
+  doc.setFont("helvetica", "bold");
+  doc.text("Aspect Chart", w / 2, 25, { align: "center" });
 
-  // Let's render the Aspects Table here directly to satisfy "Aspects Table" requirement
-  // but call it "Aspect Grid" page to match flow.
+  doc.setDrawColor(210, 200, 190);
+  doc.setLineWidth(0.5);
+  doc.line(15, 32, w - 15, 32);
 
-  const tableBody = aspects.map((a: any) => [
-    a.planet1,
-    a.aspect,
-    a.planet2,
-    safeFixed(a.orb) + "°",
-  ]);
-
-  autoTable(doc, {
-    startY: 30,
-    head: [["Planet 1", "Aspect", "Planet 2", "Orb"]],
-    body: tableBody,
-    theme: "plain",
-    headStyles: { fillColor: COLORS.primary, textColor: 255 },
-    styles: { fontSize: 10, cellPadding: 2 },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
-  });
-
-  // Legend
-  const y = (doc as any).lastAutoTable.finalY + 15;
-  doc.setFontSize(12);
-  doc.setTextColor(COLORS.primary[0], COLORS.primary[1], COLORS.primary[2]);
-  doc.text("Aspect Legends", 20, y);
-
-  doc.setFontSize(10);
-  doc.setTextColor(80, 80, 80);
-
-  // Conjunction = 0, Square = 90, Trine = 120, Opposition = 180, Sextile = 60
-  const legends = [
-    "Conjunction (0°) - Dynamic/Intense",
-    "Square (90°) - Challenge/Tension",
-    "Trine (120°) - Harmony/Flow",
-    "Opposition (180°) - Awareness/Balance",
-    "Sextile (60°) - Opportunity",
+  const gridPlanets = [
+    "Sun",
+    "Moon",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto",
+    "Ascendant",
+    "MC",
   ];
 
-  let ly = y + 8;
-  legends.forEach((l) => {
-    doc.text(`• ${l}`, 25, ly);
-    ly += 6;
+  // Build aspect lookup
+  const aspectMap: Record<string, any> = {};
+  aspects?.forEach((a) => {
+    const p1 = a.aspecting_planet || a.planet1;
+    const p2 = a.aspected_planet || a.planet2;
+    const aspectType = a.type || a.aspect;
+
+    if (!p1 || !p2) {
+      return;
+    }
+
+    const aspectData = { ...a, aspect: aspectType };
+    aspectMap[`${p1}-${p2}`] = aspectData;
+    aspectMap[`${p2}-${p1}`] = aspectData;
+  });
+
+  const aspectColors: Record<string, number[]> = {
+    Conjunction: [186, 199, 235], // Soft blue
+    Sextile: [255, 212, 185], // Soft orange
+    Square: [230, 189, 235], // Soft purple
+    Trine: [197, 235, 197], // Soft green
+    Opposition: [255, 212, 212], // Soft red
+  };
+
+  const aspectTextColors: Record<string, number[]> = {
+    Conjunction: [50, 80, 180],
+    Sextile: [255, 110, 50],
+    Square: [200, 60, 220],
+    Trine: [40, 180, 80],
+    Opposition: [240, 60, 60],
+  };
+
+  const planetColors: Record<string, number[]> = {
+    Sun: [230, 100, 0],
+    Moon: [140, 140, 150],
+    Mercury: [139, 195, 74],
+    Mars: [211, 47, 47],
+    Venus: [76, 175, 80],
+    Jupiter: [156, 39, 176],
+    Saturn: [51, 51, 51],
+    Uranus: [3, 169, 244],
+    Neptune: [0, 188, 212],
+    Pluto: [211, 47, 47],
+    Ascendant: [245, 124, 0],
+    MC: [3, 169, 244],
+  };
+
+  const cellSize = 12.5;
+  // Center grid horizontally based on number of columns (12)
+  const gridWidth = gridPlanets.length * cellSize;
+  const startX = (w - gridWidth) / 2 + 10;
+  const startY = 40;
+
+  doc.setLineWidth(0.2);
+  doc.setDrawColor(220, 220, 220);
+
+  for (let i = 0; i < gridPlanets.length; i++) {
+    const p1 = gridPlanets[i];
+
+    for (let j = 0; j <= i; j++) {
+      const p2 = gridPlanets[j];
+      const x = startX + j * cellSize;
+      const y = startY + i * cellSize;
+
+      const isDiagonal = i === j;
+
+      let bgColor = [255, 255, 255]; // Default white
+      let aspectData = null;
+      let textIcon = "";
+      let textColor = [0, 0, 0];
+
+      if (!isDiagonal) {
+        aspectData = aspectMap[`${p1}-${p2}`];
+
+        if (aspectData) {
+          bgColor = aspectColors[aspectData.aspect] || [255, 255, 255];
+          textIcon = ASPECT_ICONS[aspectData.aspect] || "";
+          textColor = aspectTextColors[aspectData.aspect] || [100, 100, 100];
+        }
+      }
+
+      // Draw cell background
+      if (bgColor[0] !== 255 || bgColor[1] !== 255 || bgColor[2] !== 255) {
+        doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+        doc.rect(x, y, cellSize, cellSize, "F");
+      }
+
+      doc.rect(x, y, cellSize, cellSize, "S");
+
+      // Draw cell content
+      doc.setFont("helvetica", "bold");
+      if (isDiagonal) {
+        let icon = PLANET_ICONS[p1] || "";
+        if (p1 === "Ascendant") icon = "AC";
+        if (p1 === "MC") icon = "MC";
+
+        const pColor = planetColors[p1] || [100, 100, 100];
+        doc.setTextColor(pColor[0], pColor[1], pColor[2]);
+        doc.setFontSize(10);
+
+        const textWidth = doc.getTextWidth(icon);
+        doc.text(icon, x + (cellSize - textWidth) / 2, y + cellSize / 2 + 3.2);
+      } else if (textIcon) {
+        doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+        doc.setFontSize(11);
+
+        const textWidth = doc.getTextWidth(textIcon);
+        doc.text(
+          textIcon,
+          x + (cellSize - textWidth) / 2,
+          y + cellSize / 2 + 3.5,
+        );
+      }
+    }
+  }
+
+  // 3. New Legends matching Image 1 exactly
+  const legendY = startY + gridPlanets.length * cellSize + 20;
+
+  doc.setFontSize(11);
+  doc.setTextColor(59, 56, 101); // Dark blue/purple matching title
+  doc.setFont("helvetica", "bold");
+  doc.text("LEGENDS FOR ASPECTS TABLE", w / 2, legendY, { align: "center" });
+
+  // Decorative squiggly line
+  doc.setDrawColor(156, 39, 176);
+  doc.setLineWidth(0.5);
+  const cx = w / 2;
+  const cy = legendY + 4;
+  doc.line(cx - 15, cy, cx - 5, cy);
+  doc.line(cx - 3, cy - 1, cx + 3, cy + 1);
+  doc.line(cx + 5, cy, cx + 15, cy);
+
+  const drawLegendItem = (
+    lx: number,
+    ly: number,
+    aspectName: string,
+    labelString: string,
+  ) => {
+    const icon = ASPECT_ICONS[aspectName] || "";
+    const color = aspectTextColors[aspectName] || [100, 100, 100];
+
+    // Icon
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(color[0], color[1], color[2]);
+    doc.setFontSize(12);
+    doc.text(icon, lx, ly);
+
+    // Text Label
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(40, 40, 40); // Darker grey text for legend
+    doc.setFontSize(10);
+    // Draw string to exact match
+    doc.text(labelString, lx + 4, ly - 0.5);
+  };
+
+  let ly = legendY + 16;
+  const col1X = 20;
+  const col2X = 80;
+  const col3X = 145;
+
+  // Row 1
+  drawLegendItem(col1X, ly, "Square", "Square (90°) - Challenging");
+  drawLegendItem(col2X, ly, "Conjunction", "Conjunction (0°) - Dynamic");
+  drawLegendItem(col3X, ly, "Trine", "Trine (120°) - Harmony");
+
+  // Row 2 Band
+  ly += 11;
+  doc.setFillColor(242, 234, 246); // Very light purple band
+  doc.rect(15, ly - 6, w - 30, 9, "F");
+
+  drawLegendItem(col1X, ly, "Opposition", "Opposition (180°) - Tension");
+  drawLegendItem(col2X, ly, "Sextile", "Sextile(60°) - Opportunities");
+}
+
+// ═══════════════════════════════════════════════
+//  PAGE 7 & 8 — ASPECTS TABLE
+// ═══════════════════════════════════════════════
+export function renderAspectsTablePage(doc: jsPDF, aspects: any[]) {
+  if (!aspects || aspects.length === 0) {
+    return;
+  }
+
+  doc.addPage();
+  addPageBackground(doc);
+
+  const w = doc.internal.pageSize.getWidth();
+
+  // 1. Header
+  const printHeader = () => {
+    doc.setFontSize(22);
+    doc.setTextColor(110, 120, 140);
+    doc.setFont("helvetica", "bold");
+    doc.text("Aspects Table", w / 2, 25, { align: "center" });
+
+    doc.setDrawColor(210, 200, 190);
+    doc.setLineWidth(0.5);
+    doc.line(15, 32, w - 15, 32);
+  };
+
+  printHeader();
+
+  // Same aspect lookup logic to handle aspecting_planet, aspected_planet, type
+  const processedAspects = aspects
+    .map((a: any) => {
+      return {
+        planet1: a.aspecting_planet || a.planet1 || "",
+        planet2: a.aspected_planet || a.planet2 || "",
+        aspect: a.type || a.aspect || "",
+        orb: a.orb || 0,
+        ...a,
+      };
+    })
+    .filter((a: any) => a.planet1 && a.planet2 && a.aspect);
+
+  const tableBody = processedAspects.map((a: any) => {
+    return [
+      { content: "", raw: { planet: a.planet1 } },
+      { content: "", raw: { aspect: a.aspect } },
+      { content: "", raw: { planet: a.planet2 } },
+      safeFixed(a.orb),
+    ];
+  });
+
+  const aspectTextColors: Record<string, number[]> = {
+    Conjunction: [50, 80, 180],
+    Sextile: [255, 110, 50],
+    Square: [200, 60, 220],
+    Trine: [40, 180, 80],
+    Opposition: [240, 60, 60],
+  };
+
+  const planetColors: Record<string, number[]> = {
+    Sun: [230, 100, 0],
+    Moon: [140, 140, 150],
+    Mercury: [139, 195, 74],
+    Mars: [211, 47, 47],
+    Venus: [76, 175, 80],
+    Jupiter: [156, 39, 176],
+    Saturn: [51, 51, 51],
+    Uranus: [3, 169, 244],
+    Neptune: [0, 188, 212],
+    Pluto: [211, 47, 47],
+    Ascendant: [245, 124, 0],
+    Midheaven: [3, 169, 244],
+    MC: [3, 169, 244],
+  };
+
+  autoTable(doc, {
+    startY: 40,
+    head: [["Planet", "Aspect", "Planet", "Orb"]],
+    body: tableBody,
+    theme: "plain",
+    headStyles: {
+      fillColor: [228, 205, 235], // Light purple
+      textColor: [115, 80, 140], // Darker purple text
+      fontStyle: "bold",
+      halign: "left",
+      fontSize: 10,
+    },
+    styles: {
+      fontSize: 10,
+      font: "helvetica",
+      cellPadding: 6,
+      valign: "middle",
+    },
+    columnStyles: {
+      0: { halign: "left" },
+      1: { halign: "left" },
+      2: { halign: "left" },
+      3: { halign: "left", textColor: [80, 80, 80] },
+    },
+    // Add page background rendering for auto-pagination extending to page 8+
+    willDrawPage: (hookData) => {
+      // Background must only be redrawn if autoTable forces a new page break internally.
+      // Hook data gives us page count vs start page to detect forced jumps.
+      if (hookData.pageNumber > 1) {
+        // Render identical PDF doc background logic here on the new auto-page
+        addPageBackground(doc);
+        printHeader();
+      }
+    },
+    // We must reset the Start Y for next pages since we print a header again
+    margin: { top: 40, left: 15, right: 15, bottom: 20 },
+
+    didParseCell: (hookData) => {
+      // Create alternating row background
+      if (hookData.section === "body") {
+        if (hookData.row.index % 2 === 0) {
+          hookData.cell.styles.fillColor = [255, 255, 255];
+        } else {
+          hookData.cell.styles.fillColor = [246, 238, 250]; // Extremely light purple
+        }
+      }
+    },
+    didDrawCell: (hookData) => {
+      if (hookData.section === "body") {
+        const raw = hookData.cell.raw && (hookData.cell.raw as any).raw;
+        if (!raw) return;
+
+        const startX = hookData.cell.x + 5; // Left padding
+        const y = hookData.cell.y + hookData.cell.height / 2 + 3;
+
+        doc.setFontSize(11);
+
+        if (raw.planet) {
+          const pName = raw.planet;
+          let icon = PLANET_ICONS[pName] || "";
+          if (pName === "Ascendant") icon = "AC";
+          if (pName === "Midheaven" || pName === "MC") icon = "MC";
+
+          const pColor = planetColors[pName] || [100, 100, 100];
+
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(pColor[0], pColor[1], pColor[2]);
+          doc.text(icon, startX, y);
+
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(60, 60, 60); // Dark grey text
+          const iconWidth = doc.getTextWidth(icon) + 2;
+
+          // Print Planet name exactly
+          let displayName = pName;
+          if (pName === "Ascendant") displayName = "Ascendant";
+          if (pName === "MC") displayName = "Midheaven";
+
+          doc.text(displayName, startX + iconWidth - 1, y);
+        } else if (raw.aspect) {
+          const aName = raw.aspect;
+          const icon = ASPECT_ICONS[aName] || "";
+          const color = aspectTextColors[aName] || [100, 100, 100];
+
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(color[0], color[1], color[2]);
+          doc.text(icon, startX, y);
+
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(60, 60, 60); // Dark grey
+          const iconWidth = doc.getTextWidth(icon) + 2;
+          doc.text(aName, startX + iconWidth, y);
+        }
+      }
+    },
   });
 }
