@@ -1,10 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Public_Sans } from "next/font/google";
 import "./globals.css";
-
-import PageTopNavbar from "../components/PageTopNavbar";
-import DesktopSidebar from "../components/DesktopSidebar";
-import PageFooter from "../components/PageFooter";
-import ContentProtection from "@/components/ContentProtection";
+import {
+  Lexend_Deca,
+  Varta,
+  Gowun_Dodum,
+  Homemade_Apple,
+} from "next/font/google";
+import DesktopSidebar from "@/components/DesktopSidebar";
+import PageTopNavbar from "@/components/PageTopNavbar";
+import PageFooter from "@/components/PageFooter";
+const publicSans = Public_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-public-sans",
+});
 
 // Viewport configuration
 export const viewport: Viewport = {
@@ -303,9 +313,33 @@ export const metadata: Metadata = {
   // Bookmarks
   bookmarks: ["https://astroweb.com/bookmarks"],
 };
+const lexendDeca = Lexend_Deca({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-lexend-deca",
+});
 
-// ... (existing imports)
+const varta = Varta({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-varta",
+});
 
+const gowunDodum = Gowun_Dodum({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-gowun-dodum",
+});
+
+const homemadeApple = Homemade_Apple({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-homemade-apple",
+});
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -451,32 +485,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preconnect for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-
-        {/* Google Fonts - Optimized URLs */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Varta:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap"
-          rel="stylesheet"
-        />
-
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -520,37 +538,28 @@ export default function RootLayout({
         />
       </head>
       <body
-        style={{
-          fontFamily: '"Lexend Deca", sans-serif',
-          backgroundColor: "#f0f2f5",
-          margin: 0,
-          padding: 0,
-          height: "100vh",
-          overflow: "hidden",
-        }}
+        className={`antialiased min-h-screen flex flex-col w-full h-full font-sans m-0 p-0 ${publicSans.variable}`}
       >
-        <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-          {/* Sidebar (Desktop only) - Independent scroll */}
-          <DesktopSidebar />
-          <ContentProtection />
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              height: "100vh",
-              overflow: "hidden",
-            }}
-          >
-            {/* Navbar - Fixed at top */}
-            <PageTopNavbar />
-
-            {/* Main Content - Independent scroll */}
-            <div style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
-              <main className="container pt-16 mt-4 px-4">{children}</main>
-
-              <div className="container px-4">
-                <PageFooter />
+        <div
+          className={`${lexendDeca.className} ${varta.variable} ${gowunDodum.variable} ${homemadeApple.variable}`}
+          style={{
+            backgroundColor: "#f0f2f5",
+            margin: 0,
+            padding: 0,
+            height: "100vh",
+            overflow: "hidden",
+          }}
+        >
+          <div className="flex h-screen overflow-hidden">
+            <DesktopSidebar />
+            <div className="flex-1 flex flex-col h-screen overflow-hidden">
+              <PageTopNavbar />
+              {/* Main Content - Independent scroll */}
+              <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                <main className="container pt-16 mt-4 px-4"> {children}</main>
+                <div className="container px-4">
+                  <PageFooter />
+                </div>
               </div>
             </div>
           </div>

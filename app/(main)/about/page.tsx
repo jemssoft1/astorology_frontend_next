@@ -48,6 +48,19 @@ export default function About() {
 
           <div className="vstack gap-2" style={{ maxWidth: "667.5px" }}>
             <p>
+              astroweb{" "}
+              <span className="font-semibold">is made by volunteers</span> from{" "}
+              <span className="font-semibold">Bhavnagar</span>, India. You can
+              see people who contributed behind astroweb by clicking{" "}
+              <Link
+                href="/made-on-earth"
+                className="text-blue-500 hover:text-blue-600 no-underline hover:underline"
+              >
+                here
+              </Link>
+              .
+            </p>
+            <p>
               <img
                 src="/images/dropcap-a.svg"
                 style={{
@@ -190,7 +203,17 @@ export default function About() {
                 <br />
                 It's their gift to us, the <strong>"world folk"</strong>.
               </p>
-
+              <p>
+                Feel free to give suggestions to improve this initiative by
+                using our{" "}
+                <Link
+                  href="/contact-us"
+                  className="text-blue-500 hover:text-blue-600 no-underline hover:underline"
+                >
+                  Contact Us
+                </Link>{" "}
+                page.
+              </p>
               <div style={{ cursor: "pointer", marginTop: "60.1px" }}>
                 <figure className="text-center">
                   <blockquote className="blockquote">

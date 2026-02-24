@@ -17,12 +17,20 @@ export default function PageTopNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const leftLinks: NavLink[] = [
-    { icon: "carbon:gateway-api", text: "Open API", href: "/api-builder" },
+    {
+      icon: "carbon:gateway-api",
+      text: "Open API",
+      href: "/api-builder",
+    },
     { icon: "openmoji:love-letter", text: "Donate", href: "/donate" },
   ];
 
   const rightLinks: NavLink[] = [
-    { icon: "heroicons-outline:mail", text: "Contact Us", href: "/contact-us" },
+    {
+      icon: "heroicons-outline:mail",
+      text: "Contact Us",
+      href: "/contact-us",
+    },
     { icon: "ix:about", text: "About", href: "/about" },
     {
       icon: "octicon:video-16",
@@ -46,7 +54,11 @@ export default function PageTopNavbar() {
       href: "/match-checker",
     },
     { icon: "mdi:numbers", text: "Numerology", href: "/numerology" },
-    { icon: "gis:map-time", text: "Life Predictor", href: "/life-predictor" },
+    {
+      icon: "gis:map-time",
+      text: "Life Predictor",
+      href: "/life-predictor",
+    },
   ];
 
   return (
