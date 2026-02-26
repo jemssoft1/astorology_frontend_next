@@ -10,17 +10,17 @@ const ApiDomain = process.env.NEXT_PUBLIC_NEXT_JS_API_URL;
 // Gets the user ID from local storage or assigns a guest ID if not present
 export function getUserId(): string {
   if (typeof window === "undefined") return "101";
-  const storedValue = localStorage.getItem("UserId");
+  const storedValue = localStorage.getItem("user");
   try {
-    return storedValue ? JSON.parse(storedValue) : "101"; // Guest ID is "101"
-  } catch (e) {
+    return storedValue ? JSON.parse(storedValue).userId : "101"; // Guest ID is "101"
+  } catch {
     return "101"; // Return guest ID on parse error
   }
 }
 
 export function setUserId(value: string): void {
   if (typeof window !== "undefined") {
-    localStorage.setItem("UserId", JSON.stringify(value));
+    localStorage.setItem("user", JSON.stringify({ userId: value }));
   }
 }
 
@@ -46,9 +46,12 @@ export function isGuestUser(): boolean {
 }
 
 // Get auth token from localStorage
+// Checks both "token" (set by auth-callback/UserContext) and legacy "AuthToken"
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("AuthToken");
+  return (
+    localStorage.getItem("token") || localStorage.getItem("AuthToken") || null
+  );
 }
 
 export function setAuthToken(value: string | null): void {

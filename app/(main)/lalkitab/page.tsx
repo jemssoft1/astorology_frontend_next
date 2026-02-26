@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -7,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // Types
 interface LalKitabData {
@@ -172,6 +172,7 @@ export default function LalKitabPage() {
   const [lalKitabData, setLalKitabData] = useState<LalKitabResponse | null>(
     null,
   );
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [selectedRemedyPlanet, setSelectedRemedyPlanet] =
     useState<string>("Sun");
@@ -211,11 +212,17 @@ export default function LalKitabPage() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/lalkitab`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/lalkitab`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: LalKitabResponse = await response.json();
       if (result.status === "Fail") {
@@ -991,7 +998,6 @@ export default function LalKitabPage() {
               </button>
             </div>
 
-         
             {/* Info Card */}
             <div className="bg-white border border-gray-200 rounded-lg p-5">
               <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">

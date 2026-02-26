@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // ============ Updated Types ============
 interface SignAshtakPoints {
@@ -214,7 +215,7 @@ export default function AshtakvargaPage() {
   );
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [selectedPlanet, setSelectedPlanet] = useState<string>("sun");
-
+  const { user } = useUser();
   const handlePersonSelected = (person: Person) => {
     setSelectedPerson(person);
     setAshtakData(null);
@@ -250,11 +251,17 @@ export default function AshtakvargaPage() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/ashtakvarga`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/ashtakvarga`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: AshtakvargaResponse = await response.json();
       if (result.status === "Fail") {

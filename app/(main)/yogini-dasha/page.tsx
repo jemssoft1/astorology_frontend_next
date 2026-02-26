@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // Types matching API response
 interface DashaPeriod {
@@ -175,6 +176,8 @@ export default function YoginiDashaPage() {
   const [yoginiData, setYoginiData] = useState<YoginiDashaResponse | null>(
     null,
   );
+  const { user } = useUser();
+
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [selectedMajorDasha, setSelectedMajorDasha] = useState<string | null>(
     null,
@@ -215,11 +218,17 @@ export default function YoginiDashaPage() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/yogini-dasha`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/yogini-dasha`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: YoginiDashaResponse = await response.json();
       if (result.status === "Fail") {

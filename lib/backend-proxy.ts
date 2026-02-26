@@ -21,7 +21,7 @@ export async function proxyToBackend(req: NextRequest, endpoint: string) {
     let body;
     try {
       body = await req.json();
-    } catch (e) {
+    } catch {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 

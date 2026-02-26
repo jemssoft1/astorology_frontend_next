@@ -7,6 +7,7 @@ import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
 import BirthChartSection from "@/components/horoscope/BirthChartSection";
+import { useUser } from "@/context/UserContext";
 
 // Types
 interface KPSystemData {
@@ -167,7 +168,7 @@ export default function KPSystemPage() {
   const [loading, setLoading] = useState(false);
   const [kpData, setKpData] = useState<KPSystemResponse | null>(null);
   const [activeTab, setActiveTab] = useState<string>("overview");
-
+  const { user } = useUser();
   const handlePersonSelected = (person: Person) => {
     setSelectedPerson(person);
     setKpData(null);
@@ -203,11 +204,17 @@ export default function KPSystemPage() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/kp-system`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/kp-system`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: KPSystemResponse = await response.json();
       if (result.status === "Fail") {

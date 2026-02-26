@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // Types
 interface DashaPeriod {
@@ -190,7 +191,7 @@ export default function VimshottariDasha() {
       ...(md && ad && pd && sd && { sd }),
     };
   };
-
+  const { user } = useUser();
   const fetchDasha = async () => {
     if (!selectedPerson) {
       Swal.fire("Error", "Please select a person first", "error");
@@ -200,11 +201,17 @@ export default function VimshottariDasha() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/vimshottari-dasha`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/vimshottari-dasha`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: VdashaResponse = await response.json();
       if (result.status === "Fail") {

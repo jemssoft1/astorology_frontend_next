@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 interface PredictionResponse {
   birth_moon_sign: string;
@@ -66,6 +67,7 @@ export default function DailyNakshatraPage() {
       },
     };
   };
+  const { user } = useUser();
 
   const fetchPrediction = async (
     type: string = "prediction",
@@ -80,13 +82,17 @@ export default function DailyNakshatraPage() {
     try {
       const payload = getBirthDataPayload(selectedPerson, date);
 
-      const response = await fetch(`/api/daily_nakshatra?type=${type}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/daily_nakshatra?type=${type}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
       const result = await response.json();
 

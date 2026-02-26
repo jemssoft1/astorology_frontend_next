@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // ============ Types ============
 
@@ -222,7 +223,7 @@ export default function RemediesPage() {
     null,
   );
   const [activeTab, setActiveTab] = useState<string>("overview");
-
+  const { user } = useUser();
   const handlePersonSelected = (person: Person) => {
     setSelectedPerson(person);
     setRemediesData(null);
@@ -258,11 +259,17 @@ export default function RemediesPage() {
     setLoading(true);
     try {
       const payload = getBirthDataPayload(selectedPerson);
-      const response = await fetch(`/api/remedies`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/remedies`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: RemediesResponse = await response.json();
       if (result.status === "Fail") {

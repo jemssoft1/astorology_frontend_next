@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Iconify from "@/components/Iconify";
+import { useUser } from "@/context/UserContext";
 
 // Types
 interface PanchangInfo {
@@ -70,7 +71,7 @@ const IndianCalendar = () => {
   const [currentYear, setCurrentYear] = useState<number>(
     new Date().getFullYear(),
   );
-
+  const { user } = useUser();
   const weekDays = [
     { short: "Sun", full: "Sunday", hindi: "रवि" },
     { short: "Mon", full: "Monday", hindi: "सोम" },
@@ -92,7 +93,14 @@ const IndianCalendar = () => {
 
     try {
       const response = await fetch(
-        `/api/calendar/hindu-calender?month=${month}&year=${year}&type=${type}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/calendar/hindu-calender?month=${month}&year=${year}&type=${type}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+        },
       );
 
       if (!response.ok) {

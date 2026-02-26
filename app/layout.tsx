@@ -10,6 +10,7 @@ import {
 import DesktopSidebar from "@/components/DesktopSidebar";
 import PageTopNavbar from "@/components/PageTopNavbar";
 import PageFooter from "@/components/PageFooter";
+import { UserProvider } from "@/context/UserContext";
 const publicSans = Public_Sans({
   subsets: ["latin"],
   display: "swap",
@@ -540,30 +541,32 @@ export default function RootLayout({
       <body
         className={`antialiased min-h-screen flex flex-col w-full h-full font-sans m-0 p-0 ${publicSans.variable}`}
       >
-        <div
-          className={`${lexendDeca.className} ${varta.variable} ${gowunDodum.variable} ${homemadeApple.variable}`}
-          style={{
-            backgroundColor: "#f0f2f5",
-            margin: 0,
-            padding: 0,
-            height: "100vh",
-            overflow: "hidden",
-          }}
-        >
-          <div className="flex h-screen overflow-hidden">
-            <DesktopSidebar />
-            <div className="flex-1 flex flex-col h-screen overflow-hidden">
-              <PageTopNavbar />
-              {/* Main Content - Independent scroll */}
-              <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                <main className="container pt-16 mt-4 px-4"> {children}</main>
-                <div className="container px-4">
-                  <PageFooter />
+        <UserProvider>
+          <div
+            className={`${lexendDeca.className} ${varta.variable} ${gowunDodum.variable} ${homemadeApple.variable}`}
+            style={{
+              backgroundColor: "#f0f2f5",
+              margin: 0,
+              padding: 0,
+              height: "100vh",
+              overflow: "hidden",
+            }}
+          >
+            <div className="flex h-screen overflow-hidden">
+              <DesktopSidebar />
+              <div className="flex-1 flex flex-col h-screen overflow-hidden">
+                <PageTopNavbar />
+                {/* Main Content - Independent scroll */}
+                <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                  <main className="container pt-16 mt-4 px-4"> {children}</main>
+                  <div className="container px-4">
+                    <PageFooter />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </UserProvider>
       </body>
     </html>
   );

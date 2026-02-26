@@ -6,6 +6,7 @@ import PersonSelector from "@/components/PersonSelector";
 import Iconify from "@/components/Iconify";
 import { Person } from "@/lib/models";
 import Swal from "sweetalert2";
+import { useUser } from "@/context/UserContext";
 
 // Types
 interface NumerologyData {
@@ -93,7 +94,7 @@ export default function NumerologyPage() {
   const [loading, setLoading] = useState(false);
   const [numeroData, setNumeroData] = useState<NumerologyResponse | null>(null);
   const [activeTab, setActiveTab] = useState<string>("overview");
-
+  const { user } = useUser();
   const handlePersonSelected = (person: Person) => {
     setSelectedPerson(person);
     setNumeroData(null);
@@ -119,11 +120,17 @@ export default function NumerologyPage() {
     setLoading(true);
     try {
       const payload = getPayload(selectedPerson);
-      const response = await fetch(`/api/numerology`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/indian-numerology`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
       const result: NumerologyResponse = await response.json();
       if (result.status === "Fail") {

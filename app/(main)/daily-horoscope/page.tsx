@@ -18,6 +18,7 @@ import {
   Clover,
 } from "lucide-react";
 import AstroLoader from "@/components/ui/AstroLoader";
+import { useUser } from "@/context/UserContext";
 
 // --- Zodiac Data ---
 const ZODIAC_SIGNS = [
@@ -385,7 +386,7 @@ export default function DailyHoroscopePage() {
   const [loading, setLoading] = useState(false);
   const [predictions, setPredictions] = useState<PredictionsData | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const { user } = useUser();
   // ✅ Fetch data when sign changes
   useEffect(() => {
     const fetchHoroscope = async () => {
@@ -394,14 +395,20 @@ export default function DailyHoroscopePage() {
       setPredictions(null);
 
       try {
-        const res = await fetch("/api/daily-horoscope", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            sign: selectedSign,
-            timezone: 5.5,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/daily-horoscope`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user?.token}`,
+            },
+            body: JSON.stringify({
+              sign: selectedSign,
+              timezone: 5.5,
+            }),
+          },
+        );
 
         const result = await res.json();
 
